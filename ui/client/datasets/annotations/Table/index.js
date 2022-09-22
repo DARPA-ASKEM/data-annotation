@@ -14,6 +14,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import ColumnPanel from '../ColumnPanel';
 import OntologiesSelector from '../OntologiesSelector';
 
+import BasicAlert from '../../../components/BasicAlert';
+
 import { calcPointerLocation, groupColumns } from './helpers';
 import Header from './Header';
 
@@ -118,11 +120,16 @@ export default withStyles(({ palette }) => ({
   const [pageSize, setPageSize] = useState(rowsPerPageOptions[0]);
   const [highlightedColumn, setHighlightedColumn] = useState(null);
   const [editingColumn, setEditingColumn] = useState(null);
-  const [anchorPosition, setAnchorPosition] = useState('right');
+  const [anchorPosition] = useState('right');
 
   const [isShowMarkers, setShowMarkers] = useState(true);
 
   const [ontologiesOpen, setOntologiesOpen] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState({
+    severity: '',
+    message: ''
+  });
 
   const isEditing = Boolean(editingColumn);
 
@@ -256,13 +263,13 @@ export default withStyles(({ palette }) => ({
           title="Display context icons for columns with inferred data, annotated as primary, or as qualifier."
         >
           <FormControlLabel
-            control={
+            control={(
               <Checkbox
                 checked={isShowMarkers}
-                onChange={e => setShowMarkers(e.target.checked)}
+                onChange={(e) => setShowMarkers(e.target.checked)}
                 color="primary"
               />
-            }
+            )}
             label="Show Additional Markers"
           />
         </Tooltip>
@@ -323,8 +330,17 @@ export default withStyles(({ palette }) => ({
         open={ontologiesOpen}
         onClose={() => setOntologiesOpen(false)}
         columnName={editingColumn?.name}
+        setAlertMessage={setAlertMessage}
+        setAlertVisible={setAlertVisible}
       />
 
+      <BasicAlert
+        alert={alertMessage}
+        visible={alertVisible}
+        setVisible={setAlertVisible}
+        autoHideDuration={10000}
+        anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
+      />
     </div>
   );
 });

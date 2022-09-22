@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, lighten } from '@material-ui/core/styles';
 
 import Drawer from '@material-ui/core/Drawer';
 
@@ -44,10 +44,22 @@ export default withStyles((theme) => ({
   list: {
     '& > :nth-child(even)': {
       backgroundColor: theme.palette.grey[100],
+      '&:hover': {
+        backgroundColor: theme.palette.grey[300],
+      },
     },
   },
   listItem: {
     display: 'block',
+    '&:hover': {
+      backgroundColor: theme.palette.grey[300],
+    },
+  },
+  selectedItem: {
+    backgroundColor: lighten(theme.palette.primary.light, 0.5),
+    '&:hover': {
+      backgroundColor: lighten(theme.palette.primary.light, 0.2),
+    },
   },
   buttonContainer: {
     display: 'flex',
@@ -57,17 +69,37 @@ export default withStyles((theme) => ({
 
   },
 }))(({
-  classes, open, onClose, columnName
+  classes, open, onClose, columnName, setAlertMessage, setAlertVisible
 }) => {
   const [searchResults, setSearchResults] = useState([]);
+  const [selected, setSelected] = useState();
 
   useEffect(() => {
     // clear out the search results any time we close
     // this can happen from outside of this component (from the ColumnPanel), so handle it here
     if (!open) {
       setSearchResults([]);
+      setSelected();
     }
   }, [open]);
+
+  const handleSave = () => {
+    if (selected) {
+      setAlertMessage({
+        severity: 'success',
+        message: `Saved ontology "${selected?.name}" to the annotation for "${columnName}"`
+      });
+      setAlertVisible(true);
+      onClose();
+      return;
+    }
+
+    setAlertVisible(true);
+    setAlertMessage({
+      severity: 'warning',
+      message: 'Please select an ontology before saving.'
+    });
+  };
 
   return (
     <Drawer
@@ -104,6 +136,9 @@ export default withStyles((theme) => ({
                 <ListItem
                   classes={{ root: classes.listItem }}
                   key={result.id}
+                  button
+                  onClick={() => setSelected(result)}
+                  className={selected?.id === result.id ? classes.selectedItem : ''}
                 >
                   <Typography variant="subtitle1">
                     Name: {result.name}
@@ -121,7 +156,12 @@ export default withStyles((theme) => ({
         </div>
         <div className={classes.buttonContainer}>
           <Button onClick={onClose}>Cancel</Button>
-          <Button color="primary">Save to annotation</Button>
+          <Button
+            color="primary"
+            onClick={handleSave}
+          >
+            Save to annotation
+          </Button>
         </div>
       </div>
     </Drawer>

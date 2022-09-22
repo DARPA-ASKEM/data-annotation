@@ -460,7 +460,7 @@ export default withStyles(({ palette, spacing, breakpoints }) => ({
                         disableElevation
                         onClick={() => openOntologiesSelector()}
                       >
-                        Add Ontologies
+                        Add Ontology
                       </Button>
 
                       <div className={classes.buttonContainer}>
