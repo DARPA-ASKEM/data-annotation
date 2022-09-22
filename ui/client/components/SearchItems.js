@@ -23,9 +23,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Search = ({
-  setSearch, items, searchKeys, name
+  setSearch, items, searchKeys, name, initialSearchTerm = '', fullWidth
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [alertVisible, setAlertVisible] = useState(false);
   const [alert, setAlert] = useState({
     severity: 'warning',
@@ -97,13 +97,15 @@ const Search = ({
   return (
     <div className={classes.searchWrapper}>
       <TextField
-        className={classes.searchInput}
+        autoFocus
+        className={fullWidth ? '' : classes.searchInput}
         label={`Filter ${name}s`}
         variant="outlined"
         value={searchTerm}
         onChange={handleSearchChange}
         role="searchbox"
         data-test="viewModelsSearchField"
+        fullWidth={fullWidth}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">

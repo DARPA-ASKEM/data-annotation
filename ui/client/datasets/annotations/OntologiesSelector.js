@@ -1,62 +1,129 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
+import Drawer from '@material-ui/core/Drawer';
+
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-// import Drawer from '../../components/Drawer';
+
+import Search from '../../components/SearchItems';
+
+import mockOntologies from './mockOntologiesSearchResults.json';
+
+const mockSearchKeys = ['name', 'description', 'id'];
 
 export default withStyles((theme) => ({
-  dialog: {
-    width: '40rem',
-    height: '30rem',
+  drawerPaper: {
+    width: '30%',
+    borderRight: '1px solid gray',
   },
   ontologiesBox: {
-    height: '200px',
+    minHeight: '300px',
+    // full screen height minus all the other things in the drawer + a little extra
+    maxHeight: 'calc(100vh - 300px)',
+    overflowY: 'auto',
     width: '100%',
     borderRadius: '4px',
     border: '1px solid black',
     marginTop: theme.spacing(2),
   },
-// eslint-disable-next-line arrow-body-style
-}))(({ classes, open, onClose }) => {
+  drawerInner: {
+    padding: '2rem',
+    paddingTop: '0.5rem',
+    height: '100vh',
+  },
+  drawerControls: {
+    display: 'flex',
+    justifyContent: 'flex-end'
+  },
+  list: {
+    '& > :nth-child(even)': {
+      backgroundColor: theme.palette.grey[100],
+    },
+  },
+  listItem: {
+    display: 'block',
+  },
+  buttonContainer: {
+    display: 'flex',
+    padding: theme.spacing(1),
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+
+  },
+}))(({
+  classes, open, onClose, columnName
+}) => {
+  const [searchResults, setSearchResults] = useState([]);
+
+  useEffect(() => {
+    // clear out the search results any time we close
+    // this can happen from outside of this component (from the ColumnPanel), so handle it here
+    if (!open) {
+      setSearchResults([]);
+    }
+  }, [open]);
+
   return (
-    <Dialog
+    <Drawer
+      variant="persistent"
+      anchor="left"
       open={open}
       onClose={onClose}
+      classes={{ paper: classes.drawerPaper }}
     >
-      <DialogTitle>Search for Ontologies</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Enter a search term to find relevant ontologies with the MIRA Knowledge Graph
-        </DialogContentText>
-        <TextField
-          autoFocus
-          name="Ontology"
-          label="Ontology Search"
-          fullWidth
-          variant="outlined"
-        />
-        <div className={classes.ontologiesBox}>
-          <List>
-            <ListItem variant="subtitle2">Result 1</ListItem>
-            <ListItem variant="subtitle2">Result 2</ListItem>
-            <ListItem variant="subtitle2">Result 3</ListItem>
-          </List>
+      <div className={classes.drawerInner}>
+        <div className={classes.drawerControls}>
+          <IconButton onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
         </div>
-      </DialogContent>
-      <DialogActions>
-        <Button>Cancel</Button>
-        <Button color="primary">Save to annotation</Button>
-      </DialogActions>
-    </Dialog>
+        <Typography variant="h5" gutterBottom>Search for Ontologies</Typography>
+        <div>
+          <Typography variant="body1" paragraph color="textSecondary">
+            Enter a search term to find relevant ontologies with the MIRA Knowledge Graph
+          </Typography>
+          {open && (
+            <Search
+              name="Ontologie"
+              searchKeys={mockSearchKeys}
+              setSearch={setSearchResults}
+              items={mockOntologies}
+              initialSearchTerm={columnName}
+              fullWidth
+            />
+          )}
+          <div className={classes.ontologiesBox}>
+            <List className={classes.list}>
+              {searchResults?.map((result) => (
+                <ListItem
+                  classes={{ root: classes.listItem }}
+                  key={result.id}
+                >
+                  <Typography variant="subtitle1">
+                    Name: {result.name}
+                  </Typography>
+                  <Typography variant="body2">
+                    Description: {result.description}
+                  </Typography>
+                  <Typography variant="body2">
+                    ID: {result.id}
+                  </Typography>
+                </ListItem>
+              ))}
+            </List>
+          </div>
+        </div>
+        <div className={classes.buttonContainer}>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button color="primary">Save to annotation</Button>
+        </div>
+      </div>
+    </Drawer>
   );
 });

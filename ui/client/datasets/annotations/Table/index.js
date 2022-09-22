@@ -128,6 +128,7 @@ export default withStyles(({ palette }) => ({
 
   const toggleDrawer = () => {
     setEditingColumn(!editingColumn);
+    setOntologiesOpen(false);
   };
 
   const findMultipartMember = (columnFieldName) => (
@@ -321,6 +322,7 @@ export default withStyles(({ palette }) => ({
       <OntologiesSelector
         open={ontologiesOpen}
         onClose={() => setOntologiesOpen(false)}
+        columnName={editingColumn?.name}
       />
 
     </div>
