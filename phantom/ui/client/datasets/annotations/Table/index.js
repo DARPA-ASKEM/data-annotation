@@ -12,6 +12,9 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import ColumnPanel from '../ColumnPanel';
+import OntologiesSelector from '../OntologiesSelector';
+
+import BasicAlert from '../../../components/BasicAlert';
 
 import { calcPointerLocation, groupColumns } from './helpers';
 import Header from './Header';
@@ -117,14 +120,22 @@ export default withStyles(({ palette }) => ({
   const [pageSize, setPageSize] = useState(rowsPerPageOptions[0]);
   const [highlightedColumn, setHighlightedColumn] = useState(null);
   const [editingColumn, setEditingColumn] = useState(null);
-  const [anchorPosition, setAnchorPosition] = useState('right');
+  const [anchorPosition] = useState('right');
 
   const [isShowMarkers, setShowMarkers] = useState(true);
+
+  const [ontologiesOpen, setOntologiesOpen] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState({
+    severity: '',
+    message: ''
+  });
 
   const isEditing = Boolean(editingColumn);
 
   const toggleDrawer = () => {
     setEditingColumn(!editingColumn);
+    setOntologiesOpen(false);
   };
 
   const findMultipartMember = (columnFieldName) => (
@@ -132,7 +143,6 @@ export default withStyles(({ palette }) => ({
   );
 
   const handleCellClick = (cell) => {
-
     const isColumnAnnotated = !isEmpty(annotations[cell.field]);
 
     if (!isColumnAnnotated && !addingAnnotationsAllowed) {
@@ -252,16 +262,16 @@ export default withStyles(({ palette }) => ({
           classes={{ tooltip: classes.tooltip }}
           title="Display context icons for columns with inferred data, annotated as primary, or as qualifier."
         >
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={isShowMarkers}
-              onChange={e => setShowMarkers(e.target.checked)}
-              color="primary"
-            />
-          }
-          label="Show Additional Markers"
-        />
+          <FormControlLabel
+            control={(
+              <Checkbox
+                checked={isShowMarkers}
+                onChange={(e) => setShowMarkers(e.target.checked)}
+                color="primary"
+              />
+            )}
+            label="Show Additional Markers"
+          />
         </Tooltip>
       </div>
 
@@ -312,8 +322,25 @@ export default withStyles(({ palette }) => ({
         setMultiPartData={setMultiPartData}
 
         fieldsConfig={fieldsConfig}
+
+        openOntologiesSelector={() => setOntologiesOpen(true)}
       />
 
+      <OntologiesSelector
+        open={ontologiesOpen}
+        onClose={() => setOntologiesOpen(false)}
+        columnName={editingColumn?.name}
+        setAlertMessage={setAlertMessage}
+        setAlertVisible={setAlertVisible}
+      />
+
+      <BasicAlert
+        alert={alertMessage}
+        visible={alertVisible}
+        setVisible={setAlertVisible}
+        autoHideDuration={10000}
+        anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
+      />
     </div>
   );
 });
