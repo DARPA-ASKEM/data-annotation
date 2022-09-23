@@ -15,7 +15,7 @@ import Search from '../../components/SearchItems';
 
 import mockOntologies from './mockOntologiesSearchResults.json';
 
-const mockSearchKeys = ['name', 'description', 'id'];
+const ontologySearchKeys = ['name', 'description', 'id'];
 
 export default withStyles((theme) => ({
   drawerPaper: {
@@ -123,7 +123,7 @@ export default withStyles((theme) => ({
           {open && (
             <Search
               name="Ontologie"
-              searchKeys={mockSearchKeys}
+              searchKeys={ontologySearchKeys}
               setSearch={setSearchResults}
               items={mockOntologies}
               initialSearchTerm={columnName}

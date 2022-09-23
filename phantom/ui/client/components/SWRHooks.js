@@ -195,3 +195,23 @@ export function useParams(modelId) {
     paramsError: error,
   };
 }
+
+export function useSearchOntologies(term) {
+  const { data, error } = useSWR(`/api/dojo/dkg/search/${term}`, fetcher);
+
+  return {
+    ontologies: data,
+    ontologiesLoading: !error && !data,
+    ontologiesError: error,
+  };
+}
+
+export function useTerm(termId) {
+  const { data, error } = useSWR(`/api/dojo/dkg/term/${termId}`, fetcher);
+
+  return {
+    term: data,
+    termLoading: !error && !data,
+    termError: error,
+  };
+}

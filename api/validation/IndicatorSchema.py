@@ -136,21 +136,6 @@ class Period(BaseModel):
     )
 
 
-class ConceptMatch(BaseModel):
-    name: Optional[str] = Field(
-        None,
-        description="The name of the concept component in the ontology",
-        examples=["wm/concept/humanitarian_assistance/food_aid"],
-        title="Concept Component Name",
-    )
-    score: Optional[float] = Field(
-        None,
-        description="A score between 0 and 1 representing the strength of the match",
-        examples=[0.785829484462738],
-        title="Match Score",
-    )
-
-
 class TemporalResolution(Enum):
     annual = "annual"
     monthly = "monthly"
@@ -173,24 +158,6 @@ class Resolution(BaseModel):
         max_items=2,
         min_items=2,
         title="Spatial Resolution",
-    )
-
-
-class OntologyComponents(BaseModel):
-    concepts: Optional[List[ConceptMatch]] = Field(
-        None,
-        description="A list of concepts matched for this variable",
-        title="Matched concepts",
-    )
-    processes: Optional[List[ConceptMatch]] = Field(
-        None,
-        description="A list of processes matched for this variable",
-        title="Matched Processes",
-    )
-    properties: Optional[List[ConceptMatch]] = Field(
-        None,
-        description="A list of properties matched for this variable",
-        title="Matched Properties",
     )
 
 
@@ -237,10 +204,10 @@ class Output(BaseModel):
         examples=[""],
         title="Unit Description",
     )
-    ontologies: OntologyComponents = Field(
-        ...,
-        description="The three ontological parts representing the concepts matched to this varible",
-        title="Ontology Components",
+    ontologies: List[str] = Field(
+        [],
+        description="The ontologies the user assigned to this variable",
+        title="Ontologies",
     )
     is_primary: bool = Field(
         ...,
@@ -298,11 +265,6 @@ class QualifierOutput(BaseModel):
         description="A short description of the unit",
         examples=[""],
         title="Unit Description",
-    )
-    ontologies: OntologyComponents = Field(
-        ...,
-        description="The three ontological parts representing the concepts matched to this output",
-        title="Ontology Components",
     )
     related_features: List[str] = Field(
         ...,
