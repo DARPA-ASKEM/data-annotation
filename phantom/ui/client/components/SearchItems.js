@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
+import axios from 'axios';
+
 import CancelIcon from '@material-ui/icons/Cancel';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -23,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Search = ({
-  setSearch, items, searchKeys, name, initialSearchTerm = '', fullWidth
+  setSearch, items, searchKeys, name, searchEndpoint, initialSearchTerm = '', fullWidth
 }) => {
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [alertVisible, setAlertVisible] = useState(false);
@@ -35,8 +37,18 @@ const Search = ({
   const classes = useStyles();
 
   useEffect(() => {
+    const checkNoResults = (results) => {
+      if (results.length === 0) {
+        setAlert({
+          severity: 'warning',
+          message: `No results found for ${searchTerm}`,
+        });
+        setAlertVisible(true);
+      }
+    };
+
     // define this inside the useEffect to ensure stability
-    const handleSearch = () => {
+    const handleFuseSearch = () => {
       // define our fuse options
       const options = {
         keys: searchKeys,
@@ -55,13 +67,18 @@ const Search = ({
 
       // and pass them back to caller
       setSearch(parsedResults);
-      // unless we get nothing back, then show the alert
-      if (parsedResults.length === 0) {
-        setAlert({
-          severity: 'warning',
-          message: `No results found for ${searchTerm}`,
-        });
-        setAlertVisible(true);
+
+      checkNoResults(parsedResults);
+    };
+
+    const handleUrlSearch = async () => {
+      try {
+        const search = await axios.get(`${searchEndpoint}/${searchTerm}`);
+
+        setSearch(search.data);
+        checkNoResults(search.data);
+      } catch (error) {
+        console.error('There was an error fetching the data:', error);
       }
     };
 
@@ -71,13 +88,17 @@ const Search = ({
     if (searchTerm.length) {
       // create a timeout
       debounceSearch = setTimeout(() => {
-        handleSearch();
+        if (items) {
+          handleFuseSearch();
+        } else if (searchEndpoint) {
+          handleUrlSearch();
+        }
       }, 300);
     }
 
     // cancel the timeout if we get back here before it has executed
     return () => clearTimeout(debounceSearch);
-  }, [searchTerm, items, setSearch, searchKeys]);
+  }, [searchTerm, items, setSearch, searchKeys, searchEndpoint]);
 
   const clearSearch = () => {
     setSearchTerm('');

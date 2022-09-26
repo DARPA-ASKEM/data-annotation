@@ -13,10 +13,6 @@ import Typography from '@material-ui/core/Typography';
 
 import Search from '../../components/SearchItems';
 
-import mockOntologies from './mockOntologiesSearchResults.json';
-
-const ontologySearchKeys = ['name', 'description', 'id'];
-
 export default withStyles((theme) => ({
   drawerPaper: {
     width: '30%',
@@ -123,12 +119,12 @@ export default withStyles((theme) => ({
           {open && (
             <Search
               name="Ontologie"
-              searchKeys={ontologySearchKeys}
               setSearch={setSearchResults}
-              items={mockOntologies}
+              searchEndpoint="/api/dojo/dkg/search"
               initialSearchTerm={columnName}
               fullWidth
             />
+
           )}
           <div className={classes.ontologiesBox}>
             <List className={classes.list}>
