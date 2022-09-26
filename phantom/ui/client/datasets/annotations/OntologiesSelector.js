@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { withStyles, lighten } from '@material-ui/core/styles';
+import { withStyles, lighten, useTheme } from '@material-ui/core/styles';
 
 import Drawer from '@material-ui/core/Drawer';
 
@@ -51,12 +51,6 @@ export default withStyles((theme) => ({
       backgroundColor: theme.palette.grey[300],
     },
   },
-  selectedItem: {
-    backgroundColor: lighten(theme.palette.primary.light, 0.5),
-    '&:hover': {
-      backgroundColor: lighten(theme.palette.primary.light, 0.2),
-    },
-  },
   buttonContainer: {
     display: 'flex',
     padding: theme.spacing(1),
@@ -69,6 +63,8 @@ export default withStyles((theme) => ({
 }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [selected, setSelected] = useState();
+
+  const theme = useTheme();
 
   useEffect(() => {
     // clear out the search results any time we close
@@ -134,7 +130,13 @@ export default withStyles((theme) => ({
                   key={result.id}
                   button
                   onClick={() => setSelected(result)}
-                  className={selected?.id === result.id ? classes.selectedItem : ''}
+                  // do the styling here to overwrite the nth child zebra striping
+                  style={
+                    selected?.id === result.id
+                      ? {
+                        backgroundColor: lighten(theme.palette.primary.light, 0.5),
+                      } : {}
+                  }
                 >
                   <Typography variant="subtitle1">
                     Name: {result.name}
