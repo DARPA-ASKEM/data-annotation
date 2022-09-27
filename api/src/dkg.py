@@ -15,7 +15,7 @@ def search_ontologies(term: str):
     """
     headers = {"accept": "application/json", "Content-Type": "application/json"}
     base_url = settings.DKG_URL
-    params = f"search?q={term}&limit=25"
+    params = f"search?q={term}&limit=100"
     url = f"{base_url}/{params}"
     logger.info(f"Sending data to {url}")
 
