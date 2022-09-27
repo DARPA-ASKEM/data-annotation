@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
+import { useFormikContext } from 'formik';
+
 import { withStyles, lighten, useTheme } from '@material-ui/core/styles';
 
 import Drawer from '@material-ui/core/Drawer';
@@ -64,6 +66,8 @@ export default withStyles((theme) => ({
   const [searchResults, setSearchResults] = useState([]);
   const [selected, setSelected] = useState();
 
+  const { setFieldValue } = useFormikContext();
+
   const theme = useTheme();
 
   useEffect(() => {
@@ -81,6 +85,7 @@ export default withStyles((theme) => ({
         severity: 'success',
         message: `Saved ontology "${selected?.name}" to the annotation for "${columnName}"`
       });
+      setFieldValue('primaryOntologyTerm', selected, false);
       setAlertVisible(true);
       onClose();
       return;

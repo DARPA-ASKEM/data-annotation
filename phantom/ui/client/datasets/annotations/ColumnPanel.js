@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { Form, Formik } from 'formik';
 import * as yup from 'yup';
@@ -24,6 +24,8 @@ import { CATEGORIES, LATLON_MAPPINGS } from './constants';
 import { ColumnAnnotation } from './ColumnAnnotation';
 import { cleanUnusedFields, verifyConditionalRequiredFields, verifyQualifierPrimaryRules } from './annotationRules';
 import Stats from './Stats';
+import OntologiesSelector from './OntologiesSelector';
+import BasicAlert from '../../components/BasicAlert';
 
 // TODO convert ColumnPanel to folder- have index, form, and stats/maps files within it
 
@@ -76,6 +78,7 @@ const initialColumnValues = {
   'date.multi-column.year.format': '',
   'date.multi-column.month.format': '',
   'date.multi-column.day.format': '',
+  primaryOntologyTerm: '',
 };
 
 /**
@@ -251,9 +254,22 @@ export default withStyles(({ palette, spacing, breakpoints }) => ({
   validateDateFormat,
   onSubmit, onClose, columnStats,
   fieldsConfig = () => ({}),
-  openOntologiesSelector,
 }) => {
-  const [displayStatistics, setDisplayStatistics] = React.useState(false);
+  const [displayStatistics, setDisplayStatistics] = useState(false);
+  const [ontologiesOpen, setOntologiesOpen] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState({
+    severity: '',
+    message: ''
+  });
+
+  const handleClose = () => {
+    // close everything before calling the parent's onClose function
+    setAlertVisible(false);
+    setOntologiesOpen(false);
+    setDisplayStatistics(false);
+    onClose();
+  };
 
   function clearColumnAnnotations() {
     const multiPart = get(multiPartData, columnName);
@@ -275,7 +291,7 @@ export default withStyles(({ palette, spacing, breakpoints }) => ({
 
     annotateColumns(newAnnotations);
 
-    onClose();
+    handleClose();
   }
 
   const mergedFormValues = {
@@ -298,204 +314,228 @@ export default withStyles(({ palette, spacing, breakpoints }) => ({
   const allAnnotatedColumns = columns.filter((column) => annotations[column.field]);
 
   return (
-    <Drawer
-      variant="persistent"
-      classes={{ paper: clsx({ [classes.root]: true, [classes.expanded]: displayStatistics }) }}
-      anchor={anchorPosition}
-      open={Boolean(columnName)}
-      onClose={onClose}
-    >
-      {columnName && (
-        <div style={{ height: '200%', display: 'flex' }}>
+    <>
+      <Drawer
+        variant="persistent"
+        classes={{ paper: clsx({ [classes.root]: true, [classes.expanded]: displayStatistics }) }}
+        anchor={anchorPosition}
+        open={Boolean(columnName)}
+        onClose={handleClose}
+      >
+        {columnName && (
+          <div style={{ height: '200%', display: 'flex' }}>
 
-          <div className={classes.tabsPanel}>
-            <div>
-              <Button
-                fullWidth
-                disableRipple
-                classes={{ root: classes.statisticsButton }}
-                onClick={() => setDisplayStatistics(!displayStatistics)}
-                disabled={!statDataAvailable}
-                color="primary"
-                startIcon={<EqualizerIcon />}
-              >
-                Statistics
-              </Button>
-            </div>
-          </div>
-
-          <div className={classes.editPanel}>
-
-            <div className={classes.drawerControls}>
-              <IconButton onClick={onClose}>
-                <CloseIcon />
-              </IconButton>
-            </div>
-
-            <Grid
-              container
-              spacing={3}
-            >
-              <Grid
-                style={{
-                  display: !displayStatistics && 'none'
-                }}
-                item
-                xs={5}
-              >
-                <Typography
-                  variant="h5"
-                  paragraph
+            <div className={classes.tabsPanel}>
+              <div>
+                <Button
+                  fullWidth
+                  disableRipple
+                  classes={{ root: classes.statisticsButton }}
+                  onClick={() => setDisplayStatistics(!displayStatistics)}
+                  disabled={!statDataAvailable}
+                  color="primary"
+                  startIcon={<EqualizerIcon />}
                 >
                   Statistics
-                </Typography>
+                </Button>
+              </div>
+            </div>
 
-                <Stats
-                  statistics={statistics}
-                  histogramData={histogramData}
-                />
-              </Grid>
+            <div className={classes.editPanel}>
 
-              <Grid item xs={!displayStatistics ? 12 : 7}>
-                <Typography
-                  variant="h5"
-                  gutterBottom
-                >
-                  Annotating&nbsp;
-                  <span className={classes.highlightHeading}>
-                    {headerName}
-                  </span>
-                </Typography>
+              <div className={classes.drawerControls}>
+                <IconButton onClick={handleClose}>
+                  <CloseIcon />
+                </IconButton>
+              </div>
 
-                <Formik
-                  initialValues={mergedFormValues}
-                  validationSchema={yup.object({
-                    description: yup
-                      .string('Provide description of the column.')
-                      .required('Please enter a description.')
-                  })}
-                  validate={(values) => {
-                    const qpErrors = verifyQualifierPrimaryRules(values, annotations, columnName);
-                    const requiredErrors = verifyConditionalRequiredFields(values);
-
-                    return { ...qpErrors, ...requiredErrors };
+              <Grid
+                container
+                spacing={3}
+              >
+                <Grid
+                  style={{
+                    display: !displayStatistics && 'none'
                   }}
-                  onSubmit={(values) => {
-                    const cleanValues = cleanUnusedFields(values);
-                    const multiPartSelected = values['date.multi-column'] || values['geo.coordinate-pair'] || values['geo.multi-column'];
-                    const isNewMultiPart = multiPartSelected && !get(multiPartData, columnName);
+                  item
+                  xs={5}
+                >
+                  <Typography
+                    variant="h5"
+                    paragraph
+                  >
+                    Statistics
+                  </Typography>
 
-                    let targetColumnName = columnName;
+                  <Stats
+                    statistics={statistics}
+                    histogramData={histogramData}
+                  />
+                </Grid>
 
-                    // If we ever annotate multiPart data, we clear the individual column data
-                    // and only save the multiPart "virtual" combined column annotation.
-                    const individualPartsOverrides = {};
+                <Grid item xs={!displayStatistics ? 12 : 7}>
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                  >
+                    Annotating&nbsp;
+                    <span className={classes.highlightHeading}>
+                      {headerName}
+                    </span>
+                  </Typography>
 
-                    if (isNewMultiPart) {
-                      const { name, parts } = generateMultiPartData(columnName, values);
+                  <Formik
+                    initialValues={mergedFormValues}
+                    validationSchema={yup.object({
+                      description: yup
+                        .string('Provide description of the column.')
+                        .required('Please enter a description.')
+                    })}
+                    validate={(values) => {
+                      const qpErrors = verifyQualifierPrimaryRules(values, annotations, columnName);
+                      const requiredErrors = verifyConditionalRequiredFields(values);
 
-                      // Add multiPartBase ONLY on a new multiPart
-                      // If not, we would use a virtual column name as a multiPartBase
-                      // which can't be true. See datasets/README definitions for questions.
-                      cleanValues.multiPartBase = columnName;
+                      return { ...qpErrors, ...requiredErrors };
+                    }}
+                    onSubmit={(values) => {
+                      const cleanValues = cleanUnusedFields(values);
+                      const multiPartSelected = values['date.multi-column'] || values['geo.coordinate-pair'] || values['geo.multi-column'];
+                      const isNewMultiPart = multiPartSelected && !get(multiPartData, columnName);
 
-                      targetColumnName = name; // the name for new multipart column we just created
+                      let targetColumnName = columnName;
 
-                      setMultiPartData({
-                        ...multiPartData,
-                        [name]: {
-                          members: parts,
-                          name,
-                          baseColumn: columnName,
-                          category: values.category
-                        }
-                      });
+                      // If we ever annotate multiPart data, we clear the individual column data
+                      // and only save the multiPart "virtual" combined column annotation.
+                      const individualPartsOverrides = {};
 
-                      parts.forEach((multiPartMember) => {
-                        individualPartsOverrides[multiPartMember] = {};
-                      });
-                    }
+                      if (isNewMultiPart) {
+                        const { name, parts } = generateMultiPartData(columnName, values);
 
-                    const newAnnotations = {
-                      ...annotations,
-                      ...individualPartsOverrides,
-                      [targetColumnName]: {
-                        ...cleanValues,
-                        annotated: true
+                        // Add multiPartBase ONLY on a new multiPart
+                        // If not, we would use a virtual column name as a multiPartBase
+                        // which can't be true. See datasets/README definitions for questions.
+                        cleanValues.multiPartBase = columnName;
+
+                        targetColumnName = name; // the name for new multipart column we just created
+
+                        setMultiPartData({
+                          ...multiPartData,
+                          [name]: {
+                            members: parts,
+                            name,
+                            baseColumn: columnName,
+                            category: values.category
+                          }
+                        });
+
+                        parts.forEach((multiPartMember) => {
+                          individualPartsOverrides[multiPartMember] = {};
+                        });
                       }
-                    };
 
-                    annotateColumns(newAnnotations);
+                      const newAnnotations = {
+                        ...annotations,
+                        ...individualPartsOverrides,
+                        [targetColumnName]: {
+                          ...cleanValues,
+                          annotated: true
+                        }
+                      };
 
-                    onClose();
-                    onSubmit();
-                  }}
-                >
-                  {(formik) => (
-                    <Form>
+                      annotateColumns(newAnnotations);
 
-                      {usingInferredValues && (
-                        <Typography
-                          variant="body2"
-                          paragraph
-                          component="div"
-                          style={{display: 'flex', alignItems: 'center'}}>
-                          <InfoRoundedIcon style={{marginRight: '0.5rem', color: '#51abf1b3'}} />
-                          Defaults include inferred values from Dojo analysis.
-                        </Typography>
-                      )}
+                      handleClose();
+                      onSubmit();
+                    }}
+                  >
+                    {(formik) => (
+                      <>
+                        <Form>
 
-                      <ColumnAnnotation
-                        columns={columns}
-                        values={formik.values}
-                        setFieldValue={formik.setFieldValue}
-                        editingColumnName={columnName}
-                        validateDateFormat={validateDateFormat}
-                        annotatedColumns={allAnnotatedColumns}
-                        fieldsConfig={fieldsConfig}
-                      />
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        disableElevation
-                        onClick={() => openOntologiesSelector()}
-                      >
-                        Add Ontology
-                      </Button>
+                          {usingInferredValues && (
+                            <Typography
+                              variant="body2"
+                              paragraph
+                              component="div"
+                              style={{display: 'flex', alignItems: 'center'}}>
+                              <InfoRoundedIcon style={{marginRight: '0.5rem', color: '#51abf1b3'}} />
+                              Defaults include inferred values from Dojo analysis.
+                            </Typography>
+                          )}
 
-                      <div className={classes.buttonContainer}>
-                        <Button
-                          color="secondary"
-                          onClick={clearColumnAnnotations}
-                          {...fieldsConfig('CLEAR_BUTTON_JATAWARE_INTERNAL')}
-                        >
-                          Clear
-                        </Button>
-
-                        <div>
-                          <Button onClick={onClose}>
-                            Cancel
-                          </Button>
-
+                          <ColumnAnnotation
+                            columns={columns}
+                            values={formik.values}
+                            setFieldValue={formik.setFieldValue}
+                            editingColumnName={columnName}
+                            validateDateFormat={validateDateFormat}
+                            annotatedColumns={allAnnotatedColumns}
+                            fieldsConfig={fieldsConfig}
+                          />
                           <Button
+                            variant="contained"
                             color="primary"
-                            onClick={formik.handleSubmit}
+                            disableElevation
+                            onClick={() => setOntologiesOpen(true)}
                           >
-                            Save
+                            Add Ontology
                           </Button>
+                          {formik.values.primaryOntologyTerm && (
+                            <>
+                              <h1>Selected ontology term:</h1>
+                              <Typography>{formik.values.primaryOntologyTerm?.name}</Typography>
+                            </>
+                          )}
 
-                        </div>
-                      </div>
+                          <div className={classes.buttonContainer}>
+                            <Button
+                              color="secondary"
+                              onClick={clearColumnAnnotations}
+                              {...fieldsConfig('CLEAR_BUTTON_JATAWARE_INTERNAL')}
+                            >
+                              Clear
+                            </Button>
 
-                    </Form>
-                  )}
-                </Formik>
+                            <div>
+                              <Button onClick={handleClose}>
+                                Cancel
+                              </Button>
+
+                              <Button
+                                color="primary"
+                                onClick={formik.handleSubmit}
+                              >
+                                Save
+                              </Button>
+
+                            </div>
+                          </div>
+
+                        </Form>
+                        <OntologiesSelector
+                          open={ontologiesOpen}
+                          onClose={() => setOntologiesOpen(false)}
+                          columnName={columnName}
+                          setAlertMessage={setAlertMessage}
+                          setAlertVisible={setAlertVisible}
+                        />
+                      </>
+                    )}
+                  </Formik>
+                </Grid>
               </Grid>
-            </Grid>
-          </div>
+            </div>
 
-        </div>
-      )}
-    </Drawer>
+          </div>
+        )}
+      </Drawer>
+      <BasicAlert
+        alert={alertMessage}
+        visible={alertVisible}
+        setVisible={setAlertVisible}
+        autoHideDuration={10000}
+        anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
+      />
+    </>
   );
 });
