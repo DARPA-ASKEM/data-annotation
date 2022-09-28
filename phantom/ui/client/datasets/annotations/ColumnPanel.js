@@ -6,12 +6,14 @@ import * as yup from 'yup';
 import { withStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
+import Chip from '@material-ui/core/Chip';
 import CloseIcon from '@material-ui/icons/Close';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import Drawer from '@material-ui/core/Drawer';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
 import assignWith from 'lodash/assignWith';
@@ -25,6 +27,7 @@ import { ColumnAnnotation } from './ColumnAnnotation';
 import { cleanUnusedFields, verifyConditionalRequiredFields, verifyQualifierPrimaryRules } from './annotationRules';
 import Stats from './Stats';
 import OntologiesSelector from './OntologiesSelector';
+import ColumnPanelOntologiesSection from './ColumnPanelOntologiesSection';
 import BasicAlert from '../../components/BasicAlert';
 
 // TODO convert ColumnPanel to folder- have index, form, and stats/maps files within it
@@ -78,7 +81,7 @@ const initialColumnValues = {
   'date.multi-column.year.format': '',
   'date.multi-column.month.format': '',
   'date.multi-column.day.format': '',
-  primaryOntologyTerm: '',
+  primaryOntologyId: '',
 };
 
 /**
@@ -245,7 +248,7 @@ export default withStyles(({ palette, spacing, breakpoints }) => ({
       backgroundColor: 'transparent',
       boxShadow: 'none',
     }
-  }
+  },
 }))(({
   anchorPosition = 'right', classes,
   columnName, headerName, columns,
@@ -262,11 +265,13 @@ export default withStyles(({ palette, spacing, breakpoints }) => ({
     severity: '',
     message: ''
   });
+  const [currentOntologyTerm, setCurrentOntologyTerm] = useState(null);
 
   const handleClose = () => {
     // close everything before calling the parent's onClose function
     setAlertVisible(false);
     setOntologiesOpen(false);
+    setCurrentOntologyTerm(null);
     setDisplayStatistics(false);
     onClose();
   };
@@ -472,20 +477,12 @@ export default withStyles(({ palette, spacing, breakpoints }) => ({
                             annotatedColumns={allAnnotatedColumns}
                             fieldsConfig={fieldsConfig}
                           />
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            disableElevation
-                            onClick={() => setOntologiesOpen(true)}
-                          >
-                            Add Ontology
-                          </Button>
-                          {formik.values.primaryOntologyTerm && (
-                            <>
-                              <h1>Selected ontology term:</h1>
-                              <Typography>{formik.values.primaryOntologyTerm?.name}</Typography>
-                            </>
-                          )}
+
+                          <ColumnPanelOntologiesSection
+                            setOntologiesOpen={setOntologiesOpen}
+                            currentOntologyTerm={currentOntologyTerm}
+                            setCurrentOntologyTerm={setCurrentOntologyTerm}
+                          />
 
                           <div className={classes.buttonContainer}>
                             <Button
@@ -518,6 +515,7 @@ export default withStyles(({ palette, spacing, breakpoints }) => ({
                           columnName={columnName}
                           setAlertMessage={setAlertMessage}
                           setAlertVisible={setAlertVisible}
+                          setCurrentOntologyTerm={setCurrentOntologyTerm}
                         />
                       </>
                     )}

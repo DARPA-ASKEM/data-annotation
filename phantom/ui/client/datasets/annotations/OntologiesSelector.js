@@ -61,7 +61,7 @@ export default withStyles((theme) => ({
 
   },
 }))(({
-  classes, open, onClose, columnName, setAlertMessage, setAlertVisible
+  classes, open, onClose, columnName, setAlertMessage, setAlertVisible, setCurrentOntologyTerm
 }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [selected, setSelected] = useState();
@@ -83,9 +83,10 @@ export default withStyles((theme) => ({
     if (selected) {
       setAlertMessage({
         severity: 'success',
-        message: `Saved ontology "${selected?.name}" to the annotation for "${columnName}"`
+        message: `Saved ontology term "${selected?.name}" to the annotation for "${columnName}"`
       });
-      setFieldValue('primaryOntologyTerm', selected, false);
+      setCurrentOntologyTerm(selected);
+      setFieldValue('primaryOntologyId', selected.id, false);
       setAlertVisible(true);
       onClose();
       return;
@@ -94,7 +95,7 @@ export default withStyles((theme) => ({
     setAlertVisible(true);
     setAlertMessage({
       severity: 'warning',
-      message: 'Please select an ontology before saving.'
+      message: 'Please select an ontology term before saving.'
     });
   };
 
@@ -112,14 +113,14 @@ export default withStyles((theme) => ({
             <CloseIcon />
           </IconButton>
         </div>
-        <Typography variant="h5" gutterBottom>Search for Ontologies</Typography>
+        <Typography variant="h5" gutterBottom>Search for Ontology Terms</Typography>
         <div>
-          <Typography variant="body1" paragraph color="textSecondary">
-            Enter a search term to find relevant ontologies with the MIRA Knowledge Graph
+          <Typography variant="subtitle1" paragraph color="textSecondary">
+            Enter a search term to find relevant ontology terms with the MIRA Knowledge Graph
           </Typography>
           {open && (
             <Search
-              name="Ontologie"
+              name="Ontology Term"
               setSearch={setSearchResults}
               searchEndpoint="/api/dojo/dkg/search"
               initialSearchTerm={columnName}
@@ -143,12 +144,23 @@ export default withStyles((theme) => ({
                       } : {}
                   }
                 >
-                  <Typography variant="subtitle1">
-                    Name: {result.name}
+                  <Typography variant="h6">
+                    {result.name}
                   </Typography>
                   <Typography variant="body2">
-                    Description: {result.description}
+                    {result.description}
                   </Typography>
+                  {result.synonyms && (
+                    <Typography variant="body2">
+                      Synonyms:&nbsp;
+                      {result.synonyms.map((synonym, i) => (
+                        // eslint-disable-next-line react/no-array-index-key
+                        <span key={i}>
+                          {synonym} {i < result.synonyms.length - 1 ? '• ' : ''}
+                        </span>
+                      ))}
+                    </Typography>
+                  )}
                   <Typography variant="body2">
                     ID: {result.id}
                   </Typography>
