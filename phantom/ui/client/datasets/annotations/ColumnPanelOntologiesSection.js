@@ -15,6 +15,7 @@ export default withStyles((theme) => ({
   ontologySectionWrapper: {
     display: 'flex',
     gap: theme.spacing(3),
+    alignItems: 'center',
   },
 }))(({
   setOntologiesOpen, currentOntologyTerm, setCurrentOntologyTerm, classes

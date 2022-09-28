@@ -6,14 +6,12 @@ import * as yup from 'yup';
 import { withStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
 import CloseIcon from '@material-ui/icons/Close';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import Drawer from '@material-ui/core/Drawer';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
 import assignWith from 'lodash/assignWith';
@@ -266,6 +264,16 @@ export default withStyles(({ palette, spacing, breakpoints }) => ({
     message: ''
   });
   const [currentOntologyTerm, setCurrentOntologyTerm] = useState(null);
+
+  useEffect(() => {
+    // keep an eye on the currentOntologyTerm state here, as the OntologiesSection component
+    // has trouble knowing when the Panel is closed, and will fetch the details once after
+    // the Panel closes. This wipes it clear for the next column annotation.
+    if (!columnName && currentOntologyTerm) {
+      // when the panel is closed, keep the ontology state clear
+      setCurrentOntologyTerm(null);
+    }
+  }, [currentOntologyTerm, columnName]);
 
   const handleClose = () => {
     // close everything before calling the parent's onClose function
