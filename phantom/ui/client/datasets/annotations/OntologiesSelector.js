@@ -144,7 +144,7 @@ export default withStyles((theme) => ({
                       } : {}
                   }
                 >
-                  <Typography variant="h6">
+                  <Typography variant="subtitle1">
                     {result.name}
                   </Typography>
                   <Typography variant="body2">
