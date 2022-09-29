@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    co.elastic.terarium: kibana
+  name: kibana 
+spec:
+  containers:
+    - image: docker.elastic.co/kibana/kibana:7.11.2
+      name: elasticsearch
+      ports:
+        - containerPort: 5601
+          protocol: TCP
+      resources: {}
+      env:
+        - name: discovery.type
+          value: single-node
+  restartPolicy: Always
+status: {}

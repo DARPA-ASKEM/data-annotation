@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    com.jataware.terarium: dojo-api
+  name: dojo-api
+spec:
+  containers:
+    - image: dojo-api
+      name: dojo-api
+      args:
+        - uvicorn
+        - server:api
+        - --host
+        - 0.0.0.0
+        - --port
+        - '80'
+        - --reload
+        - --reload-dir
+        - src
+        - --log-config
+        - logging.yaml
+      ports:
+        - containerPort: 80
+          protocol: TCP
+      resources: {}
+  restartPolicy: Always
+status: {}

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jataware-phantom
+spec:
+  ports:
+    - name: 8100-tcp
+      port: 8100
+      protocol: TCP
+      targetPort: 80
+  selector:
+    com.jataware.terarium: jataware-phantom
+  type: LoadBalancer
+status:
+  loadBalancer: {}

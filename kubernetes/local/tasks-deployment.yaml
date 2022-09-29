@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    software.uncharted.terarium: jataware-dojo-rq-worker
+  name: jataware-dojo-rq-worker
+spec:
+  containers:
+    - image: docker.uncharted.software/jataware/dojo-rq-worker:dev-1.0.0
+      name: jataware-dojo-rq-worker
+      args:
+        - rq
+        - worker
+        - --url
+        - redis://${REDIS_HOST}:${REDIS_PORT}
+        - high
+        - default
+        - low
+      ports:
+        - containerPort: 8080
+          protocol: TCP
+      resources: {}
+  restartPolicy: Always
+status: {}
