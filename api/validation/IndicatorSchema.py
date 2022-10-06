@@ -204,10 +204,10 @@ class Output(BaseModel):
         examples=[""],
         title="Unit Description",
     )
-    ontologies: List[str] = Field(
-        [],
-        description="The ontologies the user assigned to this variable",
-        title="Ontologies",
+    primaryOntologyId: Optional[str] = Field(
+        None,
+        description="The ontology term the user assigned to this variable",
+        title="Ontology term",
     )
     is_primary: bool = Field(
         ...,
