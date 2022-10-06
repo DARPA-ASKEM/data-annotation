@@ -117,7 +117,7 @@ export default withStyles(({ palette }) => ({
   const [pageSize, setPageSize] = useState(rowsPerPageOptions[0]);
   const [highlightedColumn, setHighlightedColumn] = useState(null);
   const [editingColumn, setEditingColumn] = useState(null);
-  const [anchorPosition, setAnchorPosition] = useState('right');
+  const [anchorPosition] = useState('right');
 
   const [isShowMarkers, setShowMarkers] = useState(true);
 
@@ -132,7 +132,6 @@ export default withStyles(({ palette }) => ({
   );
 
   const handleCellClick = (cell) => {
-
     const isColumnAnnotated = !isEmpty(annotations[cell.field]);
 
     if (!isColumnAnnotated && !addingAnnotationsAllowed) {
@@ -252,16 +251,16 @@ export default withStyles(({ palette }) => ({
           classes={{ tooltip: classes.tooltip }}
           title="Display context icons for columns with inferred data, annotated as primary, or as qualifier."
         >
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={isShowMarkers}
-              onChange={e => setShowMarkers(e.target.checked)}
-              color="primary"
-            />
-          }
-          label="Show Additional Markers"
-        />
+          <FormControlLabel
+            control={(
+              <Checkbox
+                checked={isShowMarkers}
+                onChange={(e) => setShowMarkers(e.target.checked)}
+                color="primary"
+              />
+            )}
+            label="Show Additional Markers"
+          />
         </Tooltip>
       </div>
 
@@ -313,7 +312,6 @@ export default withStyles(({ palette }) => ({
 
         fieldsConfig={fieldsConfig}
       />
-
     </div>
   );
 });
