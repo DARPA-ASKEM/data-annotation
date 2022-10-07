@@ -156,7 +156,7 @@ export default withStyles((theme) => ({
                       {result.synonyms.map((synonym, i) => (
                         // eslint-disable-next-line react/no-array-index-key
                         <span key={i}>
-                          {synonym} {i < result.synonyms.length - 1 ? '• ' : ''}
+                          {synonym.value} {i < result.synonyms.length - 1 ? '• ' : ''}
                         </span>
                       ))}
                     </Typography>
