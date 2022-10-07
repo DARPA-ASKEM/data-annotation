@@ -25,14 +25,14 @@ export default withStyles((theme) => ({
   useEffect(() => {
     // only do this request if we don't have the ontology loaded into state already
     // if someone has closed and reopened the annotation panel, essentially
-    if (values.primaryOntologyId
-      && (values.primaryOntologyId !== currentOntologyTerm?.id)) {
-      axios.get(`/api/dojo/dkg/term/${values.primaryOntologyId}`).then((response) => {
+    console.log(values);//delete
+      && (values.primary_ontology_id !== currentOntologyTerm?.id)) {
+      axios.get(`/api/dojo/dkg/term/${values.primary_ontology_id}`).then((response) => {
         setCurrentOntologyTerm(response.data);
       });
       // no need to handle errors because we will fall back to just the ID, as seen below
     }
-  }, [currentOntologyTerm, values.primaryOntologyId, setCurrentOntologyTerm]);
+  }, [currentOntologyTerm, values.primary_ontology_id, setCurrentOntologyTerm]);
 
   return (
     <div className={classes.ontologySectionWrapper}>
@@ -42,16 +42,16 @@ export default withStyles((theme) => ({
         disableElevation
         onClick={() => setOntologiesOpen(true)}
       >
-        {values.primaryOntologyId ? 'Change' : 'Add'} Ontology Term
+        {values.primary_ontology_id ? 'Change' : 'Add'} Ontology Term
       </Button>
-      { values.primaryOntologyId && (
+      { values.primary_ontology_id && (
         <Tooltip
           interactive
           title={(
             <>
               {/* TODO: turn this ID into a link */}
               <Typography style={{ display: 'block' }} variant="caption">
-                ID: {values.primaryOntologyId}
+                ID: {values.primary_ontology_id}
               </Typography>
               <Typography variant="caption">
                 {currentOntologyTerm?.description
@@ -61,10 +61,10 @@ export default withStyles((theme) => ({
           )}
         >
           <Chip
-            label={currentOntologyTerm?.name || values.primaryOntologyId}
+            label={currentOntologyTerm?.name || values.primary_ontology_id}
             onDelete={() => {
               setCurrentOntologyTerm(null);
-              setFieldValue('primaryOntologyId', '');
+              setFieldValue('primary_ontology_id', '');
             }}
           />
         </Tooltip>
