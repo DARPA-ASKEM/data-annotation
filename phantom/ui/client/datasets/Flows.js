@@ -70,13 +70,6 @@ const BasicRegistrationFlow = {
     }
   },
   {
-    slug: 'review',
-    title: 'Review/Edit Dataset',
-    label: 'Review/Edit',
-    component: Sheet,
-    options: {}
-  },
-  {
     slug: 'annotate',
     title: 'Annotate Dataset',
     label: 'Annotation',
@@ -305,11 +298,114 @@ const UpdateMetadataFlow = {
   ]
 };
 
+const TableRegistrationFlow = {
+  steps: [
+  {
+    slug: 'register',
+    title: 'Dataset Registration',
+    label: 'Registration',
+    component: Register,
+    options: {}
+  },
+  // {
+  //   slug: 'scan',
+  //   title: 'Anomaly Detection',
+  //   label: 'Scan',
+  //   component: AnomalyDetection,
+  //   options: {
+  //     jobs: [{id: 'tasks.anomaly_detection',}]
+  //   },
+  // },
+  {
+    slug: 'validation',
+    title: 'Validating Dataset Suitability',
+    label: 'Analysis',
+    component: RunJobs,
+    options: {
+      jobs: [
+        {
+          id: 'file_processors.file_conversion',
+        },
+      ]
+    }
+  },
+  {
+    slug: 'review',
+    title: 'Review/Edit Dataset',
+    label: 'Review/Edit',
+    component: Sheet,
+    options: {}
+  },
+  {
+    slug: 'analyze',
+    title: 'Analyzing Dataset',
+    label: 'Analysis',
+    component: RunJobs,
+    options: {
+      jobs: [
+        {
+          id: 'geotime_processors.geotime_classify',
+        },
+      ]
+    }
+  },
+  {
+    slug: 'annotate',
+    title: 'Annotate Dataset',
+    label: 'Annotation',
+    component: Annotate,
+    options: {}
+  },
+  {
+    slug: 'process',
+    title: 'Processing Dataset',
+    label: 'Processing',
+    component: RunJobs,
+    options: {
+      jobs: [
+        {
+          id: 'mixmasta_processors.run_mixmasta',
+          handler: async ({result, annotations, setAnnotations, datasetInfo, ...extra}) => {
+            const updatedDataset = {
+              ...datasetInfo,
+              data_paths: result.data_files,
+              geography: result.geography,
+              period: result.period,
+              outputs: result.outputs,
+              qualifier_outputs: result.qualifier_outputs,
+            };
+            await axios.put(`/api/dojo/indicators`, updatedDataset);
+          }
+        },
+      ]
+    }
+  },
+  {
+    slug: 'preview',
+    title: 'Preview Dataset',
+    label: 'Preview',
+    component: Preview,
+    options: {
+      handleNextFunc: 'PublishDataset',
+    }
+  },
+  {
+    slug: 'submit',
+    title: 'Submit Dataset',
+    label: 'Submit',
+    component: SubmitSuccessPage,
+    options: {}
+  },
+  ]
+};
+
+
 const flows = {
   register: BasicRegistrationFlow,
   model: ModelOutputFlow,
   append: AppendFlow,
   update: UpdateMetadataFlow,
+  table: TableRegistrationFlow,
   // TODO replace: ReplaceDatasetFlow
 };
 
