@@ -25,7 +25,7 @@ export default withStyles((theme) => ({
   useEffect(() => {
     // only do this request if we don't have the ontology loaded into state already
     // if someone has closed and reopened the annotation panel, essentially
-    console.log(values);//delete
+    if (values.primary_ontology_id
       && (values.primary_ontology_id !== currentOntologyTerm?.id)) {
       axios.get(`/api/dojo/dkg/term/${values.primary_ontology_id}`).then((response) => {
         setCurrentOntologyTerm(response.data);

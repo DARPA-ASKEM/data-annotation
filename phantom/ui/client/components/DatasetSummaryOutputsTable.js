@@ -130,8 +130,8 @@ function DatasetSummaryOutputsTable({ dataset }) {
             <StyledTableRow>
               <TableCell key="first" align="center" className={classes.indexRow}><b> Primary Term: </b> </TableCell>
               {columns.map((row, index) => (
-                <StyledTableCell key={index.toString().concat('firstRow')} align="left">
-                  {row?.primary_ontology_id ? row.display_name : 'None Chosen'}
+                <StyledTableCell key={index.toString().concat('sixthRow')} align="left">
+                  {row?.primary_ontology_id ? row.primary_ontology_id : 'NA'}
                 </StyledTableCell>
               ))}
             </StyledTableRow>

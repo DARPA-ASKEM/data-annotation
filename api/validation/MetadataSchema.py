@@ -139,9 +139,13 @@ class FeatureAnnotation(BaseModel):
         description="An array of the column names which this qualifies",
         example=["crop_production", "malnutrition_rate"],
     )
+    primary_ontology_id: Optional[str] = Field(
+        None,
+        description="The ontology term the user assigned to this variable",
+        title="Ontology term",
+    )
     qualifierrole: Optional[str]
     aliases: Dict[str, str] = {}
-
 
 
 class AnnotationSchema(BaseModel):
