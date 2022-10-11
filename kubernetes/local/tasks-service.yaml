@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    software.uncharted.terarium: jataware-dojo-rq-worker
+  name: jataware-dojo-rq-worker
+status: {}

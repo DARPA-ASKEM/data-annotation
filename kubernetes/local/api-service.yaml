@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dojo-api
+spec:
+  ports:
+    - name: 8110-tcp
+      port: 8110
+      protocol: TCP
+      targetPort: 80
+  selector:
+    com.jataware.terarium: dojo-api
+  type: LoadBalancer
+status:
+  loadBalancer: {}

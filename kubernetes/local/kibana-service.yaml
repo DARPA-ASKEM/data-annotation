@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+spec:
+  ports:
+    - name: 5601-tcp
+      port: 5601
+      protocol: TCP
+      targetPort: 5601 
+  selector:
+    co.elastic.terarium: kibana
+  type: LoadBalancer
+status:
+  loadBalancer: {}

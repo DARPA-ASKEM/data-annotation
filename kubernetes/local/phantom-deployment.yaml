@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    com.jataware.terarium: jataware-phantom
+  name: jataware-phantom
+spec:
+  containers:
+    - image: docker.uncharted.software/jataware/phantom:dev-0.5.13
+      name: jataware-phantom
+      ports:
+        - containerPort: 80
+          protocol: TCP
+      resources: {}
+      env:
+        - name: API_HOST
+          value: ${PRIVATE_IP}
+        - name: WEBSOCKET_HOST
+          value: ${PRIVATE_IP}
+  restartPolicy: Always
+status: {}
