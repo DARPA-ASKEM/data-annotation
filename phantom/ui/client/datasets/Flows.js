@@ -8,6 +8,7 @@ import ModelOutput from './ModelOutput';
 import Preview from './Preview';
 import SubmitSuccessPage from './SubmitSuccessPage';
 import RunJobs from './RunJobs';
+import Sheet from './Sheet';
 import { GeoControls } from './annotations/ColumnAnnotation';
 import { useState } from 'react';
 
@@ -67,6 +68,13 @@ const BasicRegistrationFlow = {
         },
       ]
     }
+  },
+  {
+    slug: 'review',
+    title: 'Review/Edit Dataset',
+    label: 'Review/Edit',
+    component: Sheet,
+    options: {}
   },
   {
     slug: 'annotate',
