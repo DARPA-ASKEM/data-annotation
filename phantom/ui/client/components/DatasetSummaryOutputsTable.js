@@ -128,10 +128,10 @@ function DatasetSummaryOutputsTable({ dataset }) {
               ))}
             </StyledTableRow>
             <StyledTableRow>
-              <TableCell key="first" align="center" className={classes.indexRow}><b> Primary Term: </b> </TableCell>
+              <TableCell key="first" align="center" className={classes.indexRow}><b> Primary Ontology Concept: </b> </TableCell>
               {columns.map((row, index) => (
                 <StyledTableCell key={index.toString().concat('sixthRow')} align="left">
-                  {row?.primary_ontology_id ? row.primary_ontology_id : 'NA'}
+                  {row?.primary_ontology_id ? (<a href={row.primary_ontology_id}>{row.primary_ontology_id}</a>) : 'NA'}
                 </StyledTableCell>
               ))}
             </StyledTableRow>
