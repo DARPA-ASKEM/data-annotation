@@ -464,6 +464,44 @@ def validate_date(payload: IndicatorSchema.DateValidationRequestSchema):
     }
 
 
+@router.get("/indicators/{indicator_id}/data")
+async def create_preview(indicator_id: str):
+    """Get representation of dataset as 2d array (list of lists).
+
+    Args:
+        indicator_id (str): The UUID of the dataset to return a preview of.
+
+    Returns:
+        JSON: Returns a json object containing the preview for the dataset.
+    """
+    try:
+        rawfile_path = os.path.join(
+            settings.DATASET_STORAGE_BASE_URL, indicator_id, "raw_data.csv"
+        )
+        file = get_rawfile(rawfile_path)
+        df = pd.read_csv(file, delimiter=",")
+
+        columns = list(df.columns)
+        records = list(map(list, df.to_records(index=False)))
+
+        return {
+            "columns": columns,
+            "records": records,
+        }
+
+    except FileNotFoundError as e:
+        logger.exception(e)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        logger.exception(e)
+        return Response(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            headers={"msg": f"Error: {e}"},
+            content=f"Error fetching data",
+        )
+
+
 @router.post("/indicators/{indicator_id}/preview/{preview_type}")
 async def create_preview(
     indicator_id: str, preview_type: IndicatorSchema.PreviewType, filename: Optional[str] = Query(None),

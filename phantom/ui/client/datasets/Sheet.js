@@ -63,7 +63,6 @@ const Sheet = withStyles(({ spacing }) => ({
 
     const fileArg = (useFilepath ? "filepath" : "filename");
     // TODO: Probably need a flag or different endpoint to fetch the entire file data, instead of limited to first 100 rows.
-    const previewUrl = `/api/dojo/indicators/${datasetInfo.id}/preview/raw${rawFileName ? `?${fileArg}=${rawFileName}` : ''}`;
     const [loading, setLoading] = useState(true);
     const [columns, setColumns] = useState(null);
     const [data, setData] = useState(null);
@@ -77,10 +76,11 @@ const Sheet = withStyles(({ spacing }) => ({
         Promise
             .all([
                 axios.get(`/api/dojo/indicators/${datasetInfo.id}/annotations`),
-                axios.post(previewUrl)
+                axios.get(`/api/dojo/indicators/${datasetInfo.id}/data`),
             ])
-        .then(([annotations, preview]) => {
+        .then(([annotations, data]) => {
             const metadata = annotations?.data?.metadata;
+            console.log(data);
 
             if (metadata?.image) {
                 setImage(metadata.image);
@@ -89,16 +89,8 @@ const Sheet = withStyles(({ spacing }) => ({
             // TODO: Remove this, set image ahead of time when appropriate
             // DEBUG
             setImage("https://placekitten.com/200/300");
-
-            const parsedColumns = Object.keys(preview.data[0])
-                .filter(item => item !== '__id');
-            const parsedData = preview.data.map((item) => {
-                return Object.fromEntries(Object.entries(item).filter(([key, value]) => (key !== "__id")));
-            })
-            
-            setColumns(parsedColumns);
-            setData(parsedData);
-
+            setColumns(data.data.columns);
+            setData(data.data.records);
         })
         .catch((e) => {
             // setPromptMessage('Error loading annotation data.');

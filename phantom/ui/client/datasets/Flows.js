@@ -319,7 +319,7 @@ const TableRegistrationFlow = {
   {
     slug: 'validation',
     title: 'Validating Dataset Suitability',
-    label: 'Analysis',
+    label: 'Validation',
     component: RunJobs,
     options: {
       jobs: [
