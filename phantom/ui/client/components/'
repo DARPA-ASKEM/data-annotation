@@ -199,8 +199,9 @@ export function useParams(modelId) {
 export function useConceptName(termId) {
   const { data, error } = useSWR(`/api/dojo/dkg/term/${termId}`, fetcher);
 
+  console.log(data);
   return {
-    name: data?.name,
+    name: data,
     nameLoading: !error && !data,
     nameError: error,
   };

@@ -204,7 +204,7 @@ class Output(BaseModel):
         examples=[""],
         title="Unit Description",
     )
-    primaryOntologyId: Optional[str] = Field(
+    primary_ontology_id: Optional[str] = Field(
         None,
         description="The ontology term the user assigned to this variable",
         title="Ontology term",
@@ -270,6 +270,11 @@ class QualifierOutput(BaseModel):
         ...,
         description="The feature names that this data should be used as a qualifier for",
         title="Related Features",
+    )
+    primary_ontology_id: Optional[str] = Field(
+        None,
+        description="The ontology term the user assigned to this variable",
+        title="Ontology term",
     )
 
 

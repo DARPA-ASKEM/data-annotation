@@ -86,7 +86,7 @@ export default withStyles((theme) => ({
         message: `Saved ontology term "${selected?.name}" to the annotation for "${columnName}"`
       });
       setCurrentOntologyTerm(selected);
-      setFieldValue('primaryOntologyId', selected.id, false);
+      setFieldValue('primary_ontology_id', selected.id, false);
       setAlertVisible(true);
       onClose();
       return;
