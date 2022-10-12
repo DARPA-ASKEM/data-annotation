@@ -55,18 +55,25 @@ const Sheet = withStyles(({ spacing }) => ({
     handleNext, handleBack, jobs, rawFileName, useFilepath=false, ...props
   }) => {
 
-    const next = () => {
-        // TODO: Add code to upload data back to backend
-        console.log("Next");
-        return handleNext();
-    }
-
     const fileArg = (useFilepath ? "filepath" : "filename");
     // TODO: Probably need a flag or different endpoint to fetch the entire file data, instead of limited to first 100 rows.
     const [loading, setLoading] = useState(true);
     const [columns, setColumns] = useState(null);
     const [data, setData] = useState(null);
     const [image, setImage] = useState(null);
+
+    const save_data = async () => {
+    };
+
+    const next = () => {
+        const payload = {
+            columns: columns,
+            records: data,
+        };
+        axios.post(`/api/dojo/indicators/${datasetInfo.id}/data`, payload).then(() => {
+            handleNext();
+        });
+    }
 
     useEffect(() => {
         if (!datasetInfo?.id || data !== null) {
@@ -120,17 +127,17 @@ const Sheet = withStyles(({ spacing }) => ({
                                 data={data}
                                 rowHeaders={true}
                                 colHeaders={columns}
-                                width={"45%"}
-                                stretchH='all'
-                                stretchV='all'
+                                contextMenu={true}
+                                mergeCells={true}
+                                width="45%"
+                                stretchH="all"
+                                allowInsertColumn
+                                allowRemoveColumn
                                 licenseKey="non-commercial-and-evaluation" // for non-commercial use only
                             />
                         </>
                     )}
                 </Box >
-                <Box>
-                    <Button onClick={(evt) => {console.log(data);}}>Log to console</Button>
-                </Box>
             </Box>
             <Navigation
                 handleNext={next}
