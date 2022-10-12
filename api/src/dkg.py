@@ -14,7 +14,7 @@ def search_ontologies(term: str):
     Wraps search functionality from the DKG.
     """
     headers = {"accept": "application/json", "Content-Type": "application/json"}
-    base_url = settings.DKG_URL + "/api"
+    base_url = f'{settings.DKG_URL}:{settings.DKG_API_PORT}/api'
     params = f"search?q={term}&limit=100"
     url = f"{base_url}/{params}"
     logger.info(f"Sending data to {url}")
@@ -42,7 +42,7 @@ def get_ontologies(ontology_id: str):
     Wraps fetch functionality from the DKG.
     """
     headers = {"accept": "application/json", "Content-Type": "application/json"}
-    base_url = settings.DKG_URL  + "/api"
+    base_url = f'{settings.DKG_URL}:{settings.DKG_API_PORT}/api'
     params = f"entity/{quote_plus(ontology_id)}"
     url = f"{base_url}/{params}"
     logger.info(f"Sending data to {url}")
