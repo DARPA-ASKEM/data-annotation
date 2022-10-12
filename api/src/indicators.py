@@ -33,7 +33,7 @@ from validation import IndicatorSchema, DojoSchema, MetadataSchema
 from src.settings import settings
 
 from src.dojo import search_and_scroll
-from src.utils import put_rawfile, get_rawfile, list_files
+from src.utils import put_rawfile, get_rawfile, list_files, NpEncoder
 from validation.IndicatorSchema import (
     DataRepresentationSchema,
     IndicatorMetadataSchema,
@@ -481,15 +481,23 @@ async def get_data(indicator_id: str):
             settings.DATASET_STORAGE_BASE_URL, indicator_id, "raw_data.csv"
         )
         file = get_rawfile(rawfile_path)
-        df = pd.read_csv(file, delimiter=",")
+        df = pd.read_csv(file, delimiter=",").fillna("")
 
-        columns = list(df.columns)
+        columns = ['' if column.startswith('Unnamed: ') else column for column in list(df.columns)]
         records = list(map(list, df.to_records(index=False)))
 
-        return {
+        output = {
             "columns": columns,
             "records": records,
         }
+        body = json.dumps(output, cls=NpEncoder)
+        return Response(
+            status_code=200,
+            headers={
+                "content-type": "application/json",
+            },
+            content=body,
+        )
 
     except FileNotFoundError as e:
         logger.exception(e)

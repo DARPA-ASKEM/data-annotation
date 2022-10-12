@@ -1,3 +1,4 @@
+import json
 import os
 import tempfile
 import time
@@ -7,6 +8,7 @@ from io import BytesIO
 from elasticsearch import Elasticsearch
 import boto3
 import botocore
+import numpy as np
 
 from src.settings import settings
 from validation import ModelSchema
@@ -15,6 +17,17 @@ es = Elasticsearch([settings.ELASTICSEARCH_URL], port=settings.ELASTICSEARCH_POR
 
 # S3 OBJECT
 s3 = boto3.client("s3")
+
+
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super(NpEncoder, self).default(obj)
 
 
 def try_parse_int(s: str, default: int = 0) -> int:
