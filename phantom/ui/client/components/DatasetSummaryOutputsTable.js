@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -12,6 +12,7 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 import AliasDialog from './AliasDialog';
 import CollapseText from './CollapseText';
+import { useConceptName } from './SWRHooks';
 
 const StyledTableCell = withStyles((theme) => ({
 
@@ -133,7 +134,8 @@ function DatasetSummaryOutputsTable({ dataset }) {
                 <StyledTableCell key={index.toString().concat('sixthRow')} align="left">
                   {row?.primary_ontology_id ? 
                     (<a href={`${process.env.DKG_URL}:${process.env.DKG_DESC_PORT}/${row.primary_ontology_id}`}>
-                        {row.primary_ontology_id}</a>
+                        {useConceptName(row.primary_ontology_id).name}
+                     </a>
                     ) : 'NA'}
                 </StyledTableCell>
               ))}
