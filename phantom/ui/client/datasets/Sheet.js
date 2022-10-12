@@ -4,6 +4,7 @@ import axios from 'axios';
 import { withStyles } from '@material-ui/core/styles';
 
 import Box from '@material-ui/core/Box';
+import Container from '@material-ui/core/Container';
 import { Navigation } from '.';
 import { HotTable } from '@handsontable/react';
 import { registerAllModules } from 'handsontable/registry';
@@ -58,18 +59,11 @@ const Sheet = withStyles(({ spacing }) => ({
     const fileArg = (useFilepath ? "filepath" : "filename");
     // TODO: Probably need a flag or different endpoint to fetch the entire file data, instead of limited to first 100 rows.
     const [loading, setLoading] = useState(true);
-    const [columns, setColumns] = useState(null);
     const [data, setData] = useState(null);
     const [image, setImage] = useState(null);
 
-    const save_data = async () => {
-    };
-
     const next = () => {
-        const payload = {
-            columns: columns,
-            records: data,
-        };
+        const payload = data;
         axios.post(`/api/dojo/indicators/${datasetInfo.id}/data`, payload).then(() => {
             handleNext();
         });
@@ -96,8 +90,7 @@ const Sheet = withStyles(({ spacing }) => ({
             // TODO: Remove this, set image ahead of time when appropriate
             // DEBUG
             setImage("https://placekitten.com/200/300");
-            setColumns(data.data.columns);
-            setData(data.data.records);
+            setData(data.data);
         })
         .catch((e) => {
             // setPromptMessage('Error loading annotation data.');
@@ -126,7 +119,6 @@ const Sheet = withStyles(({ spacing }) => ({
                                 flex={3}
                                 data={data}
                                 rowHeaders={true}
-                                colHeaders={columns}
                                 contextMenu={true}
                                 mergeCells={true}
                                 width="45%"
@@ -139,10 +131,12 @@ const Sheet = withStyles(({ spacing }) => ({
                     )}
                 </Box >
             </Box>
-            <Navigation
-                handleNext={next}
-                handleBack={handleBack}
-            />
+            <Container>
+                <Navigation
+                    handleNext={next}
+                    handleBack={handleBack}
+                />
+            </Container>
         </Box>
     );
   });

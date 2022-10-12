@@ -484,13 +484,9 @@ async def get_data(indicator_id: str):
         df = pd.read_csv(file, delimiter=",").fillna("")
 
         columns = ['' if column.startswith('Unnamed: ') else column for column in list(df.columns)]
-        records = list(map(list, df.to_records(index=False)))
+        records = [columns] + list(map(list, df.to_records(index=False)))
 
-        output = {
-            "columns": columns,
-            "records": records,
-        }
-        body = json.dumps(output, cls=NpEncoder)
+        body = json.dumps(records, cls=NpEncoder)
         return Response(
             status_code=200,
             headers={
@@ -514,7 +510,7 @@ async def get_data(indicator_id: str):
 
 
 @router.post("/indicators/{indicator_id}/data")
-async def update_data(indicator_id: str, payload: DataRepresentationSchema):
+async def update_data(indicator_id: str, payload: List[List[Any]]):
     """Update representation of dataset as 2d array (list of lists).
 
     Args:
@@ -527,8 +523,9 @@ async def update_data(indicator_id: str, payload: DataRepresentationSchema):
         rawfile_path = os.path.join(
             settings.DATASET_STORAGE_BASE_URL, indicator_id, "raw_data.csv"
         )
-        df = pd.DataFrame.from_records(data=payload.records, columns=payload.columns)
-
+        logger.warn(payload)
+        df = pd.DataFrame.from_records(data=payload[1:], columns=payload[0])
+        logger.warn(df)
 
         with tempfile.NamedTemporaryFile('rb') as temp_csv:
             df.to_csv(temp_csv.name, index=False)
