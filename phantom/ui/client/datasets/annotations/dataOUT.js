@@ -10,7 +10,7 @@ import capitalize from 'lodash/capitalize';
 // Properties used when formatting annotations out
 const properties = {
   common: ['aliases', 'category', 'description', 'display_name', 'qualifies', 'qualifierrole'],
-  feature: ['feature_type', 'units_description', 'units'],
+  feature: ['feature_type', 'units_description', 'units', 'primary_ontology_id'],
   geo: ['geo_type', 'resolve_to_gadm', 'coord_format'],
   time: ['date_type', 'time_format']
 };

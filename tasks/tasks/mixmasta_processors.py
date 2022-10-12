@@ -192,6 +192,7 @@ def run_mixmasta(context, filename=None):
             type=feature["feature_type"],
             unit=feature["units"],
             unit_description=feature["units_description"],
+            primary_ontology_id=feature["primary_ontology_id"],
             ontologies={},
             is_primary=True,
             data_resolution={
@@ -220,6 +221,7 @@ def run_mixmasta(context, filename=None):
                 ),
                 unit=feature["units"],
                 unit_description=feature["units_description"],
+                primary_ontology_id=feature["primary_ontology_id"],
                 ontologies={},
                 related_features=feature["qualifies"],
             )

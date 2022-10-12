@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     UVICORN_RELOAD: bool = False
 
     DKG_URL : str
+    DKG_API_PORT : str
 
     UAZ_URL: str = ""
     UAZ_THRESHOLD: str = ""

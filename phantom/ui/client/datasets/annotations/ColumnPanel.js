@@ -79,7 +79,7 @@ const initialColumnValues = {
   'date.multi-column.year.format': '',
   'date.multi-column.month.format': '',
   'date.multi-column.day.format': '',
-  primaryOntologyId: '',
+  primary_ontology_id: '',
 };
 
 /**

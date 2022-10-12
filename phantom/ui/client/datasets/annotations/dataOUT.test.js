@@ -1048,6 +1048,174 @@ describe('formatAnnotationsOUT', () => {
         },
       ]);
   });
+
+  test('Only features preserve primary ontology id', () => {
+
+    const input = {
+      'admin0': {
+        aliases: [],
+
+        category: 'geo',
+        display_name: 'SUPER_GGEO',
+        description: 'primary geo description',
+
+        isQualifies: false,
+        qualifierrole: 'breakdown',
+        qualifies: [],
+
+        geo_type: 'country',
+        primary: true,
+
+        "primary_ontology_id": "id:3434",
+
+        gadm_level: '',
+        'geo.coordinate-pair': false,
+
+        'geo.multi-column': false,
+
+        'geo.multi-column.admin0': '',
+        'geo.multi-column.admin1': '',
+        'geo.multi-column.admin2': '',
+        'geo.multi-column.admin3': '',
+
+        date_type: '',
+        time_format: '',
+        'date.multi-column': false,
+
+        annotated: true
+      },
+      'value': {
+
+        aliases: [{ current: 'a', new: 'b' }],
+        category: 'feature',
+        display_name: '',
+        description: 'feature description',
+        feature_type: 'float',
+        units: 'm',
+        units_description: '',
+
+        isQualifies: false,
+        qualifierrole: 'breakdown',
+        qualifies: [],
+
+        geo_type: 'latitude',
+        coord_format: 'lonlat',
+        primary: false,
+
+        "primary_ontology_id": "id:5757",
+
+        resolve_to_gadm: false,
+        gadm_level: 'admin3',
+        'geo.coordinate-pair': false,
+
+        'geo.coordinate-pair-column': '',
+
+        date_type: 'year',
+        time_format: '',
+        'date.multi-column': false,
+
+        'date.multi-column.day': '',
+        'date.multi-column.month': '',
+        'date.multi-column.year': '',
+
+        'date.multi-column.year.format': '',
+        'date.multi-column.month.format': '',
+        'date.multi-column.day.format': '',
+                annotated: true
+      },
+      date: {
+        aliases: [],
+        category: 'time',
+        display_name: '',
+        description: 'date/time description',
+        feature_type: 'float',
+        units: '',
+        units_description: '',
+
+        isQualifies: false,
+        qualifierrole: 'breakdown',
+        qualifies: [],
+
+        geo_type: 'latitude',
+        coord_format: 'lonlat',
+        primary: true,
+
+        "primary_ontology_id": "id:6757",
+
+        resolve_to_gadm: false,
+        gadm_level: 'admin3',
+        'geo.coordinate-pair': false,
+
+        'geo.coordinate-pair-column': '',
+
+        date_type: 'year',
+        time_format: '%y',
+        'date.multi-column': false,
+
+        'date.multi-column.day': '',
+        'date.multi-column.month': '',
+        'date.multi-column.year': '',
+
+        'date.multi-column.year.format': '',
+        'date.multi-column.month.format': '',
+        'date.multi-column.day.format': '',
+      }
+
+    };
+
+    const output = formatAnnotationsOUT(input);
+
+    expect(output)
+      .toEqual({
+        "date": [
+          {
+            "aliases": {},
+            "date_type": "year",
+            "description": "date/time description",
+            "display_name": "",
+            "name": "date",
+            "primary_date": true,
+            // "primary_ontology_id": "id:6757",
+            "qualifierrole": "breakdown",
+            "qualifies": [],
+            "time_format": "%y",
+            "type": "date"
+          }
+        ],
+        "feature": [
+          {
+            "aliases": {
+              "a": "b"
+            },
+            "description": "feature description",
+            "display_name": "",
+            "feature_type": "float",
+            "primary_ontology_id": "id:5757",
+            "name": "value",
+            "qualifierrole": "breakdown",
+            "qualifies": [],
+            "type": "feature",
+            "units": "m",
+            "units_description": ""
+          }
+        ],
+        "geo": [
+          {
+            "aliases": {},
+            "description": "primary geo description",
+            "display_name": "SUPER_GGEO",
+            "geo_type": "country",
+            "name": "admin0",
+            "primary_geo": true,
+            // "primary_ontology_id": "id:3434",
+            "qualifierrole": "breakdown",
+            "qualifies": [],
+            "type": "geo"
+          }
+        ]
+      });
+
+  });
 });
 
 describe('formatAliasesOUT', () => {

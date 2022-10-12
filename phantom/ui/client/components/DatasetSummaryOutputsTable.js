@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -12,6 +12,7 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 import AliasDialog from './AliasDialog';
 import CollapseText from './CollapseText';
+import { useConceptName } from './SWRHooks';
 
 const StyledTableCell = withStyles((theme) => ({
 
@@ -124,6 +125,18 @@ function DatasetSummaryOutputsTable({ dataset }) {
                     ? <AliasDialog key={index.toString().concat('Alias')} column={row} />
                     : <div key={index.toString().concat('NoAlias')}>No Aliases</div>}
 
+                </StyledTableCell>
+              ))}
+            </StyledTableRow>
+            <StyledTableRow>
+              <TableCell key="first" align="center" className={classes.indexRow}><b> Primary Ontology Concept: </b> </TableCell>
+              {columns.map((row, index) => (
+                <StyledTableCell key={index.toString().concat('sixthRow')} align="left">
+                  {row?.primary_ontology_id ? 
+                    (<a href={`${process.env.DKG_URL}:${process.env.DKG_DESC_PORT}/${row.primary_ontology_id}`}>
+                        {useConceptName(row.primary_ontology_id).name}
+                     </a>
+                    ) : 'NA'}
                 </StyledTableCell>
               ))}
             </StyledTableRow>
