@@ -7,14 +7,8 @@ import Typography from '@material-ui/core/Typography';
 
 import BasicAlert from './BasicAlert';
 
-<<<<<<< HEAD
 function DatasetDownload({ dataset, className }) {
   const [openDownload, setDownload] = useState(false);
-=======
-function CSVDownload({ resource, index = 'indicators', className }) {
-  const [openDownload, setDownload] = useState(false);
-  const name = `${resource.id}.csv`;
->>>>>>> d5736c5... Relocate/rename from ./phantom/ui -> ./ui
   return (
     <>
 
@@ -22,22 +16,13 @@ function CSVDownload({ resource, index = 'indicators', className }) {
         <Button
           variant="outlined"
           color="primary"
-<<<<<<< HEAD
           href={`/api/dojo/indicators/${dataset.id}/download/csv`}
           download={`${dataset.id}.csv`}
-=======
-          href={`/api/dojo/dojo/download/csv/${index}/${resource.id}`}
-          download={name}
->>>>>>> d5736c5... Relocate/rename from ./phantom/ui -> ./ui
           type="text/csv"
           onClick={() => setDownload(true)}
           disabled={openDownload ? true : undefined}
         >
-<<<<<<< HEAD
           Download Dataset
-=======
-          Download CSV
->>>>>>> d5736c5... Relocate/rename from ./phantom/ui -> ./ui
         </Button>
       </Typography>
       <BasicAlert
@@ -66,8 +51,4 @@ function CSVDownload({ resource, index = 'indicators', className }) {
   );
 }
 
-<<<<<<< HEAD
 export default DatasetDownload;
-=======
-export default CSVDownload;
->>>>>>> d5736c5... Relocate/rename from ./phantom/ui -> ./ui

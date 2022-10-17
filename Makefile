@@ -6,7 +6,7 @@ export LANG
 BASEDIR = $(shell pwd)
 DOJO_API_DIR = api
 MIXMASTA_DIR = mixmasta
-PHANTOM_DIR = ui
+UI_DIR = ui
 RQ_DIR = tasks
 WORKERS_DIR = workers
 COMPOSE_DIRS := $(DOJO_DMC_DIR)
