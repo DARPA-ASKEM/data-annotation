@@ -6,7 +6,7 @@ export LANG
 BASEDIR = $(shell pwd)
 DOJO_API_DIR = api
 MIXMASTA_DIR = mixmasta
-PHANTOM_DIR = phantom
+PHANTOM_DIR = ui
 RQ_DIR = tasks
 WORKERS_DIR = workers
 COMPOSE_DIRS := $(DOJO_DMC_DIR)
@@ -57,16 +57,16 @@ docker-compose.yaml:$(COMPOSE_FILES) docker-compose.build-override.yaml envfile
 	rm $(TEMP_COMPOSE_FILES);
 
 
-phantom/ui/node_modules:docker-compose.yaml phantom/ui/package-lock.json phantom/ui/package.json
-	docker-compose run phantom npm ci -y
+ui/node_modules:docker-compose.yaml ui/package-lock.json ui/package.json
+	docker-compose run ui npm ci -y
 
 
 .PHONY:up
-up:docker-compose.yaml phantom/ui/node_modules
+up:docker-compose.yaml ui/node_modules
 	docker-compose up -d
 
 .PHONY:up-rebuild
-up-rebuild:docker-compose.yaml phantom/ui/node_modules
+up-rebuild:docker-compose.yaml ui/node_modules
 	docker-compose up --build -d
 
 

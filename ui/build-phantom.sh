@@ -6,7 +6,7 @@ VERSION="0.5.13"
 TAG="${VERSION}"
 
 GROUP=jataware
-NAME=phantom
+NAME=dojo-ui
 IMAGE="${GROUP}/${NAME}"
 
 docker build -f phantom/Dockerfile \

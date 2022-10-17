@@ -47,17 +47,17 @@ services:
       - envfile
     networks:
       - dojo-stack
-  phantom:
+  ui:
     build:
-      context: ./phantom/
+      context: ./ui/
       dockerfile: Dockerfile.dev
-    container_name: phantom
+    container_name: ui
     env_file:
       - envfile
     environment:
       - DKG_URL
     volumes:
-      - "./phantom/ui:/ui"
+      - "./ui:/ui"
     expose:
       - 8080
     ports:
