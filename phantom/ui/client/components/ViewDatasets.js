@@ -67,10 +67,11 @@ const getDatasets = (setDatasets, setDatasetsError, setDatasetsLoading) => {
   // pass along a timestamp to ensure that our url is different every time
   // otherwise the browser may cache the request and we won't see updates if someone
   // deprecates their dataset and comes back to this page
-  const url = `/api/dojo/indicators/latest?requestTime=${Date.now()}`;
+  const url = `http://localhost:8000/datasets/indicators/latest?requestTime=${Date.now()}`;
   axios.get(url)
     .then((response) => {
       setDatasetsLoading(false);
+      console.log(response);
       console.log(response.data);
       setDatasets(response.data);
     })
@@ -169,7 +170,7 @@ function ViewDatasets() {
       headerName: 'Maintainer',
       minWidth: 140,
       flex: 1,
-      valueGetter: (params) => params.row?.maintainer.name,
+      valueGetter: (params) => params.row?.maintainer?.name,
     },
     {
       field: 'created_at',
