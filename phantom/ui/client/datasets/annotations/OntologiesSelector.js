@@ -61,7 +61,14 @@ export default withStyles((theme) => ({
 
   },
 }))(({
-  classes, open, onClose, columnName, setAlertMessage, setAlertVisible, setCurrentOntologyTerm
+  classes,
+  open,
+  onClose,
+  columnName,
+  setAlertMessage,
+  setAlertVisible,
+  setCurrentOntologyTerm,
+  type = 'primaryOntologyId'
 }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [selected, setSelected] = useState();
@@ -69,6 +76,8 @@ export default withStyles((theme) => ({
   const { setFieldValue } = useFormikContext();
 
   const theme = useTheme();
+
+  const term = type === 'units' ? 'unit' : 'ontology';
 
   useEffect(() => {
     // clear out the search results any time we close
@@ -83,10 +92,10 @@ export default withStyles((theme) => ({
     if (selected) {
       setAlertMessage({
         severity: 'success',
-        message: `Saved ontology term "${selected?.name}" to the annotation for "${columnName}"`
+        message: `Saved ${term} term "${selected?.name}" to the annotation for "${columnName}"`
       });
       setCurrentOntologyTerm(selected);
-      setFieldValue('primaryOntologyId', selected.id, false);
+      setFieldValue(type, selected.id, false);
       setAlertVisible(true);
       onClose();
       return;
@@ -95,7 +104,7 @@ export default withStyles((theme) => ({
     setAlertVisible(true);
     setAlertMessage({
       severity: 'warning',
-      message: 'Please select an ontology term before saving.'
+      message: `Please select a term before saving.`
     });
   };
 
@@ -113,14 +122,14 @@ export default withStyles((theme) => ({
             <CloseIcon />
           </IconButton>
         </div>
-        <Typography variant="h5" gutterBottom>Search for Ontology Terms</Typography>
+        <Typography variant="h5" gutterBottom>Search for {term} terms</Typography>
         <div>
           <Typography variant="subtitle1" paragraph color="textSecondary">
-            Enter a search term to find relevant ontology terms with the MIRA Knowledge Graph
+            Enter a search term to find relevant {term} terms with the MIRA Knowledge Graph
           </Typography>
           {open && (
             <Search
-              name="Ontology Term"
+              name={`${term} term`}
               setSearch={setSearchResults}
               searchEndpoint="/api/dojo/dkg/search"
               initialSearchTerm={columnName}

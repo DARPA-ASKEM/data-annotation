@@ -15,6 +15,7 @@ import { FormAwareCheckBox, FormAwareSelect, FormAwareTextField } from '../FormF
 import FormatValidationInput from '../FormFields/FormatValidationInput';
 import MultiColumnDateSelector from './MultiColumnDateSelector';
 import MultiColumnGeoSelector from './MultiColumnGeoSelector';
+import ColumnPanelOntologiesSection from './ColumnPanelOntologiesSection';
 
 import { ExternalLink } from '../../components/Links';
 import { removeSelf } from './annotationRules';
@@ -23,7 +24,13 @@ import { GEO_ADMINS } from './constants';
 /**
  *
  * */
-export const FeatureControls = ({ values, fieldsConfig }) => (
+export const FeatureControls = ({
+  values,
+  fieldsConfig,
+  setUnitSelectorOpen,
+  currentUnit,
+  setCurrentUnit,
+}) => (
   <>
     <FormAwareSelect
       name="feature_type"
@@ -37,8 +44,16 @@ export const FeatureControls = ({ values, fieldsConfig }) => (
       ]}
       {...fieldsConfig('feature_type')}
     />
-
-    <FormAwareTextField
+{/* TODO: either make a copy of this component, or make it accept a different form value
+    - then pass in the same form value to ontologies selector, use that for setFieldValue
+*/}
+    <ColumnPanelOntologiesSection
+      setOntologiesOpen={setUnitSelectorOpen}
+      currentOntologyTerm={currentUnit}
+      setCurrentOntologyTerm={setCurrentUnit}
+      type="units"
+    />
+{/*    <FormAwareTextField
       name="units"
       margin="dense"
       label="Units"
@@ -53,7 +68,7 @@ export const FeatureControls = ({ values, fieldsConfig }) => (
       label="Unit Description"
       placeholder=""
       {...fieldsConfig('units_description')}
-    />
+    />*/}
 
     <Aliases
       aliases={values.aliases}
@@ -306,7 +321,10 @@ export const ColumnAnnotation = withStyles((theme) => ({
 }))(({
   classes, editingColumnName, columns,
   values, setFieldValue, validateDateFormat,
-  annotatedColumns, fieldsConfig=()=>({})
+  annotatedColumns, fieldsConfig=()=>({}),
+  setUnitSelectorOpen,
+  currentUnit,
+  setCurrentUnit,
 }) => {
 
   const displayNamePlaceholder = editingColumnName.includes('+') ? '' : editingColumnName;
@@ -362,6 +380,9 @@ export const ColumnAnnotation = withStyles((theme) => ({
         setFieldValue={setFieldValue}
         validateDateFormat={validateDateFormat}
         fieldsConfig={fieldsConfig}
+        setUnitSelectorOpen={setUnitSelectorOpen}
+        currentUnit={currentUnit}
+        setCurrentUnit={setCurrentUnit}
       />
 
       <Field

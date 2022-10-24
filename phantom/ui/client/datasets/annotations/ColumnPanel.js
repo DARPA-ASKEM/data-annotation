@@ -45,7 +45,6 @@ const initialColumnValues = {
   description: '',
   feature_type: 'float',
   units: '',
-  units_description: '',
 
   isQualifies: false,
   qualifierrole: 'breakdown',
@@ -264,6 +263,9 @@ export default withStyles(({ palette, spacing, breakpoints }) => ({
     message: ''
   });
   const [currentOntologyTerm, setCurrentOntologyTerm] = useState(null);
+
+  const [unitSelectorOpen, setUnitSelectorOpen] = useState(false);
+  const [currentUnit, setCurrentUnit] = useState(false);
 
   useEffect(() => {
     // keep an eye on the currentOntologyTerm state here, as the OntologiesSection component
@@ -484,6 +486,9 @@ export default withStyles(({ palette, spacing, breakpoints }) => ({
                             validateDateFormat={validateDateFormat}
                             annotatedColumns={allAnnotatedColumns}
                             fieldsConfig={fieldsConfig}
+                            setUnitSelectorOpen={setUnitSelectorOpen}
+                            currentUnit={currentUnit}
+                            setCurrentUnit={setCurrentUnit}
                           />
 
                           <ColumnPanelOntologiesSection
@@ -524,6 +529,19 @@ export default withStyles(({ palette, spacing, breakpoints }) => ({
                           setAlertMessage={setAlertMessage}
                           setAlertVisible={setAlertVisible}
                           setCurrentOntologyTerm={setCurrentOntologyTerm}
+                        />
+                        {/* TODO: perhaps work on making this just one instance of this component
+                          once we make a more permanent/real version of the units selector
+                          (or at least don't call everything ontologyTerm, etc)
+                        */}
+                        <OntologiesSelector
+                          open={unitSelectorOpen}
+                          onClose={() => setUnitSelectorOpen(false)}
+                          columnName={columnName}
+                          setAlertMessage={setAlertMessage}
+                          setAlertVisible={setAlertVisible}
+                          setCurrentOntologyTerm={setCurrentUnit}
+                          type="units"
                         />
                       </>
                     )}
