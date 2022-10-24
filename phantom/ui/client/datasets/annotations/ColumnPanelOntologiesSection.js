@@ -24,7 +24,7 @@ export default withStyles((theme) => ({
   currentOntologyTerm,
   setCurrentOntologyTerm,
   classes,
-  type = 'primaryOntologyId'
+  type = 'primary_ontology_id'
 }) => {
   const { setFieldValue, values } = useFormikContext();
 

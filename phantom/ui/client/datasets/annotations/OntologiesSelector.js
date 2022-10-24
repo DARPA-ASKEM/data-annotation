@@ -68,7 +68,7 @@ export default withStyles((theme) => ({
   setAlertMessage,
   setAlertVisible,
   setCurrentOntologyTerm,
-  type = 'primaryOntologyId'
+  type = 'primary_ontology_id'
 }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [selected, setSelected] = useState();
