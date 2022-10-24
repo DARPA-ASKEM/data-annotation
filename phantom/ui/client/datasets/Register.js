@@ -53,12 +53,12 @@ export default withStyles(({ spacing }) => ({
   // This is the file metadata as we fill in the form (not the one stored in services):
   const [fileMetadata, setFileMetadata] = useState({});
 
-  const back = (event) => {}; // Do nothing
+  const back = (event) => { }; // Do nothing
 
   /**
    * Creates or updates a dataset (indicator) resource in the backend
    **/
-  const updateDataset = async (validatedData, { method='post', id }) => {
+  const updateDataset = async (validatedData, { method = 'post', id }) => {
 
     const payload = {
       id,
@@ -74,12 +74,14 @@ export default withStyles(({ spacing }) => ({
       spatial_resolution: validatedData.spatial_resolution,
       temporal_resolution: validatedData.temporal_resolution,
       data_sensitivity: validatedData.data_sensitivity,
-      data_quality: validatedData.data_quality,
+      data_quality: validatedData.data_quality
     };
+
+    console.log(payload);
 
     const response = await axios({
       method,
-      url: `/api/dojo/indicators${method === 'PATCH' ? '?indicator_id=' + id : ''}`,
+      url: `/api/dojo/datasets/register${method === 'PATCH' ? '?indicator_id=' + id : ''}`,
       data: payload,
     });
     return response.data;
@@ -137,7 +139,7 @@ export default withStyles(({ spacing }) => ({
             const httpMethod = isUpdate ? 'PATCH' : 'POST';
             // TODO try/catch promise error handling
             // Creates or updates a dataset. Update returns no data
-            const dataset = await updateDataset(values, {method: httpMethod, id: datasetInfo.id});
+            const dataset = await updateDataset(values, { method: httpMethod, id: datasetInfo.id });
 
             const latestDatasetData = isUpdate ? datasetInfo : dataset;
             const datasetId = latestDatasetData.id;
@@ -146,7 +148,7 @@ export default withStyles(({ spacing }) => ({
             if (datasetId && (!isFileUploaded || isUpdatingUploadedFile)) {
               const uploadResponse = await uploadFile(formRef.current, datasetId);
               const newRawFileName = uploadResponse.data.filename;
-              const fileMetadataData = {...fileMetadata, rawFileName: newRawFileName};
+              const fileMetadataData = { ...fileMetadata, rawFileName: newRawFileName };
               await updateMetadata(datasetId, fileMetadataData, setAnnotations);
 
               return { dataset: latestDatasetData, rawFileName: newRawFileName };
@@ -157,7 +159,7 @@ export default withStyles(({ spacing }) => ({
           }
 
           createAndUploadDataset()
-            .then(({dataset, rawFileName}) => handleNext({dataset: dataset, filename: rawFileName}));
+            .then(({ dataset, rawFileName }) => handleNext({ dataset: dataset, filename: rawFileName }));
         }}
       >
         {(formik) => (
