@@ -53,22 +53,6 @@ export const FeatureControls = ({
       setCurrentOntologyTerm={setCurrentUnit}
       type="units"
     />
-{/*    <FormAwareTextField
-      name="units"
-      margin="dense"
-      label="Units"
-      required
-      placeholder=""
-      {...fieldsConfig('units')}
-    />
-
-    <FormAwareTextField
-      name="units_description"
-      margin="dense"
-      label="Unit Description"
-      placeholder=""
-      {...fieldsConfig('units_description')}
-    />*/}
 
     <Aliases
       aliases={values.aliases}
