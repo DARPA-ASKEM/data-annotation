@@ -10,7 +10,10 @@ const fetcher = async (url) => {
     throw error;
   }
 
-  return response.json();
+  const rjson = response.json();
+  console.log('RESPONSE : ', rjson);
+
+  return rjson;
 };
 
 export function useModel(modelId) {
@@ -27,7 +30,7 @@ export function useModel(modelId) {
 // Datasets were previously called indicators, and this has not yet been updated in dojo
 export function useDataset(datasetId) {
   const { data, error, mutate } = useSWR(
-    datasetId ? `/api/dojo/indicators/${datasetId}` : null, fetcher
+    datasetId ? `http://localhost:8000/datasets/datasets/${datasetId}` : null, fetcher
   );
 
   return {

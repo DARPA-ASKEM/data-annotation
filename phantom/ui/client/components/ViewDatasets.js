@@ -67,7 +67,7 @@ const getDatasets = (setDatasets, setDatasetsError, setDatasetsLoading) => {
   // pass along a timestamp to ensure that our url is different every time
   // otherwise the browser may cache the request and we won't see updates if someone
   // deprecates their dataset and comes back to this page
-  const url = `http://localhost:8000/datasets/indicators/latest?requestTime=${Date.now()}`;
+  const url = 'http://localhost:8000/datasets/datasets?count=50';
   axios.get(url)
     .then((response) => {
       setDatasetsLoading(false);
@@ -173,7 +173,7 @@ function ViewDatasets() {
       valueGetter: (params) => params.row?.maintainer?.name,
     },
     {
-      field: 'created_at',
+      field: 'timestamp',
       headerName: 'Created At',
       valueFormatter: (params) => (
         new Date(params.value).toLocaleDateString(

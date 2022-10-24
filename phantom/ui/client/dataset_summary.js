@@ -91,6 +91,8 @@ const DatasetSummary = () => {
     dataset, datasetLoading, datasetError, mutateDataset
   } = useDataset(datasetId);
 
+  console.log('In summary, ', dataset);
+
   const classes = useStyles();
   const theme = useTheme();
   const mediumBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
@@ -210,7 +212,7 @@ const DatasetSummary = () => {
               Features
             </Typography>
 
-            <DatasetSummaryOutputsTable dataset={dataset} />
+            {/* <DatasetSummaryOutputsTable dataset={dataset} /> */}
           </Grid>
         </Grid>
 
