@@ -9,7 +9,7 @@ from src import (
     dkg,
     dojo,
     indicators,
-    phantom,
+    ui,
 )
 from src.settings import settings
 
@@ -19,7 +19,7 @@ api = FastAPI(docs_url="/")
 api.include_router(dojo.router, tags=["Dojo"])
 api.include_router(indicators.router, tags=["Indicators"])
 api.include_router(dkg.router, tags=["DKG"])
-api.include_router(phantom.router, prefix="/phantom", tags=["Phantom"])
+api.include_router(ui.router, prefix="/ui", tags=["Dojo UI"])
 api.include_router(data.router, tags=["Data"])
 
 
