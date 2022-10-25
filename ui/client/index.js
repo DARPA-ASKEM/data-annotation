@@ -19,7 +19,6 @@ import ThemeContextProvider from './components/ThemeContextProvider';
 import Admin from './admin';
 import DatasetSummary from './dataset_summary';
 import LandingPage from './landingpage';
-import Model from './model';
 import Provision from './provision';
 import Provisioning from './provisioning';
 import RunLogs from './runlogs';
@@ -41,7 +40,6 @@ export default function Main() {
       <NavBar />
       <Switch>
         <Route component={LandingPage} exact path="/non-askem" />
-        <Route component={Model} exact path="/model" />
         <Route component={ViewModels} exact path="/models" />
         <Route component={ViewDatasets} exact path="/" />
         <Route component={DatasetAnnotate} exact path="/datasets/annotate" />

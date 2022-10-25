@@ -24,7 +24,6 @@ import FileList from './FileList';
 import FullScreenDialog from './FullScreenDialog';
 import FullScreenTemplater from './templater/FullScreenTemplater';
 import LoadingOverlay from './LoadingOverlay';
-import { ModelSummaryEditor } from './ModelSummaryEditor';
 import PublishContainer from '../publish_container';
 import SimpleEditor from './SimpleEditor';
 import SummaryAccessories from './SummaryAccessories';
@@ -439,9 +438,6 @@ const SummaryContents = ({
         visible={navigateAwayWarning}
         setVisible={setNavigateAwayWarning}
       />
-
-      {model && openModelEdit
-        && <ModelSummaryEditor model={model} open={openModelEdit} setOpen={setOpenModelEdit} />}
 
       {(locked && uploading)
         && (

@@ -1,28 +1,31 @@
 import React, { useEffect, useState } from 'react';
+
 import { Form, Formik } from 'formik';
 
+import axios from 'axios';
+
 import isEmpty from 'lodash/isEmpty';
+import get from 'lodash/get';
+
+import { useHistory } from 'react-router-dom';
+
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
-import axios from 'axios';
 import Container from '@material-ui/core/Container';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 
-import * as yup from 'yup';
-import get from 'lodash/get';
-
 import { withStyles } from '@material-ui/core/styles';
-import { DomainsAutocomplete } from '../components/ModelDetailForm';
+
+import * as yup from 'yup';
 
 import { Navigation } from '.';
 import { FormAwareTextField } from './FormFields';
 import { ExtraInput } from './FileSelector';
-
 import { Resolution } from './metadataComponents';
+import DomainsAutocomplete from '../components/DomainsAutocomplete';
 
 
 const skipValidation = false;
