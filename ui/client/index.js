@@ -23,7 +23,6 @@ import Provision from './provision';
 import Provisioning from './provisioning';
 import RunLogs from './runlogs';
 import RunSummary from './components/RunSummary';
-import Summary from './summary';
 import Terminal from './terminal';
 import theme from './theme';
 import ViewDatasets from './components/ViewDatasets';
@@ -48,7 +47,6 @@ export default function Main() {
         <Route component={Provision} exact path="/provision/:modelId" />
         <Route component={Provisioning} exact path="/provisioning/:modelId" />
         <Route component={Terminal} exact path="/term/:modelid" />
-        <Route component={Summary} exact path="/summary/:modelId" />
         <Route component={DatasetSummary} exact path="/dataset_summary" />
         <Route component={Admin} exact path="/admin" />
         <Route component={ViewRuns} exact path="/runs" />

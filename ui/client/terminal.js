@@ -20,7 +20,6 @@ import FullScreenDialog from './components/FullScreenDialog';
 import FullScreenTemplater from './components/templater/FullScreenTemplater';
 import HelperTip from './components/HelperTip';
 import LoadingOverlay from './components/LoadingOverlay';
-import ModelFileTabs from './components/ModelFileTabs';
 import ShellHistory from './components/ShellHistory';
 import SimpleEditor from './components/SimpleEditor';
 import Term from './components/Term';
@@ -172,15 +171,6 @@ const CenteredGrid = ({ model }) => {
             <div className={classes.directiveContainer}>
               <DirectiveBox modelId={model.id} handleClick={handleDirectiveClick} />
             </div>
-
-            <ModelFileTabs
-              model={model}
-              setTemplaterMode={setTemplaterMode}
-              setTemplaterContents={setTemplaterContents}
-              setTemplaterOpen={setTemplaterOpen}
-              setModelOutputOpen={setIsModelOutputOpen}
-              setModelOutputFile={setModelOutputFile}
-            />
           </div>
         </Grid>
       </Grid>
