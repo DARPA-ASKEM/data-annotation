@@ -16,7 +16,6 @@ import NavBar from './components/NavBar';
 import ThemeContextProvider from './components/ThemeContextProvider';
 
 // pages
-import Admin from './admin';
 import DatasetSummary from './dataset_summary';
 import theme from './theme';
 import ViewDatasets from './components/ViewDatasets';
@@ -35,7 +34,6 @@ export default function Main() {
         <Route component={DatasetPreview} exact path="/datasets/preview" />
         <Route component={DatasetRegistrationStepper} path="/datasets/:flowslug/:step?/:datasetId?" />
         <Route component={DatasetSummary} exact path="/dataset_summary" />
-        <Route component={Admin} exact path="/admin" />
         <Route path="/*" render={() => <h2>404 Not Found</h2>} />
       </Switch>
     </Router>
