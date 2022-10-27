@@ -149,7 +149,7 @@ function formatGeoAnnotationOUT(localAnnotation, outgoingAnnotationBase) {
     if (localAnnotation['geo.multi-column']) {
       const otherColumnNames = getGeoMultiPartMembers(localAnnotation)
       // Filter out unselected build-geo columns; eg empty, no columns selected
-            .filter(Boolean);
+        .filter(Boolean);
 
       genGeoMultiPartMemberAnnotation(otherColumnNames, localAnnotation, outgoingAnnotation)
         .forEach((item) => { collectedOutgoingAnnotations.push(item); });

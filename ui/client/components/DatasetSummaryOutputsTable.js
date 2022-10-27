@@ -132,10 +132,11 @@ function DatasetSummaryOutputsTable({ dataset }) {
               <TableCell key="first" align="center" className={classes.indexRow}><b> Primary Ontology Concept: </b> </TableCell>
               {columns.map((row, index) => (
                 <StyledTableCell key={index.toString().concat('sixthRow')} align="left">
-                  {row?.primary_ontology_id ? 
-                    (<a href={`${process.env.DKG_URL}:${process.env.DKG_DESC_PORT}/${row.primary_ontology_id}`}>
+                  {row?.primary_ontology_id
+                    ? (
+                      <a href={`${process.env.DKG_URL}:${process.env.DKG_DESC_PORT}/${row.primary_ontology_id}`}>
                         {useConceptName(row.primary_ontology_id).name}
-                     </a>
+                      </a>
                     ) : 'NA'}
                 </StyledTableCell>
               ))}

@@ -267,7 +267,7 @@ export const DateControls = ({
       )}
 
       {requiresFormatting && (
-        <div style={{paddingTop: '0.5rem'}}>
+        <div style={{ paddingTop: '0.5rem' }}>
           <FormatValidationInput
             name="time_format"
             required
@@ -306,9 +306,8 @@ export const ColumnAnnotation = withStyles((theme) => ({
 }))(({
   classes, editingColumnName, columns,
   values, setFieldValue, validateDateFormat,
-  annotatedColumns, fieldsConfig=()=>({})
+  annotatedColumns, fieldsConfig = () => ({})
 }) => {
-
   const displayNamePlaceholder = editingColumnName.includes('+') ? '' : editingColumnName;
   const setQualifiesValues = useCallback(
     (val) => {

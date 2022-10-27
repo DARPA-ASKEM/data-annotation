@@ -27,7 +27,6 @@ import { ExtraInput } from './FileSelector';
 import { Resolution } from './metadataComponents';
 import DomainsAutocomplete from '../components/DomainsAutocomplete';
 
-
 const skipValidation = false;
 
 /**
@@ -145,7 +144,6 @@ export default withStyles(({ spacing }) => ({
   const back = (event) => {}; // Do nothing
 
   useEffect(async () => {
-
     setDatasetInfo({
       ...datasetInfo,
       id: modelId,
@@ -156,7 +154,7 @@ export default withStyles(({ spacing }) => ({
       annotations: {},
     });
 
-    const terminal_ready_filepath = props["request_path"];
+    const terminal_ready_filepath = props.request_path;
     const url = `/api/dojo/job/${props.modelId}/tasks.model_output_analysis`;
     await axios({
       method: 'post',
@@ -164,7 +162,7 @@ export default withStyles(({ spacing }) => ({
       data: {
         model_id: modelId,
         fileurl: terminal_ready_filepath,
-        filepath: props?.file_path || "",
+        filepath: props?.file_path || '',
         synchronous: true,
         context: {},
       },
@@ -174,11 +172,10 @@ export default withStyles(({ spacing }) => ({
         ...fileMetadata,
         ...jobResult,
         fileurl: terminal_ready_filepath,
-        filepath: props?.file_path || "",
+        filepath: props?.file_path || '',
       });
-    })
+    });
   }, []);
-
 
   const defaultValues = {
     name: datasetInfo?.name || '',
@@ -215,7 +212,7 @@ export default withStyles(({ spacing }) => ({
           setDatasetInfo({
             ...datasetInfo,
             ...values
-          })
+          });
           handleNext();
         }}
       >

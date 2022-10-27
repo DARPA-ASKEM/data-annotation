@@ -58,9 +58,7 @@ describe('formatAnnotationsOUT', () => {
     }]);
   });
 
-
   test('Setting isQualifies + qualifies fields array formats it out to the backend', () => {
-
     const input = {
       value: {
         aliases: [{ current: 'a', new: 'b' }],
@@ -114,12 +112,9 @@ describe('formatAnnotationsOUT', () => {
         a: 'b'
       }
     }]);
-
-
   });
 
   test('Disabling back "qualifies" toggle clears the list of columns it qualifies when submitting', () => {
-
     const input = {
       value: {
         aliases: [{ current: 'a', new: 'b' }],
@@ -173,8 +168,6 @@ describe('formatAnnotationsOUT', () => {
         a: 'b'
       }
     }]);
-
-
   });
 
   test('groups date with relevant information', () => {
@@ -556,7 +549,6 @@ describe('formatAnnotationsOUT', () => {
   });
 
   test('gadm_level is not set when working with a non-primary geo column', () => {
-
     const input = {
       somegeo: {
         aliases: [],
@@ -600,8 +592,6 @@ describe('formatAnnotationsOUT', () => {
   });
 
   test('gadm_level is not set when working with a primary non-coordinate geo column', () => {
-
-
     const input = {
       somegeo: {
         aliases: [],
@@ -996,7 +986,7 @@ describe('formatAnnotationsOUT', () => {
 
   test('multi column geo: multiple admin columns with only 1 column selected', () => {
     const input = {
-      'admin0': {
+      admin0: {
         aliases: [],
 
         category: 'geo',
@@ -1050,9 +1040,8 @@ describe('formatAnnotationsOUT', () => {
   });
 
   test('Only features preserve primary ontology id', () => {
-
     const input = {
-      'admin0': {
+      admin0: {
         aliases: [],
 
         category: 'geo',
@@ -1066,7 +1055,7 @@ describe('formatAnnotationsOUT', () => {
         geo_type: 'country',
         primary: true,
 
-        "primary_ontology_id": "id:3434",
+        primary_ontology_id: 'id:3434',
 
         gadm_level: '',
         'geo.coordinate-pair': false,
@@ -1084,7 +1073,7 @@ describe('formatAnnotationsOUT', () => {
 
         annotated: true
       },
-      'value': {
+      value: {
 
         aliases: [{ current: 'a', new: 'b' }],
         category: 'feature',
@@ -1102,7 +1091,7 @@ describe('formatAnnotationsOUT', () => {
         coord_format: 'lonlat',
         primary: false,
 
-        "primary_ontology_id": "id:5757",
+        primary_ontology_id: 'id:5757',
 
         resolve_to_gadm: false,
         gadm_level: 'admin3',
@@ -1121,7 +1110,7 @@ describe('formatAnnotationsOUT', () => {
         'date.multi-column.year.format': '',
         'date.multi-column.month.format': '',
         'date.multi-column.day.format': '',
-                annotated: true
+        annotated: true
       },
       date: {
         aliases: [],
@@ -1140,7 +1129,7 @@ describe('formatAnnotationsOUT', () => {
         coord_format: 'lonlat',
         primary: true,
 
-        "primary_ontology_id": "id:6757",
+        primary_ontology_id: 'id:6757',
 
         resolve_to_gadm: false,
         gadm_level: 'admin3',
@@ -1167,54 +1156,53 @@ describe('formatAnnotationsOUT', () => {
 
     expect(output)
       .toEqual({
-        "date": [
+        date: [
           {
-            "aliases": {},
-            "date_type": "year",
-            "description": "date/time description",
-            "display_name": "",
-            "name": "date",
-            "primary_date": true,
+            aliases: {},
+            date_type: 'year',
+            description: 'date/time description',
+            display_name: '',
+            name: 'date',
+            primary_date: true,
             // "primary_ontology_id": "id:6757",
-            "qualifierrole": "breakdown",
-            "qualifies": [],
-            "time_format": "%y",
-            "type": "date"
+            qualifierrole: 'breakdown',
+            qualifies: [],
+            time_format: '%y',
+            type: 'date'
           }
         ],
-        "feature": [
+        feature: [
           {
-            "aliases": {
-              "a": "b"
+            aliases: {
+              a: 'b'
             },
-            "description": "feature description",
-            "display_name": "",
-            "feature_type": "float",
-            "primary_ontology_id": "id:5757",
-            "name": "value",
-            "qualifierrole": "breakdown",
-            "qualifies": [],
-            "type": "feature",
-            "units": "m",
-            "units_description": ""
+            description: 'feature description',
+            display_name: '',
+            feature_type: 'float',
+            primary_ontology_id: 'id:5757',
+            name: 'value',
+            qualifierrole: 'breakdown',
+            qualifies: [],
+            type: 'feature',
+            units: 'm',
+            units_description: ''
           }
         ],
-        "geo": [
+        geo: [
           {
-            "aliases": {},
-            "description": "primary geo description",
-            "display_name": "SUPER_GGEO",
-            "geo_type": "country",
-            "name": "admin0",
-            "primary_geo": true,
+            aliases: {},
+            description: 'primary geo description',
+            display_name: 'SUPER_GGEO',
+            geo_type: 'country',
+            name: 'admin0',
+            primary_geo: true,
             // "primary_ontology_id": "id:3434",
-            "qualifierrole": "breakdown",
-            "qualifies": [],
-            "type": "geo"
+            qualifierrole: 'breakdown',
+            qualifies: [],
+            type: 'geo'
           }
         ]
       });
-
   });
 });
 

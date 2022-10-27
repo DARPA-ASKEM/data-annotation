@@ -5,7 +5,9 @@ import axios from 'axios';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-const DomainsAutocomplete = ({ formik, label = 'Model Domain(s)', disabled, textFieldProps }) => {
+const DomainsAutocomplete = ({
+  formik, label = 'Model Domain(s)', disabled, textFieldProps
+}) => {
   const [domainList, setDomainList] = React.useState([]);
 
   useEffect(() => {

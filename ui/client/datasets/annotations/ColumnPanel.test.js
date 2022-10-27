@@ -45,7 +45,7 @@ describe('genInitialValues', () => {
       gadm_level: 'admin3',
       coord_format: 'lonlat',
       primary: false,
-      "primary_ontology_id": "",
+      primary_ontology_id: '',
       resolve_to_gadm: false,
       'geo.coordinate-pair': false,
       'geo.coordinate-pair-column': '',
@@ -83,7 +83,7 @@ describe('genInitialValues', () => {
       }
     };
 
-    const columns = [{field: 'x'}, {field: 'longitude'}, {field: 'value'}, {field: 'something'}];
+    const columns = [{ field: 'x' }, { field: 'longitude' }, { field: 'value' }, { field: 'something' }];
 
     const result = genInitialValues(inferredGeo, columns);
 
@@ -102,10 +102,10 @@ describe('genInitialValues', () => {
       gadm_level: 'admin3',
       coord_format: 'lonlat',
       primary: false,
-      "primary_ontology_id": "",
+      primary_ontology_id: '',
       resolve_to_gadm: false,
       'geo.coordinate-pair': false,
-      "geo.coordinate-pair-column": 'longitude',
+      'geo.coordinate-pair-column': 'longitude',
       'geo.multi-column': false,
       'geo.multi-column.admin0': '',
       'geo.multi-column.admin1': '',
@@ -152,7 +152,7 @@ describe('genInitialValues', () => {
       gadm_level: 'admin3',
       coord_format: 'lonlat',
       primary: false,
-      "primary_ontology_id": "",
+      primary_ontology_id: '',
       resolve_to_gadm: false,
       'geo.coordinate-pair': false,
       'geo.coordinate-pair-column': '',
