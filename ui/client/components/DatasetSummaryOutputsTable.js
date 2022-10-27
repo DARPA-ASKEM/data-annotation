@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -53,6 +53,21 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.action.hover,
   },
 }));
+
+const Concept = ({ primaryOntologyId }) => {
+  const { name } = useConceptName(primaryOntologyId);
+
+  return (
+    <StyledTableCell align="left">
+      {name?.name
+        ? (
+          <a href={`${process.env.DKG_URL}:${process.env.DKG_DESC_PORT}/${primaryOntologyId}`}>
+            {name?.name}
+          </a>
+        ) : 'NA'}
+    </StyledTableCell>
+  );
+};
 
 function DatasetSummaryOutputsTable({ dataset }) {
   const columns = [...dataset?.outputs, ...(dataset?.qualifier_outputs || [])
@@ -116,7 +131,9 @@ function DatasetSummaryOutputsTable({ dataset }) {
               ))}
             </StyledTableRow>
             <StyledTableRow>
-              <TableCell key="first" align="center" className={classes.indexRow}><b> Aliases: </b>  </TableCell>
+              <TableCell key="first" align="center" className={classes.indexRow}>
+                <b>Aliases:</b>
+              </TableCell>
 
               {columns.map((row, index) => (
                 <StyledTableCell key={index.toString().concat('fifthRow')} align="left">
@@ -129,16 +146,14 @@ function DatasetSummaryOutputsTable({ dataset }) {
               ))}
             </StyledTableRow>
             <StyledTableRow>
-              <TableCell key="first" align="center" className={classes.indexRow}><b> Primary Ontology Concept: </b> </TableCell>
+              <TableCell key="first" align="center" className={classes.indexRow}>
+                <b>Primary Ontology Concept:</b>
+              </TableCell>
               {columns.map((row, index) => (
-                <StyledTableCell key={index.toString().concat('sixthRow')} align="left">
-                  {row?.primary_ontology_id
-                    ? (
-                      <a href={`${process.env.DKG_URL}:${process.env.DKG_DESC_PORT}/${row.primary_ontology_id}`}>
-                        {useConceptName(row.primary_ontology_id).name}
-                      </a>
-                    ) : 'NA'}
-                </StyledTableCell>
+                <Concept
+                  key={index.toString().concat('sixthRow')}
+                  primaryOntologyId={row.primary_ontology_id}
+                />
               ))}
             </StyledTableRow>
           </TableBody>

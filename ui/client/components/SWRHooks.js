@@ -31,7 +31,7 @@ export function useConceptName(termId) {
   const { data, error } = useSWR(`/api/dojo/dkg/term/${termId}`, fetcher);
 
   return {
-    name: data?.name,
+    name: data,
     nameLoading: !error && !data,
     nameError: error,
   };
