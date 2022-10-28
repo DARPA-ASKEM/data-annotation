@@ -1,4 +1,4 @@
-import React, { useEffect, useState, SetStateAction } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import axios from 'axios';
 import isEmpty from 'lodash/isEmpty';
@@ -11,7 +11,6 @@ import { withStyles } from '@material-ui/core/styles';
 import AnnotationsSubmitPrompt from './annotations/AnnotationsSubmitPrompt';
 import Instructions from './Instructions';
 import { Navigation } from '.';
-import Progress from './Progress';
 import TableAnnotation from './annotations/Table';
 import { formatAnnotationsIN } from './annotations/dataIN';
 import { formatAnnotationsOUT } from './annotations/dataOUT';
@@ -46,7 +45,6 @@ export default withStyles(({ spacing }) => ({
   datasetInfo, stepTitle, rawFileName,
   annotations, setAnnotations, onSubmit,
   addingAnnotationsAllowed = true, useFilepath = false,
-  modelInfo,
   fieldsConfig = () => ({})
 }) => {
   const [internalAnnotations, setInternalAnnotations] = useState({});
@@ -116,7 +114,7 @@ export default withStyles(({ spacing }) => ({
         console.error('Error fetching geoclassify or raw preview:', e);
       })
       .finally(() => { setLoading(false); });
-  }, [datasetInfo, isLoading]);
+  }, [datasetInfo, isLoading, annotations, rawFileName, useFilepath]);
 
   function submitToBackend() {
     setSubmitLoading(true);
@@ -216,7 +214,9 @@ export default withStyles(({ spacing }) => ({
         errors={errors}
         warnings={warnings}
         onDecline={() => setPreviewPromptOpen(false)}
-        onAccept={() => { if (onSubmit) { onSubmit({ annotations, setAnnotations, handleNext }); } else { submitToBackend(); } }}
+        onAccept={() => {
+          if (onSubmit) { onSubmit({ annotations, setAnnotations, handleNext }); } else { submitToBackend(); }
+        }}
       />
 
       <Prompt

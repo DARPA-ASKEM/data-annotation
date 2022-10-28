@@ -1,15 +1,14 @@
 import axios from 'axios';
-import { useState } from 'react';
+
 import Register from './Register';
 import Annotate from './Annotate';
-import AnomalyDetection from './AnomalyDetection';
 import Append from './Append';
 import UpdateMetadata from './UpdateMetadata';
-import ModelOutput from './ModelOutput';
 import Preview from './Preview';
 import SubmitSuccessPage from './SubmitSuccessPage';
 import RunJobs from './RunJobs';
-import { GeoControls } from './annotations/ColumnAnnotation';
+
+// import AnomalyDetection from './AnomalyDetection';
 
 const updateFlowDisabledFields = [
   'feature_type', 'geo_type',
@@ -119,99 +118,6 @@ const BasicRegistrationFlow = {
   ]
 };
 
-const ModelOutputFlow = {
-  steps: [
-    {
-      slug: 'model',
-      title: 'Model Output Registration',
-      label: 'Registration',
-      component: ModelOutput,
-      options: {}
-    },
-    {
-      slug: 'analyze',
-      title: 'Analyzing Dataset',
-      label: 'Analysis',
-      component: RunJobs,
-      options: {
-        jobs: [
-          {
-            id: 'file_processors.model_output_preview',
-            send_context: true,
-            handler: ({ result, setRawFileName }) => {
-              setRawFileName(result);
-            }
-          },
-          {
-            id: 'geotime_processors.model_output_geotime_classify',
-            send_context: true,
-            handler: ({
-              result, annotations, setAnnotations, ...extra
-            }) => {
-              annotations.metadata.geotime_classify = result;
-              setAnnotations(annotations);
-            }
-          },
-        ],
-      }
-    },
-    {
-      slug: 'annotate',
-      title: 'Annotate Dataset',
-      label: 'Annotation',
-      component: Annotate,
-      options: {
-        useFilepath: true,
-        onSubmit: ({
-          annotations, formattedAnnotations, setAnnotations, handleNext, ...extra
-        }) => {
-          annotations.annotations = formattedAnnotations;
-          setAnnotations(annotations);
-          handleNext();
-        }
-      }
-    },
-    {
-      slug: 'process',
-      title: 'Processing Dataset',
-      label: 'Processing',
-      component: RunJobs,
-      options: {
-        jobs: [
-          {
-            id: 'mixmasta_processors.run_model_mixmasta',
-            send_context: true,
-            handler: async ({
-              result, annotations, setAnnotations, datasetInfo, setDatasetInfo, ...extra
-            }) => {
-              annotations.metadata.mixmasterAnnotations = result.mixmaster_annotations;
-              setAnnotations(annotations);
-            }
-          }
-        ]
-      }
-    },
-    {
-      slug: 'preview',
-      title: 'Preview Dataset',
-      label: 'Preview',
-      component: Preview,
-      options: {
-        useFilepath: true,
-        handleNextFunc: 'PublishModelOutput',
-      }
-    },
-    {
-      slug: 'submit',
-      title: 'Submit Dataset',
-      label: 'Submit',
-      component: SubmitSuccessPage,
-      options: {}
-    },
-
-  ]
-};
-
 const AppendFlow = {
   steps: [
     {
@@ -308,7 +214,6 @@ const UpdateMetadataFlow = {
 
 const flows = {
   register: BasicRegistrationFlow,
-  model: ModelOutputFlow,
   append: AppendFlow,
   update: UpdateMetadataFlow,
   // TODO replace: ReplaceDatasetFlow

@@ -27,7 +27,7 @@ const NullGeotiffTooltip = ({ ...props }) => (
 );
 
 export const ExtraInput = ({
-  formik, fileMetadata, setFileMetadata, ...props
+  fileMetadata, setFileMetadata,
 }) => {
   // TODO This metadata is set on user file select etc, not on loading a previously
   // uploaded file. We'll check if we can populate
@@ -42,6 +42,7 @@ export const ExtraInput = ({
     const { value } = evt.target;
     const geotiff_bands = { ...(fileMetadata.geotiff_bands) };
     if (value === '') {
+      // eslint-disable-next-line no-prototype-builtins
       if (geotiff_bands.hasOwnProperty(band_num)) {
         delete geotiff_bands[band_num];
       } else {
@@ -85,7 +86,6 @@ export const ExtraInput = ({
     );
   }
   if (fileMetadata.filetype === 'geotiff') {
-    const name = 'geotiff_info';
     if (fileMetadata.geotiff_band_count > 1) {
       return (
         <>
@@ -150,7 +150,10 @@ export const ExtraInput = ({
               display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '0.5em', rowGap: '0.5em',
             }}
             >
-              {/* This generates a numbered TextField input for each band in the geotiff to allow labeling */}
+              {/*
+                This generates a numbered TextField input
+                for each band in the geotiff to allow labeling
+              */}
               {Array.from(Array(fileMetadata.geotiff_band_count).keys()).map((i) => {
                 const band_num = i + 1;
                 return (
@@ -202,7 +205,10 @@ export const ExtraInput = ({
                 display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '0.5em', rowGap: '0.5em'
               }}
             >
-              {/* This generates a numbered TextField input for each band in the geotiff to allow labeling */}
+              {/*
+                This generates a numbered TextField input
+                for each band in the geotiff to allow labeling
+              */}
               {Array.from(Array(fileMetadata.geotiff_band_count).keys()).map((i) => {
                 const band_num = i + 1;
                 return (
@@ -263,7 +269,7 @@ export const ExtraInput = ({
       );
     }
 
-    return <div>File can't be read correctly!!</div>;
+    return <div>File can&quot;t be read correctly!</div>;
   }
   return null;
 };
@@ -284,7 +290,7 @@ const FileInput = withStyles(({ spacing }) => ({
   name, label, onFileSelect, InputProps = {}, required, requiredFn,
   classes, inputProps = {}, ...props
 }) => {
-  const [{ onChange, value, ...field }, meta, setters] = useField({ ...props, name });
+  const [{ onChange, value, ...field }, meta] = useField({ ...props, name });
 
   function handleChange(event) {
     // Set value in form context
@@ -308,6 +314,10 @@ const FileInput = withStyles(({ spacing }) => ({
         style: { borderRadius: 0 },
         ...InputProps
       }}
+      /* MUI textfield has both inputProps and InputProps doing different things
+        Are we actually using both of these props? Not sure. - AG
+       */
+      // eslint-disable-next-line react/jsx-no-duplicate-props
       inputProps={{
         'data-testid': 'file-upload-input',
         'aria-label': label,
@@ -326,7 +336,7 @@ const FileInput = withStyles(({ spacing }) => ({
 /**
  *
  * */
-export const FileSelector = withStyles(({ spacing, palette }) => ({
+export const FileSelector = withStyles(({ spacing }) => ({
   warning: {
     backgroundColor: 'pink'
   },
@@ -350,7 +360,6 @@ export const FileSelector = withStyles(({ spacing, palette }) => ({
   } = allProps;
 
   const [message, setMessage] = useState(null);
-  const [processing, setProcessing] = useState(false);
 
   const analyzeExcel = (file, metadata) => {
     setMessage(null);
@@ -407,7 +416,6 @@ export const FileSelector = withStyles(({ spacing, palette }) => ({
   };
 
   const analyzeFile = (evt) => {
-    setProcessing(true);
     setMessage(null);
     const fileInput = evt.target;
     const file = fileInput.files[0];
@@ -427,17 +435,11 @@ export const FileSelector = withStyles(({ spacing, palette }) => ({
     }
 
     setMessage(`File ${file.name} is not a type that Dojo is able to process.`);
-    setProcessing(false);
     setFileMetadata({});
 
     return null;
   };
 
-  const currentFileName = formik?.values?.file;
-
-  // Previous uploaded file exists, but user is uploading a new one (edit mode)
-  //    AND we have selected a new file (currentFileName)
-  const newFileSelected = isUpdatingUploadedFile && currentFileName;
   const uploadedRawFileNameToUse = get(props?.datasetInfo, 'fileData.raw.rawFileName');
   const uploadedFileName = get(props?.datasetInfo, 'fileData.raw.url');
   const uploadedFileMetadata = get(uploadedFilesData, uploadedRawFileNameToUse, null);
@@ -452,9 +454,10 @@ export const FileSelector = withStyles(({ spacing, palette }) => ({
       {displayUploadedFile && !isUpdatingUploadedFile ? (
         <div className={classes.uploadedFileData}>
           <Typography>
-            Uploaded filename: <span className="filename">
+            Uploaded filename:
+            <span className="filename">
               {uploadedFileName}
-                               </span>
+            </span>
           </Typography>
 
           <table>
@@ -491,7 +494,7 @@ export const FileSelector = withStyles(({ spacing, palette }) => ({
           />
           {displayUploadedFile && (
             <div className={classes.uploadedFileData}>
-              <Typography>You're replacing a previously uploaded file.</Typography>
+              <Typography>You&quot;re replacing a previously uploaded file.</Typography>
               <Button
                 variant="outlined"
                 size="small"

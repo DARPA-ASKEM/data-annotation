@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Form, Formik } from 'formik';
-import axios from 'axios';
 
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -11,9 +10,6 @@ import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
-
-import get from 'lodash/get';
-import isEmpty from 'lodash/isEmpty';
 
 import { Navigation } from '.';
 import {
@@ -47,17 +43,14 @@ export default withStyles(({ spacing }) => ({
   }
 }))(({
   classes, datasetInfo, error, stepTitle, setDatasetInfo,
-  annotations, setAnnotations, handleNext, handleBack,
+  setAnnotations, handleNext,
   rawFileName, uploadedFilesData,
-  ...props
 }) => {
-  const history = useHistory();
-  const [file, setFile] = useState(null);
   const [fileMetadata, setFileMetadata] = useState({});
 
   const formRef = React.useRef();
 
-  const back = (event) => {}; // Do nothing
+  const back = () => {}; // Do nothing
 
   const defaultValues = genRegisterDefaultValues(datasetInfo);
   const [isUpdatingUploadedFile, setUpdatingUploadedFile] = useState(false);
@@ -87,7 +80,9 @@ export default withStyles(({ spacing }) => ({
           let rawFileNameToUse = rawFileName;
 
           if (!isFileUploaded || isUpdatingUploadedFile) {
-            const uploadResponse = await uploadFile(formRef.current, datasetInfo.id, { append: true, filename: rawFileName });
+            const uploadResponse = await uploadFile(
+              formRef.current, datasetInfo.id, { append: true, filename: rawFileName }
+            );
 
             rawFileNameToUse = uploadResponse.data.filename;
 

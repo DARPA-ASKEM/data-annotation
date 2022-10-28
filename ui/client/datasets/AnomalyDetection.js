@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import clsx from 'clsx';
 
 import Container from '@material-ui/core/Container';
@@ -65,7 +65,7 @@ const RunJob = withStyles(({ spacing }) => ({
 }) => {
   const [jobData, setJobData] = useState(null);
 
-  const updateJobData = () => {
+  const updateJobData = useCallback(() => {
     const url = `/api/dojo/job/${datasetInfo.id}/${job_id}`;
     console.log(url);
     axios({
@@ -75,23 +75,23 @@ const RunJob = withStyles(({ spacing }) => ({
     }).then((response) => {
       setJobData(response.data);
     });
-  };
+  }, [props, datasetInfo, job_id]);
 
   useEffect(() => {
     if (jobData === null) {
       // Run right away on page load
       updateJobData();
-    } else if (jobData.status == 'finished') {
+    } else if (jobData.status === 'finished') {
       console.log('done');
 
       // setJobData(null);
       // handleNext();
-    } else if (jobData.status == 'failed') {
+    } else if (jobData.status === 'failed') {
       console.log('failed');
     } else {
       setTimeout(updateJobData, 1500);
     }
-  }, [jobData]);
+  }, [jobData, updateJobData]);
 
   return (
     <Container
@@ -116,6 +116,7 @@ const RunJob = withStyles(({ spacing }) => ({
                 classes[`risk${jobData?.result?.anomalyConfidence}`]
               ])}
               >
+                {/* eslint-disable-next-line jsx-a11y/alt-text */}
                 <img src={`data:image/png;base64,${jobData.result.img}`} />
                 <Typography variant="subtitle1">
                   {mapConfidenceMessage[jobData.result.anomalyConfidence]}
@@ -126,7 +127,8 @@ const RunJob = withStyles(({ spacing }) => ({
                 <div className={classes.spinner} />
                 <br />
                 <Typography variant="caption">
-                  Scanning file blocks, analyzing whitespace, string, and numeric data for viability.
+                  Scanning file blocks, analyzing whitespace, string,
+                  and numeric data for viability.
                 </Typography>
                 {/* <Typography style={{ textTransform: 'capitalize' }}>
                   {jobData?.status}
