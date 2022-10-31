@@ -74,14 +74,14 @@ export default withStyles(({ spacing }) => ({
       spatial_resolution: validatedData.spatial_resolution,
       temporal_resolution: validatedData.temporal_resolution,
       data_sensitivity: validatedData.data_sensitivity,
-      data_quality: validatedData.data_quality
+      data_quality: validatedData.data_quality,
     };
 
     console.log(payload);
 
     const response = await axios({
       method,
-      url: `/api/dojo/datasets/register${method === 'PATCH' ? '?indicator_id=' + id : ''}`,
+      url: `/api/dojo/indicators/${method === 'PATCH' ? '?indicator_id=' + id : ''}`,
       data: payload,
     });
     return response.data;

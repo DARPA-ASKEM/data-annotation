@@ -12,35 +12,35 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 
 module.exports = {
-    entry: ['babel-polyfill', path.resolve(__dirname, './client/index.js')],
-    output: {
-        path: path.resolve(__dirname, './dist'),
-        filename: '[contenthash].bundle.js',
-        publicPath: '/'
-    },
-    module: {
-        rules: [
-            {
-                test: /\.(js|.jsx)$/,
-                exclude: /node_modules/,
-                use: ['babel-loader']
-            },
-            {
-                test: /\.css$/i,
-                use: [MiniCssExtractPlugin.loader, 'css-loader'],
-                sideEffects: true
-            },
-          {
-            test: /\.(png|jpg|gif|woff|woff2|eot|ttf|svg|mp4)$/,
-            loader: 'file-loader',
-          },
-        ]
-    },
+  entry: ['babel-polyfill', path.resolve(__dirname, './client/index.js')],
+  output: {
+    path: path.resolve(__dirname, './dist'),
+    filename: '[contenthash].bundle.js',
+    publicPath: '/'
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js|.jsx)$/,
+        exclude: /node_modules/,
+        use: ['babel-loader']
+      },
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        sideEffects: true
+      },
+      {
+        test: /\.(png|jpg|gif|woff|woff2|eot|ttf|svg|mp4)$/,
+        loader: 'file-loader',
+      },
+    ]
+  },
 
-    devtool: 'source-map',
-    resolve: {
-        extensions: ['*', '.js', '.jsx']
-    },
+  devtool: 'source-map',
+  resolve: {
+    extensions: ['*', '.js', '.jsx']
+  },
 
   devServer: {
     contentBase: path.resolve(__dirname, './dist'),
@@ -88,23 +88,24 @@ module.exports = {
       },
     }
   },
-    plugins: [
-        new webpack.HotModuleReplacementPlugin(),
-        //new ESLintPlugin(),
-        new HtmlWebpackPlugin({
-            template: 'client/index.html',
-            favicon: 'client/favicon.ico',
-        }),
-        new MiniCssExtractPlugin({
-            filename: "[contenthash].css",}),
-      new webpack.HotModuleReplacementPlugin(),
-      new CopyWebpackPlugin({
-        patterns: [
-          { from: "client/assets", to: "assets" }
-        ],
-      }),
-      new webpack.DefinePlugin({
-        'process.env': JSON.stringify(process.env),
-      }),
-    ],
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    //new ESLintPlugin(),
+    new HtmlWebpackPlugin({
+      template: 'client/index.html',
+      favicon: 'client/favicon.ico',
+    }),
+    new MiniCssExtractPlugin({
+      filename: "[contenthash].css",
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: "client/assets", to: "assets" }
+      ],
+    }),
+    new webpack.DefinePlugin({
+      'process.env': JSON.stringify(process.env),
+    }),
+  ],
 };

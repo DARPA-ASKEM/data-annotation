@@ -67,7 +67,7 @@ const getDatasets = (setDatasets, setDatasetsError, setDatasetsLoading) => {
   // pass along a timestamp to ensure that our url is different every time
   // otherwise the browser may cache the request and we won't see updates if someone
   // deprecates their dataset and comes back to this page
-  const url = 'http://localhost:8000/datasets/datasets?count=50';
+  const url = '/api/dojo/indicators/latest';
   axios.get(url)
     .then((response) => {
       setDatasetsLoading(false);

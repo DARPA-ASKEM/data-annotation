@@ -194,7 +194,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
 
       const result = axios({
         method: 'get',
-        url: `/api/dojo/indicators/${datasetId}/verbose`,
+        url: `/api/dojo/datasets/datasets/${datasetId}`,
       }).then((result) => {
 
         /* Set loaded dataset info, uploaded files data, and annotations */
