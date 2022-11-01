@@ -91,6 +91,7 @@ def create_indicator(payload: Dict[Any, Any]):
     return response.json()
 
 
+# UNMODIFIED
 @router.put("/indicators")
 def update_indicator(payload: IndicatorSchema.IndicatorMetadataSchema):
     indicator_id = payload.id
@@ -104,6 +105,7 @@ def update_indicator(payload: IndicatorSchema.IndicatorMetadataSchema):
     )
 
 
+# UNMODIFIED
 @router.patch("/indicators")
 def patch_indicator(
     payload: IndicatorSchema.IndicatorMetadataSchema, indicator_id: str
@@ -127,6 +129,7 @@ def get_latest_indicators(size=100):
     return dataArray.json()
 
 
+# UNMODIFIED
 @router.get("/indicators", response_model=DojoSchema.IndicatorSearchResult)
 def search_indicators(
     query: str = Query(None),
@@ -181,6 +184,7 @@ def get_indicators(indicator_id: str):
     return dataset.json()
 
 
+# UNMODIFIED
 @router.put("/indicators/{indicator_id}/publish")
 def publish_indicator(indicator_id: str):
     try:
@@ -198,6 +202,7 @@ def publish_indicator(indicator_id: str):
     )
 
 
+# UNMODIFIED
 @router.get("/indicators/{indicator_id}/download/csv")
 def get_csv(indicator_id: str, request: Request):
     try:
