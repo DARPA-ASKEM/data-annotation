@@ -357,7 +357,14 @@ def put_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
 
         body = json.loads(payload.json())
 
-        es.index(index="annotations", body=body, id=indicator_id)
+        existing_dataset = get_indicators(indicator_id)
+
+        existing_dataset["annotations"] = json.dumps(body)
+
+        patch_response = requests.patch(
+            f"http://data-store-api_api_1:8000/datasets/datasets/{indicator_id}",
+            json=existing_dataset,
+        )
 
         return Response(
             status_code=status.HTTP_201_CREATED,
@@ -388,7 +395,14 @@ def patch_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
 
         body = json.loads(payload.json(exclude_unset=True))
 
-        es.update(index="annotations", body={"doc": body}, id=indicator_id)
+        existing_dataset = get_indicators(indicator_id)
+
+        existing_dataset["annotations"] = json.dumps(body)
+
+        patch_response = requests.patch(
+            f"http://data-store-api_api_1:8000/datasets/datasets/{indicator_id}",
+            json=existing_dataset,
+        )
 
         return Response(
             status_code=status.HTTP_201_CREATED,
