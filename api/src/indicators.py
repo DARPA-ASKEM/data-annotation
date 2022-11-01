@@ -7,11 +7,13 @@ import time
 import zlib
 import uuid
 from datetime import datetime
+import tempfile
 from typing import Any, Dict, Generator, List, Optional
 from urllib.parse import urlparse
 
 import json
 import pandas as pd
+import requests
 
 from elasticsearch import Elasticsearch
 import pandas as pd
@@ -34,6 +36,7 @@ from src.settings import settings
 from src.dojo import search_and_scroll
 from src.utils import put_rawfile, get_rawfile, list_files
 from validation.IndicatorSchema import (
+    # DataRepresentationSchema,
     IndicatorMetadataSchema,
     QualifierOutput,
     Output,
@@ -54,25 +57,38 @@ def current_milli_time():
 
 
 @router.post("/indicators")
-def create_indicator(payload: IndicatorSchema.IndicatorMetadataSchema):
-    indicator_id = str(uuid.uuid4())
-    payload.id = indicator_id
-    payload.created_at = current_milli_time()
-    body = payload.json()
-    payload.published = False
+def create_indicator(payload: Dict[Any, Any]):
+    dataset_payload = {
+        "id": 0,
+        "name": payload["name"],
+        "url": payload["maintainer"]["website"],
+        "description": payload["description"],
+        "deprecated": False,
+        "sensitivity": payload["data_sensitivity"],
+        "quality": payload["data_quality"],
+        "annotations": "{}",
+    }
+    try:
+        dataset_payload["temporal_resolution"] = payload["temporal_resolution"]
+    except:
+        logger.debug("No temporal resolution")
+    try:
+        dataset_payload["geospatial_resolution"] = payload["spatial_resolution"]
+    except:
+        logger.debug("No spatial resolution")
 
-    es.index(index="indicators", body=body, id=indicator_id)
-    empty_annotations_payload = MetadataSchema.MetaModel(metadata={}).json()
-    es.index(index="annotations", body=empty_annotations_payload, id=indicator_id)
+    person_payload = {
+        "name": payload["maintainer"]["name"],
+        "email": payload["maintainer"]["email"],
+        "org": payload["maintainer"]["organization"],
+        "website": payload["maintainer"]["website"],
+        "is_registered": True,
+    }
 
-    return Response(
-        status_code=status.HTTP_201_CREATED,
-        headers={
-            "location": f"/api/indicators/{indicator_id}",
-            "content-type": "application/json",
-        },
-        content=body,
+    response = requests.post(
+        "http://data-store-api_api_1:8000/datasets/datasets", json=dataset_payload
     )
+    return response.json()
 
 
 @router.put("/indicators")
@@ -102,32 +118,13 @@ def patch_indicator(
     )
 
 
-@router.get(
-    "/indicators/latest", response_model=List[IndicatorSchema.IndicatorsSearchSchema]
-)
-def get_latest_indicators(size=10000):
-    q = {
-        "_source": [
-            "description",
-            "name",
-            "id",
-            "created_at",
-            "deprecated",
-            "maintainer.name",
-            "maintainer.email",
-        ],
-        "query": {
-            "bool": {
-                "must": [{"match_all": {}}],
-                "filter": [{"term": {"published": True}}],
-            }
-        },
-    }
-    results = es.search(index="indicators", body=q, size=size)["hits"]["hits"]
-    IndicatorsSchemaArray = []
-    for res in results:
-        IndicatorsSchemaArray.append(res.get("_source"))
-    return IndicatorsSchemaArray
+@router.get("/indicators/latest")
+def get_latest_indicators(size=100):
+    dataArray = requests.get(
+        f"http://data-store-api_api_1:8000/datasets/datasets?count={size}"
+    )
+    logger.warn(f"Data Array: {dataArray}")
+    return dataArray.json()
 
 
 @router.get("/indicators", response_model=DojoSchema.IndicatorSearchResult)
@@ -176,16 +173,12 @@ def search_indicators(
         return indicator_data
 
 
-@router.get(
-    "/indicators/{indicator_id}", response_model=IndicatorSchema.IndicatorMetadataSchema
-)
-def get_indicators(indicator_id: str) -> IndicatorSchema.IndicatorMetadataSchema:
-    try:
-        indicator = es.get(index="indicators", id=indicator_id)["_source"]
-    except Exception as e:
-        logger.exception(e)
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return indicator
+@router.get("/indicators/{indicator_id}")
+def get_indicators(indicator_id: str):
+    dataset = requests.get(
+        f"http://data-store-api_api_1:8000/datasets/datasets/{indicator_id}"
+    )
+    return dataset.json()
 
 
 @router.put("/indicators/{indicator_id}/publish")
@@ -464,9 +457,93 @@ def validate_date(payload: IndicatorSchema.DateValidationRequestSchema):
     }
 
 
+@router.get("/indicators/{indicator_id}/data")
+async def get_data(indicator_id: str):
+    """Get representation of dataset as 2d array (list of lists).
+
+    Args:
+        indicator_id (str): The UUID of the dataset to return a preview of.
+
+    Returns:
+        JSON: Returns a json object containing the preview for the dataset.
+    """
+    try:
+        rawfile_path = os.path.join(
+            settings.DATASET_STORAGE_BASE_URL, indicator_id, "raw_data.csv"
+        )
+        file = get_rawfile(rawfile_path)
+        df = pd.read_csv(file, delimiter=",").fillna("")
+
+        columns = [
+            "" if column.startswith("Unnamed: ") else column
+            for column in list(df.columns)
+        ]
+        records = [columns] + list(map(list, df.to_records(index=False)))
+
+        body = json.dumps(records)
+        return Response(
+            status_code=200,
+            headers={
+                "content-type": "application/json",
+            },
+            content=body,
+        )
+
+    except FileNotFoundError as e:
+        logger.exception(e)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        logger.exception(e)
+        return Response(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            headers={"msg": f"Error: {e}"},
+            content=f"Error fetching data",
+        )
+
+
+@router.post("/indicators/{indicator_id}/data")
+async def update_data(indicator_id: str, payload: List[List[Any]]):
+    """Update representation of dataset as 2d array (list of lists).
+
+    Args:
+        indicator_id (str): The UUID of the dataset to return a preview of.
+
+    Returns:
+        JSON: Returns a json object containing the preview for the dataset.
+    """
+    try:
+        rawfile_path = os.path.join(
+            settings.DATASET_STORAGE_BASE_URL, indicator_id, "raw_data.csv"
+        )
+        logger.warn(payload)
+        df = pd.DataFrame.from_records(data=payload[1:], columns=payload[0])
+        logger.warn(df)
+
+        with tempfile.NamedTemporaryFile("rb") as temp_csv:
+            df.to_csv(temp_csv.name, index=False)
+            put_rawfile(rawfile_path, temp_csv)
+
+        return True
+
+    except IOError as e:
+        logger.exception(e)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        logger.exception(e)
+        return Response(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            headers={"msg": f"Error: {e}"},
+            content=f"Error saving data",
+        )
+
+
 @router.post("/indicators/{indicator_id}/preview/{preview_type}")
 async def create_preview(
-    indicator_id: str, preview_type: IndicatorSchema.PreviewType, filename: Optional[str] = Query(None),
+    indicator_id: str,
+    preview_type: IndicatorSchema.PreviewType,
+    filename: Optional[str] = Query(None),
     filepath: Optional[str] = Query(None),
 ):
     """Get preview for a dataset.
@@ -479,19 +556,19 @@ async def create_preview(
     """
     try:
         if filename:
-            file_suffix_match = re.search(r'raw_data(_\d+)?\.', filename)
+            file_suffix_match = re.search(r"raw_data(_\d+)?\.", filename)
             if file_suffix_match:
-                file_suffix = file_suffix_match.group(1) or ''
+                file_suffix = file_suffix_match.group(1) or ""
             else:
-                file_suffix = ''
+                file_suffix = ""
         else:
-            file_suffix = ''
+            file_suffix = ""
         # TODO - Get all potential string files concatenated together using list file utility
         if preview_type == IndicatorSchema.PreviewType.processed:
             if filepath:
                 rawfile_path = os.path.join(
                     settings.DATASET_STORAGE_BASE_URL,
-                    filepath.replace(".csv", ".parquet.gzip")
+                    filepath.replace(".csv", ".parquet.gzip"),
                 )
             else:
                 rawfile_path = os.path.join(
@@ -516,9 +593,7 @@ async def create_preview(
 
         else:
             if filepath:
-                rawfile_path = os.path.join(
-                    settings.DATASET_STORAGE_BASE_URL, filepath
-                )
+                rawfile_path = os.path.join(settings.DATASET_STORAGE_BASE_URL, filepath)
             else:
                 rawfile_path = os.path.join(
                     settings.DATASET_STORAGE_BASE_URL, indicator_id, "raw_data.csv"
@@ -526,7 +601,9 @@ async def create_preview(
             file = get_rawfile(rawfile_path)
             df = pd.read_csv(file, delimiter=",")
 
-        obj = json.loads(df.sort_index().reset_index(drop=True).head(100).to_json(orient="index"))
+        obj = json.loads(
+            df.sort_index().reset_index(drop=True).head(100).to_json(orient="index")
+        )
         indexed_rows = [{"__id": key, **value} for key, value in obj.items()]
 
         return indexed_rows
