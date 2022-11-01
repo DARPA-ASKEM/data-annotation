@@ -15,7 +15,7 @@ import * as yup from 'yup';
 import get from 'lodash/get';
 
 import { withStyles } from '@material-ui/core/styles';
-import { DomainsAutocomplete } from '../components/ModelDetailForm';
+import DomainsAutocomplete from '../components/DomainsAutocomplete';
 
 import { Navigation } from '.';
 import { FormAwareTextField, FormAwareSelect } from './FormFields';
