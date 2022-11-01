@@ -267,10 +267,9 @@ def get_csv(indicator_id: str, request: Request):
 @router.put("/indicators/{indicator_id}/deprecate")
 def deprecate_indicator(indicator_id: str):
     try:
-        indicator = es.get(index="indicators", id=indicator_id)["_source"]
-        indicator["deprecated"] = True
-        es.index(index="indicators", id=indicator_id, body=indicator)
-
+        response = requests.post(
+            f"http://data-store-api_api_1:8000/datasets/datasets/deprecate/{indicator_id}"
+        )
     except Exception as e:
         logger.exception(e)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
@@ -297,7 +296,8 @@ def get_annotations(indicator_id: str) -> MetadataSchema.MetaModel:
         MetadataSchema.MetaModel: Returns the annotations pydantic schema for the dataset that contains a metadata dictionary and an annotations object validated via a nested pydantic schema.
     """
     try:
-        annotation = es.get(index="annotations", id=indicator_id)["_source"]
+        db_response = get_indicators(indicator_id)
+        annotation = db_response["annotations"]
         return annotation
     except Exception as e:
         logger.exception(e)
@@ -320,7 +320,14 @@ def post_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
 
         body = json.loads(payload.json())
 
-        es.index(index="annotations", body=body, id=indicator_id)
+        existing_dataset = get_indicators(indicator_id)
+
+        existing_dataset["annotations"] = json.dumps(body)
+
+        patch_response = requests.patch(
+            f"http://data-store-api_api_1:8000/datasets/datasets/{indicator_id}",
+            json=existing_dataset,
+        )
 
         return Response(
             status_code=status.HTTP_201_CREATED,
