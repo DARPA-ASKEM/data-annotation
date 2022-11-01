@@ -34,7 +34,7 @@ from validation import IndicatorSchema, DojoSchema, MetadataSchema
 from src.settings import settings
 
 from src.dojo import search_and_scroll
-from src.utils import put_rawfile, get_rawfile, list_files
+from src.utils import put_rawfile, get_rawfile, list_files, NpEncoder
 from validation.IndicatorSchema import (
     # DataRepresentationSchema,
     IndicatorMetadataSchema,

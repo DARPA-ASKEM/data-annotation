@@ -64,7 +64,7 @@ function DatasetSummaryDetails({ dataset }) {
             <CollapseText childrenText={dataset.description} collapsedSize={40} />
           </Typography>
           <Typography variant="body2" className={classes.subsection}>
-            <b> Created Date: </b> {new Date(dataset.created_at).toLocaleDateString()}
+            <b> Created Date: </b> {new Date(dataset.timestamp).toLocaleDateString()}
           </Typography>
 
           <Typography variant="body2" className={classes.subsection}>

@@ -10,7 +10,10 @@ const fetcher = async (url) => {
     throw error;
   }
 
-  return response.json();
+  const rjson = response.json();
+  console.log('RESPONSE : ', rjson);
+
+  return rjson;
 };
 
 export function useModel(modelId) {

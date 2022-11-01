@@ -3,6 +3,7 @@ import logging
 import uvicorn
 from elasticsearch import Elasticsearch
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from src import (
     data,
@@ -21,6 +22,13 @@ api.include_router(indicators.router, tags=["Indicators"])
 api.include_router(dkg.router, tags=["DKG"])
 api.include_router(ui.router, prefix="/ui", tags=["Dojo UI"])
 api.include_router(data.router, tags=["Data"])
+api.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def setup_elasticsearch_indexes():

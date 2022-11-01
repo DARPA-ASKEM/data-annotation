@@ -448,3 +448,20 @@ class DateValidationResponseSchema(BaseModel):
         description="Indicates if format provided (and returned) matches the values sent in",
         examples=[True, False],
     )
+
+
+class DataRepresentationSchema(BaseModel):
+    columns: List[str] = Field(
+        ...,
+        description="List of the columns for the dataset",
+        examples=[["date", "lat", "lon", "value", "type"]],
+    )
+    records: List[List[Any]] = Field(
+        ...,
+        description="List of list",
+        examples=[[
+            ["2012-04-18", "60.4982", "-10.6151", "18.2", "auto"],
+            ["2012-04-19", "60.4982", "-10.6151", "15.4", "auto"],
+            ["2012-04-20", "60.4982", "-10.6151", "13.1", "manual"],
+        ]],
+    )
