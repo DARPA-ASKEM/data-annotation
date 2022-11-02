@@ -53,6 +53,7 @@ function GeographyListModal({ geography }) {
   return (
     <div>
 
+      {/* eslint-disable-next-line react/no-unknown-property */}
       <div align="right">
         <Button
           className={classes.buttons}

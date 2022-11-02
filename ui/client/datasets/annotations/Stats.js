@@ -38,7 +38,7 @@ function formatStatNumber(value, sigFigures) {
 
     const parsed = Number(value);
 
-    if (isNaN(parsed)) {
+    if (Number.isNaN(parsed)) {
       return value;
     }
 
@@ -76,8 +76,8 @@ function loadConfig(labels, datasets) {
       plugins: {
         tooltip: {
           callbacks: {
-            title: (datasets) => {
-              const dataset = datasets[0];
+            title: (innerDatasets) => {
+              const dataset = innerDatasets[0];
               const currentIdx = dataset.dataIndex;
               const currentLabel = dataset.label;
               const nextLabel = labels[currentIdx + 1];
@@ -144,7 +144,7 @@ function loadConfig(labels, datasets) {
           },
           // Yes Label:
           ticks: {
-            callback(val, index) {
+            callback(val) {
               const label = this.getLabelForValue(val);
               return formatStatNumber(label, 2);
             },

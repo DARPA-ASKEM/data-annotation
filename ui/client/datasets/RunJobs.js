@@ -9,7 +9,6 @@ import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
 import { Navigation } from '.';
 
 const RunJobs = withStyles(({ spacing }) => ({
@@ -59,6 +58,7 @@ const RunJobs = withStyles(({ spacing }) => ({
   const [jobData, setJobData] = useState(null);
   const [jobIndex, setJobIndex] = useState(0);
 
+  // eslint-disable-next-line no-unused-vars
   const updateJobData = ({ firstRun, ...args } = {}) => {
     const job = jobs[jobIndex];
     // const job_id = job.id;
@@ -117,7 +117,7 @@ const RunJobs = withStyles(({ spacing }) => ({
       } else {
         handleNext({});
       }
-    } else if (jobData.status == 'failed') {
+    } else if (jobData.status === 'failed') {
       console.log('failed');
     } else {
       // No result, wait for an update

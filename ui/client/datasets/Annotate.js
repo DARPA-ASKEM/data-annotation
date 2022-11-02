@@ -198,6 +198,7 @@ export default withStyles(({ spacing }) => ({
         multiPartData={multiPartData}
         setMultiPartData={setMultiPartData}
         columnStats={columnStats}
+        // eslint-disable-next-line react/jsx-no-bind
         validateDateFormat={validateDateFormat}
         fieldsConfig={fieldsConfig}
         addingAnnotationsAllowed={addingAnnotationsAllowed}
@@ -205,6 +206,7 @@ export default withStyles(({ spacing }) => ({
 
       <Navigation
         disabled={submitLoading}
+        // eslint-disable-next-line react/jsx-no-bind
         handleNext={next}
         handleBack={handleBack}
       />
@@ -215,7 +217,9 @@ export default withStyles(({ spacing }) => ({
         warnings={warnings}
         onDecline={() => setPreviewPromptOpen(false)}
         onAccept={() => {
-          if (onSubmit) { onSubmit({ annotations, setAnnotations, handleNext }); } else { submitToBackend(); }
+          if (onSubmit) {
+            onSubmit({ annotations, setAnnotations, handleNext });
+          } else { submitToBackend(); }
         }}
       />
 

@@ -13,7 +13,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import ColumnPanel from '../ColumnPanel';
 
-import { calcPointerLocation, groupColumns } from './helpers';
+import { groupColumns } from './helpers';
 import Header from './Header';
 
 const rowsPerPageOptions = [25, 50, 100];
@@ -295,6 +295,7 @@ export default withStyles(({ palette }) => ({
       <ColumnPanel
         anchorPosition={anchorPosition}
         onClose={toggleDrawer}
+        // eslint-disable-next-line react/jsx-no-bind
         onSubmit={onAnnotationSave}
 
         columns={formattedColumns}

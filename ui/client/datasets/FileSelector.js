@@ -327,6 +327,7 @@ const FileInput = withStyles(({ spacing }) => ({
       helperText={get(meta, 'touched') && get(meta, 'error')}
       error={get(meta, 'error') && get(meta, 'touched')}
       required={required || (isFunction(requiredFn) ? requiredFn(name) : false)}
+      // eslint-disable-next-line react/jsx-no-bind
       onChange={handleChange}
       {...props}
     />

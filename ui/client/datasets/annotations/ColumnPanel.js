@@ -426,7 +426,8 @@ export default withStyles(({ palette, spacing, breakpoints }) => ({
                         // which can't be true. See datasets/README definitions for questions.
                         cleanValues.multiPartBase = columnName;
 
-                        targetColumnName = name; // the name for new multipart column we just created
+                        // the name for new multipart column we just created
+                        targetColumnName = name;
 
                         setMultiPartData({
                           ...multiPartData,
@@ -493,6 +494,7 @@ export default withStyles(({ palette, spacing, breakpoints }) => ({
                           <div className={classes.buttonContainer}>
                             <Button
                               color="secondary"
+                              // eslint-disable-next-line react/jsx-no-bind
                               onClick={clearColumnAnnotations}
                               {...fieldsConfig('CLEAR_BUTTON_JATAWARE_INTERNAL')}
                             >

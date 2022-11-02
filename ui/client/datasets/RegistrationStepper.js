@@ -8,7 +8,6 @@ import Typography from '@material-ui/core/Typography';
 
 import cloneDeep from 'lodash/cloneDeep';
 import get from 'lodash/get';
-import map from 'lodash/map';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -72,8 +71,6 @@ const useStyles = makeStyles(({ spacing, breakpoints }) => ({
     flex: 1,
   }
 }));
-
-const getSteps = (flow) => map(flow.steps, 'label');
 
 const defaultDatasetState = {
   id: null,
@@ -255,7 +252,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
   // We fetch once either on page load, or once we move to a different step to get freshest data
   // TODO: this needs the additional commented out deps, but additional logic is needed to prevent
   // extra unnecessary fetches (and to make sure it doesn't break anything)
-  }, [activeStep]);//, datasetId, flowslug, location]);
+  }, [activeStep]);// , datasetId, flowslug, location]);
 
   const handleBack = () => {
     let prevStep = flow.steps[activeStep - 1];

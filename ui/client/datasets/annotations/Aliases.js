@@ -31,6 +31,7 @@ export const Aliases = withStyles(() => ({
     alignItems: 'center'
   }
 }))(({
+  // eslint-disable-next-line no-unused-vars
   classes, aliases, disabled, ...props
 }) => (
   <FieldArray

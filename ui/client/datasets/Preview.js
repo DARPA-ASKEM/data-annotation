@@ -100,7 +100,8 @@ export default withStyles(({ spacing }) => ({
       datasetInfo?.qualifier_outputs || []).filter((output) => (output.uuid !== file_uuid));
 
     const column_index = Object.fromEntries(
-      [].concat(...Object.values(annotations.annotations)).map((obj) => ([obj.name, obj])));
+      [].concat(...Object.values(annotations.annotations)).map((obj) => ([obj.name, obj]))
+    );
 
     const resolution = {};
     if (datasetInfo.temporal_resolution) {
