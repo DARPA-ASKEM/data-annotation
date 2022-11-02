@@ -34,14 +34,14 @@ services:
     networks:
       - dojo-stack
     healthcheck:
-      interval: 10s
-      retries: 5
+      interval: 3s
+      retries: 20
       test:
         - CMD
         - curl
         - --fail
         - http://localhost:9200/_cluster/health
-      timeout: 10s
+      timeout: 3s
   redis:
     env_file:
       - envfile
