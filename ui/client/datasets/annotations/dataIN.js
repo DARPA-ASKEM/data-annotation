@@ -221,7 +221,7 @@ export function formatAnnotationsIN(serverAnnotations) {
   }
   // Delete individual multi-part members, since we'll only use the on virtual multi-part
   // annotation for purposes of UI
-  for (const [_, members] of Object.entries(multiPartData)) {
+  for (const [members] of Object.entries(multiPartData)) {
     members.forEach((member) => {
       delete acc[member];
     });

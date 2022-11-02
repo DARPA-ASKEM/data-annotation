@@ -56,6 +56,7 @@ export default withStyles(({ spacing }) => ({
   const [columns, setColumns] = useState([]);
   const [previewData, setPreviewData] = useState([]);
 
+  // eslint-disable-next-line no-shadow
   function PublishDataset({ datasetInfo }) {
     axios.put(`/api/dojo/indicators/${datasetInfo.id}/publish`)
       .then(handleNext)
@@ -64,8 +65,8 @@ export default withStyles(({ spacing }) => ({
       });
   }
 
-  // function PublishModelOutput({datasetInfo, annotations, handleNext, defaultHandleNext, ...props}={}) {
   function PublishModelOutput({
+    // eslint-disable-next-line no-shadow, no-unused-vars
     datasetInfo, annotations, onSubmit, ...props
   } = {}) {
     const { file_uuid } = annotations.metadata;
@@ -81,15 +82,25 @@ export default withStyles(({ spacing }) => ({
       prev_id: null,
     }];
 
-    const isQualifier = (annotation) => (Boolean(annotation.qualify?.length || annotation.qualifies?.length || annotation.qualifier_outputs?.length));
-    const isPrimary = (annotation) => (Boolean(annotation.primary_date === true || annotation.primary_geo === true));
-    // An annotation is a feature if it doesn't qualify anything and is not a primary date or primary geo
+    const isQualifier = (annotation) => (
+      Boolean(annotation.qualify?.length
+        || annotation.qualifies?.length
+        || annotation.qualifier_outputs?.length)
+    );
+    const isPrimary = (annotation) => (
+      Boolean(annotation.primary_date === true
+        || annotation.primary_geo === true)
+    );
+    // An annotation is a feature if it doesn't qualify anything
+    // and is not a primary date or primary geo
     const isFeature = (annotation) => (!(isQualifier(annotation) || isPrimary(annotation)));
 
     const outputs = (datasetInfo?.outputs || []).filter((output) => (output.uuid !== file_uuid));
-    const qualifier_outputs = (datasetInfo?.qualifier_outputs || []).filter((output) => (output.uuid !== file_uuid));
+    const qualifier_outputs = (
+      datasetInfo?.qualifier_outputs || []).filter((output) => (output.uuid !== file_uuid));
 
-    const column_index = Object.fromEntries([].concat(...Object.values(annotations.annotations)).map((obj) => ([obj.name, obj])));
+    const column_index = Object.fromEntries(
+      [].concat(...Object.values(annotations.annotations)).map((obj) => ([obj.name, obj])));
 
     const resolution = {};
     if (datasetInfo.temporal_resolution) {
@@ -133,7 +144,8 @@ export default withStyles(({ spacing }) => ({
         name: annotation.name,
         display_name: annotation.display_name,
         description: annotation.description,
-        type: typeRemapper[annotation.date_type] || annotation.date_type, // annotation.date_type, // OutputType
+        // annotation.date_type, // OutputType
+        type: typeRemapper[annotation.date_type] || annotation.date_type,
         unit: null, // annotation.units,
         unit_description: null, // annotation.units_description,
         related_features: [],
@@ -147,7 +159,8 @@ export default withStyles(({ spacing }) => ({
         name: annotation.name,
         display_name: annotation.display_name,
         description: annotation.description,
-        type: typeRemapper[annotation.geo_type] || annotation.geo_type, // annotation.geo_type, // OutputType
+        // annotation.geo_type, // OutputType
+        type: typeRemapper[annotation.geo_type] || annotation.geo_type,
         unit: null, // annotation.units,
         unit_description: null, // annotation.units_description,
         related_features: [],
@@ -170,6 +183,7 @@ export default withStyles(({ spacing }) => ({
       })),
     );
 
+    // eslint-disable-next-line no-unused-vars
     const updates = Promise.all([
       axios.post('/api/dojo/dojo/outputfile', outputPayload),
       axios.patch(`/api/dojo/models/${datasetInfo.id}`,
@@ -218,7 +232,7 @@ export default withStyles(({ spacing }) => ({
         setPromptMessage('Error loading preview data.');
       })
       .finally(() => { setLoading(false); });
-  }, [datasetInfo]);
+  }, [datasetInfo, rawFileName, useFilepath]);
 
   return (
 

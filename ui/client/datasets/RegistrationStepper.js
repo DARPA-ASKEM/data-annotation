@@ -117,10 +117,10 @@ function getRawFileNameFromLocation(location) {
  * Given we're in the Dataset Update Metadata flow, we should
  * find and use the first raw file uploaded (which may vary by extension).
  *
- * NOTE Only potential "bug" (user error?) being, if the user first uploads 1 file, then somehow does
- * not finish registration and uses this ID to navigate to append flow, we might
- * _append_ a second file, then go through register flow using the second file,
- * which would mean the update flow would be borked (since it wants to use the first file, not the second.)
+ * NOTE Only potential "bug" (user error?) being, if the user first uploads 1 file, then somehow
+ * does not finish registration and uses this ID to navigate to append flow, we might
+ * _append_ a second file, then go through register flow using the second file, which would
+ *  mean the update flow would be borked (since it wants to use the first file, not the second.)
  * TODO verify note above.
  * */
 function getUpdateRawFileName(uploadedRawFileNames) {
@@ -136,13 +136,7 @@ function getUpdateRawFileName(uploadedRawFileNames) {
 
 const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
   const { flowslug, step, datasetId } = match?.params;
-  updateLocation = updateLocation == undefined ? true : Boolean(updateLocation);
-
-  // Return "404" immediately if the flow slug doesn't exist
-  if (!flows.hasOwnProperty(flowslug)) {
-    // TODO: Standardize 404 not found handling
-    return <h2>404 Not Found</h2>;
-  }
+  const updateLocationBool = updateLocation === undefined ? true : Boolean(updateLocation);
 
   const history = useHistory();
   const classes = useStyles();
@@ -168,7 +162,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
       if (stepNum < 0) stepNum = 0;
     }
     setActiveStep(stepNum);
-  }, [location]);
+  }, [location, datasetId, flow.steps, step]);
 
   const [datasetInfo, setDatasetInfo] = React.useState(() => cloneDeep(defaultDatasetState));
 
@@ -190,13 +184,14 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
     }
 
     if (datasetId) {
+      // eslint-disable-next-line no-unused-vars
       const result = axios({
         method: 'get',
         url: `/api/dojo/indicators/${datasetId}/verbose`,
-      }).then((result) => {
+      }).then((response) => {
         /* Set loaded dataset info, uploaded files data, and annotations */
 
-        const uploadedFiles = get(result, 'data.annotations.metadata.files', {});
+        const uploadedFiles = get(response, 'data.annotations.metadata.files', {});
 
         if (!rawFileNameToUse) {
           const allRawFileNames = Object.keys(uploadedFiles);
@@ -204,13 +199,14 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
            * which means we should display the previously uploaded file
            * (we only upload files when a created dataset exists). If there's
            * no query param, there should be AT LEAST 1 uploaded file.
-           * If there is only one uploaded file, we can safely assume and help the user by displaying the
-           * file. If there's more than 1 file, we have no way to know which file they should work
-           * with, except if in the `filename` url search param.
+           * If there is only one uploaded file, we can safely assume and help the user by
+           * displaying the file. If there's more than 1 file, we have no way to know which file
+           * they should work with, except if in the `filename` url search param.
            * In the future we could prompt the user to select which previously uploaded
            * file they wish to work with.
            */
           if ((flowslug === 'register') && allRawFileNames.length === 1) {
+            // eslint-disable-next-line prefer-destructuring
             rawFileNameToUse = allRawFileNames[0];
           }
 
@@ -225,7 +221,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
         setUploadedFilesData(uploadedFiles);
 
         setDatasetInfo({
-          ...result.data.indicators,
+          ...response.data.indicators,
           fileData: {
             raw: {
               uploaded: Boolean(uploadedFileName),
@@ -235,7 +231,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
           }
         });
 
-        setAnnotations(result.data.annotations);
+        setAnnotations(response.data.annotations);
       }).catch((e) => {
         const { response } = e;
 
@@ -256,11 +252,12 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
         setDisplayError(true);
       });
     }
-  }, [activeStep]); // We fetch once either on page load, or once we move to a different step to get freshest data
+  // We fetch once either on page load, or once we move to a different step to get freshest data
+  // TODO: this needs the additional commented out deps, but additional logic is needed to prevent
+  // extra unnecessary fetches (and to make sure it doesn't break anything)
+  }, [activeStep]);//, datasetId, flowslug, location]);
 
-  const steps = getSteps(flow);
-
-  const handleBack = (values) => {
+  const handleBack = () => {
     let prevStep = flow.steps[activeStep - 1];
     if (prevStep.component.SKIP) {
       prevStep = flow.steps[activeStep - 2];
@@ -268,7 +265,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
 
     const newPath = `/datasets/${flowslug}/${prevStep.slug}/${datasetInfo.id}`;
 
-    if (updateLocation) {
+    if (updateLocationBool) {
       history.push(newPath + history.location.search);
     } else {
       setActiveStep(activeStep - 1);
@@ -291,7 +288,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
       setRawFileName(filename);
     }
 
-    if (updateLocation) {
+    if (updateLocationBool) {
       if (currentStep.component.SKIP) {
         history.replace(newPath);
       } else {
@@ -326,6 +323,12 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
       />
     );
   };
+
+  // Return "404" immediately if the flow slug doesn't exist
+  if (!flows.hasOwnProperty(flowslug)) {
+    // TODO: Standardize 404 not found handling
+    return <h2>404 Not Found</h2>;
+  }
 
   return (
     <div className={classes.root}>

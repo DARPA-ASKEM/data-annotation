@@ -49,6 +49,7 @@ export default withStyles(() => ({
    * a) So that we don't call the backend http validation unnecessarily
    * b) So that, when memoizing, we don't create new memoize function on each run and waste memory
    */
+// TODO: can't find quick fix for this callback deps issue
   const validate = React
     .useCallback(
       memoize(validateAlways),
@@ -70,6 +71,7 @@ export default withStyles(() => ({
           helpers.setError(invalid);
         }
       });
+// TODO: including deps here causes infinite depth issue
   }, []);
 
   return (

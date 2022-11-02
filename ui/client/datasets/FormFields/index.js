@@ -33,7 +33,8 @@ export const FormAwareTextField = withStyles((theme) => ({
     }
   },
 }))(({
-  classes, name, label, requiredFn, placeholder, inputProps = {}, InputProps = {}, required, ...props
+  classes, name, label, requiredFn, placeholder,
+  inputProps = {}, InputProps = {}, required, ...props
 }) => {
   const [field, meta] = useField({ ...props, name });
 
@@ -48,6 +49,7 @@ export const FormAwareTextField = withStyles((theme) => ({
         style: { borderRadius: 0 },
         ...InputProps
       }}
+      // eslint-disable-next-line react/jsx-no-duplicate-props
       inputProps={{
         'aria-label': label,
         ...inputProps
@@ -146,6 +148,7 @@ export const FormAwareSelect = ({
       ...InputProps,
       style: { borderRadius: 0 }
     }}
+    // eslint-disable-next-line react/jsx-no-duplicate-props
     inputProps={{
       'aria-label': props.label,
       ...inputProps

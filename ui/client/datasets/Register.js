@@ -11,9 +11,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
-import get from 'lodash/get';
-import isEmpty from 'lodash/isEmpty';
-
 import { Navigation } from '.';
 
 import {
@@ -47,12 +44,13 @@ export default withStyles(({ spacing }) => ({
   }
 }))(({
   classes, datasetInfo, stepTitle, setDatasetInfo, setAnnotations,
+  // eslint-disable-next-line no-unused-vars
   annotations, handleNext, handleBack, rawFileName, uploadedFilesData, ...props
 }) => {
   // This is the file metadata as we fill in the form (not the one stored in services):
   const [fileMetadata, setFileMetadata] = useState({});
 
-  const back = (event) => {}; // Do nothing
+  const back = () => {}; // Do nothing
 
   /**
    * Creates or updates a dataset (indicator) resource in the backend
@@ -120,6 +118,8 @@ export default withStyles(({ spacing }) => ({
           setSubmitting(true);
 
           if (values['x-resolution'] && values['y-resolution']) {
+            // If only Formik exposed access to a setter here
+            // eslint-disable-next-line no-param-reassign
             values.spatial_resolution = [
               values['x-resolution'],
               values['y-resolution']
@@ -150,7 +150,7 @@ export default withStyles(({ spacing }) => ({
           }
 
           createAndUploadDataset()
-            .then(({ dataset, rawFileName }) => handleNext({ dataset, filename: rawFileName }));
+            .then(({ dataset, rawFileName: filename }) => handleNext({ dataset, filename }));
         }}
       >
         {(formik) => (

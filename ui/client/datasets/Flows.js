@@ -83,6 +83,7 @@ const BasicRegistrationFlow = {
           {
             id: 'mixmasta_processors.run_mixmasta',
             handler: async ({
+              // eslint-disable-next-line no-unused-vars
               result, annotations, setAnnotations, datasetInfo, ...extra
             }) => {
               const updatedDataset = {
@@ -141,6 +142,7 @@ const AppendFlow = {
           {
             id: 'mixmasta_processors.run_mixmasta',
             handler: async ({
+              // eslint-disable-next-line no-unused-vars
               result, annotations, setAnnotations, datasetInfo, ...extra
             }) => {
               const updatedDataset = {
