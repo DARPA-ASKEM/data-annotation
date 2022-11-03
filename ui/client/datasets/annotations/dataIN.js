@@ -212,16 +212,19 @@ export function formatAnnotationsIN(serverAnnotations) {
 
   // Inspect date multi-part data and collect dependent Date members format
   for (const [multiPartName, members] of Object.entries(multiPartData)) {
-    if (acc[multiPartName]['date.multi-column']) {
-      members.forEach((member) => {
+    if (acc[multiPartName]['date.multi-column'] && members.length) {
+      members?.forEach((member) => {
         const data = acc[member];
         acc[multiPartName][`date.multi-column.${data.date_type}.format`] = data.time_format;
       });
     }
   }
+
   // Delete individual multi-part members, since we'll only use the on virtual multi-part
   // annotation for purposes of UI
-  for (const [members] of Object.entries(multiPartData)) {
+  // this _ is being used to extract the members array from multiPartData (rather than the key)
+  // eslint-disable-next-line no-unused-vars
+  for (const [_, members] of Object.entries(multiPartData)) {
     members.forEach((member) => {
       delete acc[member];
     });
