@@ -270,6 +270,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
   };
 
   const handleNext = ({
+    // eslint-disable-next-line no-shadow, no-unused-vars
     dataset, filename, filepath, ...props
   } = {}) => {
     const currentStep = flow.steps[activeStep];
@@ -322,6 +323,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
   };
 
   // Return "404" immediately if the flow slug doesn't exist
+  // eslint-disable-next-line no-prototype-builtins
   if (!flows.hasOwnProperty(flowslug)) {
     // TODO: Standardize 404 not found handling
     return <h2>404 Not Found</h2>;
@@ -333,19 +335,19 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
 
         <div className={classes.stepperWrapper}>
           <Stepper activeStep={activeStep}>
-            {flow.steps.map((step, index) => (
+            {flow.steps.map((flowStep, index) => (
               <Tooltip
                 classes={{
                   tooltip: classes.stepperTooltip,
                   popper: classes.stepperTooltipWraper
                 }}
-                key={step.label}
-                title={step.label}
+                key={flowStep.label}
+                title={flowStep.label}
               >
                 <Step completed={index < activeStep}>
                   <StepLabel>
                     <Typography variant="h5">
-                      {step.label}
+                      {flowStep.label}
                     </Typography>
                   </StepLabel>
                 </Step>
