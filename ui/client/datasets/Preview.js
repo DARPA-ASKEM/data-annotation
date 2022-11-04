@@ -47,7 +47,7 @@ export default withStyles(({ spacing }) => ({
     marginBottom: spacing(5),
   }
 }))(({
-  classes, handleNext, datasetInfo, handleBack, stepTitle, rawFileName, useFilepath=false, 
+  classes, handleNext, datasetInfo, handleBack, stepTitle, rawFileName, useFilepath = false,
   handleNextFunc, ...props
 }) => {
 
@@ -58,16 +58,17 @@ export default withStyles(({ spacing }) => ({
   const [columns, setColumns] = useState([]);
   const [previewData, setPreviewData] = useState([]);
 
-  function PublishDataset({datasetInfo}) {
-    axios.put(`/api/dojo/indicators/${datasetInfo.id}/publish`)
-      .then(handleNext)
-      .catch(() => {
-        setPromptMessage('Error submitting data to Dojo. Please contact the Dojo team.');
-      });
+  function PublishDataset({ datasetInfo }) {
+    console.log("Dataset published");
+    // axios.put(`/api/dojo/indicators/${datasetInfo.id}/publish`)
+    //   .then(handleNext)
+    //   .catch(() => {
+    //     setPromptMessage('Error submitting data to Dojo. Please contact the Dojo team.');
+    //   });
   };
 
   // function PublishModelOutput({datasetInfo, annotations, handleNext, defaultHandleNext, ...props}={}) {
-  function PublishModelOutput({datasetInfo, annotations, onSubmit, ...props}={}) {
+  function PublishModelOutput({ datasetInfo, annotations, onSubmit, ...props } = {}) {
     const file_uuid = annotations.metadata.file_uuid;
     const [output_directory, path] = splitOnWildCard(annotations.metadata.filename);
     const outputPayload = [{
@@ -122,7 +123,7 @@ export default withStyles(({ spacing }) => ({
         is_primary: false,
         data_resolution: resolution, // Resolution
         alias: column_index[annotation.name]?.aliases,
-        choices: null,  
+        choices: null,
         min: null,
         max: null,
         ontologies: null,
@@ -180,7 +181,7 @@ export default withStyles(({ spacing }) => ({
 
     const updates = Promise.all([
       axios.post(`/api/dojo/dojo/outputfile`, outputPayload),
-      axios.patch(`/api/dojo/models/${datasetInfo.id}`, 
+      axios.patch(`/api/dojo/models/${datasetInfo.id}`,
         {
           outputs: outputs.concat(model_outputs),
           qualifier_outputs: qualifier_outputs.concat(model_qualifier_outputs),
@@ -258,7 +259,7 @@ export default withStyles(({ spacing }) => ({
 
       <Navigation
         label="Submit to Dojo"
-        handleNext={() => nextHandlers[handleNextFunc]({datasetInfo, rawFileName, ...props})}
+        handleNext={() => nextHandlers[handleNextFunc]({ datasetInfo, rawFileName, ...props })}
         handleBack={handleBack}
       />
 

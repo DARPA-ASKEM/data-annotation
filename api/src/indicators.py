@@ -58,6 +58,22 @@ def current_milli_time():
 
 @router.post("/indicators")
 def create_indicator(payload: Dict[Any, Any]):
+
+    person_payload = {
+        "id": 0,
+        "name": payload["maintainer"]["name"],
+        "email": payload["maintainer"]["email"],
+        "org": payload["maintainer"]["organization"],
+        "website": payload["maintainer"]["website"],
+        "is_registered": True,
+    }
+
+    persons_response = requests.post(
+        "http://data-service_api_1:8000/persons", json=person_payload
+    )
+
+    p_response_obj = persons_response.json()
+
     dataset_payload = {
         "id": 0,
         "name": payload["name"],
@@ -67,6 +83,7 @@ def create_indicator(payload: Dict[Any, Any]):
         "sensitivity": payload["data_sensitivity"],
         "quality": payload["data_quality"],
         "annotations": "{}",
+        "maintainer": p_response_obj["id"],
     }
     try:
         dataset_payload["temporal_resolution"] = payload["temporal_resolution"]
@@ -77,31 +94,48 @@ def create_indicator(payload: Dict[Any, Any]):
     except:
         logger.debug("No spatial resolution")
 
-    person_payload = {
-        "name": payload["maintainer"]["name"],
-        "email": payload["maintainer"]["email"],
-        "org": payload["maintainer"]["organization"],
-        "website": payload["maintainer"]["website"],
-        "is_registered": True,
-    }
-
     response = requests.post(
-        "http://data-store-api_api_1:8000/datasets/datasets", json=dataset_payload
+        "http://data-service_api_1:8000/datasets/datasets", json=dataset_payload
     )
-    return response.json()
+
+    response_obj = response.json()
+
+    # association_payload = {
+    #     "id": 0,
+    #     "person_id": p_response_obj["id"],
+    #     "asset_id": response_obj["id"],
+    #     "type": "dataset",
+    #     "role": "maintainer",
+    # }
+
+    # association_response = requests.post(
+    #     "http://data-service_api_1:8000/associations",
+    #     json=association_payload,
+    # )
+
+    return response_obj
 
 
-# UNMODIFIED
 @router.put("/indicators")
-def update_indicator(payload: IndicatorSchema.IndicatorMetadataSchema):
-    indicator_id = payload.id
-    payload.created_at = current_milli_time()
-    body = payload.json()
-    es.index(index="indicators", body=body, id=indicator_id)
+def update_indicator(
+    payload: Dict[Any, Any]
+):  # IndicatorSchema.IndicatorMetadataSchema
+
+    id = payload["id"]
+    dataset_payload = {**payload}
+    dataset_payload["annotations"] = json.dumps(dataset_payload["annotations"])
+
+    response = requests.patch(
+        f"http://data-service_api_1:8000/datasets/datasets/{id}",
+        json=dataset_payload,
+    )
+
+    response_obj = response.json()
+
     return Response(
         status_code=status.HTTP_200_OK,
-        headers={"location": f"/api/indicators/{indicator_id}"},
-        content=f"Updated indicator with id = {indicator_id}",
+        headers={"location": f"/api/indicators/{id}"},
+        content=f"Updated indicator with id = {id}",
     )
 
 
@@ -123,7 +157,7 @@ def patch_indicator(
 @router.get("/indicators/latest")
 def get_latest_indicators(size=100):
     dataArray = requests.get(
-        f"http://data-store-api_api_1:8000/datasets/datasets?count={size}"
+        f"http://data-service_api_1:8000/datasets/datasets?count={size}"
     )
     logger.warn(f"Data Array: {dataArray}")
     return dataArray.json()
@@ -179,7 +213,7 @@ def search_indicators(
 @router.get("/indicators/{indicator_id}")
 def get_indicators(indicator_id: str):
     dataset = requests.get(
-        f"http://data-store-api_api_1:8000/datasets/datasets/{indicator_id}"
+        f"http://data-service_api_1:8000/datasets/datasets/{indicator_id}"
     )
     return dataset.json()
 
@@ -268,7 +302,7 @@ def get_csv(indicator_id: str, request: Request):
 def deprecate_indicator(indicator_id: str):
     try:
         response = requests.post(
-            f"http://data-store-api_api_1:8000/datasets/datasets/deprecate/{indicator_id}"
+            f"http://data-service_api_1:8000/datasets/datasets/deprecate/{indicator_id}"
         )
     except Exception as e:
         logger.exception(e)
@@ -325,7 +359,7 @@ def post_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
         existing_dataset["annotations"] = json.dumps(body)
 
         patch_response = requests.patch(
-            f"http://data-store-api_api_1:8000/datasets/datasets/{indicator_id}",
+            f"http://data-service_api_1:8000/datasets/datasets/{indicator_id}",
             json=existing_dataset,
         )
 
@@ -362,9 +396,35 @@ def put_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
         existing_dataset["annotations"] = json.dumps(body)
 
         patch_response = requests.patch(
-            f"http://data-store-api_api_1:8000/datasets/datasets/{indicator_id}",
+            f"http://data-service_api_1:8000/datasets/datasets/{indicator_id}",
             json=existing_dataset,
         )
+
+        for feature in body["annotations"]["feature"]:
+            logger.info(feature)
+            if "qualifies" in feature:
+                qualifier_payload = {
+                    "id": 0,
+                    "dataset_id": indicator_id,
+                    "description": feature["description"],
+                    "display_name": feature["display_name"],
+                    "name": feature["name"],
+                    "value_type": feature["feature_type"],
+                }
+                qualifier_response = requests.post(
+                    f"http://data-service_api_1:8000/qualifiers", json=qualifier_payload
+                )
+            feature_payload = {
+                "id": 0,
+                "dataset_id": indicator_id,
+                "description": feature["description"],
+                "display_name": feature["display_name"],
+                "name": feature["name"],
+                "value_type": feature["feature_type"],
+            }
+            feature_response = requests.post(
+                f"http://data-service_api_1:8000/features", json=feature_payload
+            )
 
         return Response(
             status_code=status.HTTP_201_CREATED,
@@ -395,14 +455,53 @@ def patch_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
 
         body = json.loads(payload.json(exclude_unset=True))
 
+        logger.warn(f"Annotations PATCH: {body}")
+
         existing_dataset = get_indicators(indicator_id)
 
         existing_dataset["annotations"] = json.dumps(body)
 
         patch_response = requests.patch(
-            f"http://data-store-api_api_1:8000/datasets/datasets/{indicator_id}",
+            f"http://data-service_api_1:8000/datasets/datasets/{indicator_id}",
             json=existing_dataset,
         )
+
+        try:
+            qualifier_list = []
+            for feature in body["annotations"]["feature"]:
+                logger.info(feature)
+                if feature["qualifies"]:
+                    qualifier_list.append(feature)
+                feature_payload = {
+                    "id": 0,
+                    "dataset_id": indicator_id,
+                    "description": feature["description"],
+                    "display_name": feature["display_name"],
+                    "name": feature["name"],
+                    "value_type": feature["feature_type"],
+                }
+                feature_response = requests.post(
+                    f"http://data-service_api_1:8000/features", json=feature_payload
+                )
+
+            for feature in qualifier_list:
+                qualifier_payload = {
+                    "id": 0,
+                    "dataset_id": indicator_id,
+                    "description": feature["description"],
+                    "display_name": feature["display_name"],
+                    "name": feature["name"],
+                    "value_type": feature["feature_type"],
+                }
+                post_payload = {
+                    "payload": qualifier_payload,
+                    "qualifies_array": feature["qualifies"],
+                }
+                qualifier_response = requests.post(
+                    f"http://data-service_api_1:8000/qualifiers", json=post_payload
+                )
+        except:
+            logger.warn("No annotations currently")
 
         return Response(
             status_code=status.HTTP_201_CREATED,
