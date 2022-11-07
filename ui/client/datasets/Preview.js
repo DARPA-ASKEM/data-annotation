@@ -60,6 +60,7 @@ export default withStyles(({ spacing }) => ({
 
   function PublishDataset({ datasetInfo }) {
     console.log("Dataset published");
+    handleNext();
     // axios.put(`/api/dojo/indicators/${datasetInfo.id}/publish`)
     //   .then(handleNext)
     //   .catch(() => {
