@@ -24,12 +24,12 @@ services:
       - REDIS_HOST
       - DKG_URL
     networks:
-      - dojo-stack
+      - data-annotation-stack
   redis:
     env_file:
       - envfile
     networks:
-      - dojo-stack
+      - data-annotation-stack
   ui:
     build:
       context: ./ui/
@@ -56,21 +56,21 @@ services:
       - --host
       - 0.0.0.0
     networks:
-      - dojo-stack
+      - data-annotation-stack
   rqworker:
     env_file:
       - envfile
     networks:
-      - dojo-stack
+      - data-annotation-stack
     depends_on:
       - redis
     volumes:
       - dataset-storage:/datasets
 
 networks:
-  dojo-stack:
+  data-annotation-stack:
     driver: bridge
-    name: dojo-stack
+    name: data-annotation-stack
 
 volumes:
   dmc-data-results:

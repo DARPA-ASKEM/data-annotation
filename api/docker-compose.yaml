@@ -2,7 +2,7 @@ version: '2.2'
 services:
   api:
     build: .
-    container_name: dojo-api
+    container_name: data-annotation-api
     ports:
       - 8000:80
     expose:
