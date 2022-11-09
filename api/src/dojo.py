@@ -20,42 +20,34 @@ router = APIRouter()
 
 es = Elasticsearch([settings.ELASTICSEARCH_URL], port=settings.ELASTICSEARCH_PORT)
 
+
 def search_by_model(model_id):
     q = {"query": {"term": {"model_id.keyword": {"value": model_id, "boost": 1.0}}}}
     return q
 
+
 def search_for_config(model_id, path):
     q = {
-        "query":{
-            "bool":{
-                "filter":[
+        "query": {
+            "bool": {
+                "filter": [
                     {
-                    "bool":{
-                        "filter":[
-                            {
-                                "bool":{
-                                "should":[
-                                    {
-                                        "match_phrase":{
-                                            "path": path
-                                        }
+                        "bool": {
+                            "filter": [
+                                {
+                                    "bool": {
+                                        "should": [{"match_phrase": {"path": path}}],
                                     }
-                                ],
-                                }
-                            },
-                            {
-                                "bool":{
-                                "should":[
-                                    {
-                                        "match_phrase":{
-                                            "model_id": model_id
-                                        }
+                                },
+                                {
+                                    "bool": {
+                                        "should": [
+                                            {"match_phrase": {"model_id": model_id}}
+                                        ],
                                     }
-                                ],
-                                }
-                            }
-                        ]
-                    }
+                                },
+                            ]
+                        }
                     }
                 ]
             }
@@ -154,6 +146,7 @@ def get_directive(model_id: str) -> DojoSchema.ModelDirective:
             content=f"Directive for model {model_id} not found.",
         )
 
+
 def copy_directive(model_id: str, new_model_id: str):
     """
     Copy the directive from one model_id to a new_model_id
@@ -161,14 +154,16 @@ def copy_directive(model_id: str, new_model_id: str):
     directive = get_directive(model_id)
     if type(directive) == Response:
         return False
-    directive['id'] = str(uuid.uuid4())
-    directive['model_id'] = new_model_id
+    directive["id"] = str(uuid.uuid4())
+    directive["model_id"] = new_model_id
 
     d = DojoSchema.ModelDirective(**directive)
     create_directive(d)
 
+
 def get_config_path(model_id, path):
-    return f'{settings.CONFIG_STORAGE_BASE}{model_id}{path}'
+    return f"{settings.CONFIG_STORAGE_BASE}{model_id}{path}"
+
 
 @router.post("/dojo/config")
 def create_configs(payload: List[DojoSchema.ModelConfigCreate]):
@@ -178,22 +173,23 @@ def create_configs(payload: List[DojoSchema.ModelConfigCreate]):
     which show which indices to replace with user input.
     """
     if len(payload) == 0:
-        return Response(status_code=status.HTTP_400_BAD_REQUEST,content=f"No payload")
+        return Response(status_code=status.HTTP_400_BAD_REQUEST, content=f"No payload")
 
     for config_data in payload:
         model_config = config_data.model_config
         file_content = config_data.file_content
 
         # remove existing configs with this model_id and path
-        response = es.search(index="configs", body=search_for_config(model_config.model_id, model_config.path), size=10000)
+        response = es.search(
+            index="configs",
+            body=search_for_config(model_config.model_id, model_config.path),
+            size=10000,
+        )
         for hit in response["hits"]["hits"]:
             es.delete(index="configs", id=hit["_id"])
 
-        fileobj = io.BytesIO(file_content.encode('utf-8'))
-        put_rawfile(
-            get_config_path(model_config.model_id, model_config.path),
-            fileobj
-        )
+        fileobj = io.BytesIO(file_content.encode("utf-8"))
+        put_rawfile(get_config_path(model_config.model_id, model_config.path), fileobj)
 
         es.index(index="configs", body=model_config.json())
     return Response(
@@ -201,6 +197,7 @@ def create_configs(payload: List[DojoSchema.ModelConfigCreate]):
         headers={"location": f"/dojo/config/{model_config.model_id}"},
         content=f"Created config(s) for model with id = {model_config.model_id}",
     )
+
 
 @router.get("/dojo/config/{model_id}")
 def get_configs(model_id: str) -> List[DojoSchema.ModelConfig]:
@@ -221,7 +218,9 @@ def delete_config(model_id: str, path: str):
     maps directly to the name of a specific `parameter.
     """
 
-    response = es.search(index="configs", body=search_for_config(model_id, path), size=10000)
+    response = es.search(
+        index="configs", body=search_for_config(model_id, path), size=10000
+    )
 
     config_count, param_count = 0, 0
     for hit in response["hits"]["hits"]:
@@ -231,7 +230,10 @@ def delete_config(model_id: str, path: str):
         # search the model for params in this config and remove those
         def param_matches(param):
             return param.get("template", {}).get("path") == path
-        param_count += delete_matching_records_from_model(config["model_id"], "parameters", param_matches)
+
+        param_count += delete_matching_records_from_model(
+            config["model_id"], "parameters", param_matches
+        )
 
         # TODO remove s3_url and s3_url_raw from s3?
         es.delete(index="configs", id=hit["_id"])
@@ -241,7 +243,6 @@ def delete_config(model_id: str, path: str):
         headers={"location": f"/dojo/config/{model_id}"},
         content=f"Deleted {config_count} config(s) and {param_count} param(s) for model {model_id} with path = {path}",
     )
-
 
 
 def copy_configs(model_id: str, new_model_id: str):
@@ -254,35 +255,36 @@ def copy_configs(model_id: str, new_model_id: str):
     config_create_request = []
 
     for config in configs:
-        content = get_rawfile(
-            get_config_path(config['model_id'], config['path'])
-        ).read().decode()
-        config['id'] = str(uuid.uuid4())
-        config['model_id'] = new_model_id
+        content = (
+            get_rawfile(get_config_path(config["model_id"], config["path"]))
+            .read()
+            .decode()
+        )
+        config["id"] = str(uuid.uuid4())
+        config["model_id"] = new_model_id
 
         config_data = DojoSchema.ModelConfigCreate(
-            model_config=DojoSchema.ModelConfig(**config),
-            file_content=content
+            model_config=DojoSchema.ModelConfig(**config), file_content=content
         )
         config_create_request.append(config_data)
 
     create_configs(config_create_request)
 
 
-
 @router.get("/dojo/parameters/{model_id}")
 def get_parameters(model_id: str) -> List[DojoSchema.Parameter]:
-    config_params = [ param for config in get_configs(model_id)
-                            for param in config['parameters']
-                    ]
+    config_params = [
+        param for config in get_configs(model_id) for param in config["parameters"]
+    ]
     try:
-        directive_params = [ param for param in get_directive(model_id)['parameters']]
+        directive_params = [param for param in get_directive(model_id)["parameters"]]
         return config_params + directive_params
     except Exception as e:
-        logger.info(f"No directives returned. Likely using a defunct model. Directive fetch failed with: {e}")
+        logger.info(
+            f"No directives returned. Likely using a defunct model. Directive fetch failed with: {e}"
+        )
         return config_params
-    
-    
+
 
 @router.post("/dojo/outputfile")
 def create_outputfiles(payload: List[DojoSchema.ModelOutputFile]):
@@ -292,7 +294,7 @@ def create_outputfiles(payload: List[DojoSchema.ModelOutputFile]):
     normalize it into a CauseMos compliant format.
     """
     if len(payload) == 0:
-        return Response(status_code=status.HTTP_400_BAD_REQUEST,content=f"No payload")
+        return Response(status_code=status.HTTP_400_BAD_REQUEST, content=f"No payload")
 
     for p in payload:
         es.index(index="outputfiles", body=p.json(), id=p.id)
@@ -329,8 +331,13 @@ def delete_outputfile(outputfile_id: str):
         # search the model for outputs that use this outputfile's ID
         def output_matches(output):
             return output.get("uuid") == outputfile_id
-        output_count = delete_matching_records_from_model(outputfile["model_id"], "outputs", output_matches)
-        qualifier_output_count = delete_matching_records_from_model(outputfile["model_id"], "qualifier_outputs", output_matches)
+
+        output_count = delete_matching_records_from_model(
+            outputfile["model_id"], "outputs", output_matches
+        )
+        qualifier_output_count = delete_matching_records_from_model(
+            outputfile["model_id"], "qualifier_outputs", output_matches
+        )
 
         es.delete(index="outputfiles", id=outputfile_id)
 
@@ -347,7 +354,6 @@ def delete_outputfile(outputfile_id: str):
         )
 
 
-
 def copy_outputfiles(model_id: str, new_model_id: str):
     """
     Copy outputfiles for a single model_id to a new_model_id
@@ -359,13 +365,15 @@ def copy_outputfiles(model_id: str, new_model_id: str):
     changed_uuids = {}
 
     for f in outputfiles:
-        old_id = f['id']
-        f['id'] = str(uuid.uuid4())
-        changed_uuids[old_id] = f['id']
-        f['model_id'] = new_model_id
-        f['prev_id'] = old_id
+        old_id = f["id"]
+        f["id"] = str(uuid.uuid4())
+        changed_uuids[old_id] = f["id"]
+        f["model_id"] = new_model_id
+        f["prev_id"] = old_id
 
-        requests.get(f'{os.getenv("SPACETAG_URL")}/version?old_uuid={old_id}&new_uuid={f["id"]}&old_model_id={model_id}&new_model_id={new_model_id}')
+        requests.get(
+            f'{os.getenv("SPACETAG_URL")}/version?old_uuid={old_id}&new_uuid={f["id"]}&old_model_id={model_id}&new_model_id={new_model_id}'
+        )
         m = DojoSchema.ModelOutputFile(**f)
         model_outputs.append(m)
 
@@ -374,6 +382,7 @@ def copy_outputfiles(model_id: str, new_model_id: str):
 
 
 ### Accessories Endpoints
+
 
 @router.get("/dojo/accessories/{model_id}")
 def get_accessory_files(model_id: str) -> List[DojoSchema.ModelAccessory]:
@@ -387,7 +396,9 @@ def get_accessory_files(model_id: str) -> List[DojoSchema.ModelAccessory]:
     """
 
     try:
-        results = es.search(index="accessories", body=search_by_model(model_id), size=10000)
+        results = es.search(
+            index="accessories", body=search_by_model(model_id), size=10000
+        )
         return [i["_source"] for i in results["hits"]["hits"]]
     except:
         return Response(
@@ -409,7 +420,7 @@ def create_accessory_file(payload: DojoSchema.ModelAccessory):
     provide it to Uncharted.
     """
     try:
-        payload.id = uuid.uuid4() # update payload with uuid
+        payload.id = uuid.uuid4()  # update payload with uuid
         es.update(index="accessories", body={"doc": payload.dict()}, id=payload.id)
         return Response(
             status_code=status.HTTP_200_OK,
@@ -440,11 +451,13 @@ def create_accessory_files(payload: List[DojoSchema.ModelAccessory]):
     provide it to Uncharted.
     """
     if len(payload) == 0:
-        return Response(status_code=status.HTTP_400_BAD_REQUEST,content=f"No payload")
+        return Response(status_code=status.HTTP_400_BAD_REQUEST, content=f"No payload")
 
     # Delete previous entries.
     try:
-        results = es.search(index="accessories", body=search_by_model(payload[0].model_id), size=10000)
+        results = es.search(
+            index="accessories", body=search_by_model(payload[0].model_id), size=10000
+        )
         for i in results["hits"]["hits"]:
             es.delete(index="accessories", id=i["_source"]["id"])
     except Exception as e:
@@ -452,7 +465,7 @@ def create_accessory_files(payload: List[DojoSchema.ModelAccessory]):
 
     # Add the new entries.
     for p in payload:
-        p.id = uuid.uuid4() # update payload with uuid
+        p.id = uuid.uuid4()  # update payload with uuid
         es.index(index="accessories", body=p.json(), id=p.id)
 
     return Response(
@@ -498,17 +511,18 @@ def copy_accessory_files(model_id: str, new_model_id: str):
     model_accessories = []
 
     for f in a_files:
-        f['id'] = str(uuid.uuid4())
-        f['model_id'] = new_model_id
+        f["id"] = str(uuid.uuid4())
+        f["model_id"] = new_model_id
         ma = DojoSchema.ModelAccessory(**f)
         model_accessories.append(ma)
 
     create_accessory_files(model_accessories)
 
+
 @router.get("/dojo/domains", response_model=List[str])
 def get_domains() -> List[str]:
     """
-    Returns the full list of scientific domains acceptable to be applied to models and indicators.
+    Returns the full list of scientific domains acceptable to be applied to models and datasets.
     Source: https://skos.um.es/unesco6/view.php?fmt=1
     """
 

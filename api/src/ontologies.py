@@ -6,7 +6,7 @@ from fastapi.logger import logger
 
 def get_ontologies(data, type="indicator"):
     """
-    A function to submit either indicators or models to the UAZ
+    A function to submit either datasets or models to the UAZ
     ontology mapping service
 
     Params:
@@ -84,7 +84,9 @@ def indicator_ontologies(data, ontologies):
 
     if data.get("qualifier_outputs", None):
         for qualifier_output in data["qualifier_outputs"]:
-            qualifier_output["ontologies"] = ontology_dict["qualifier_outputs"][qualifier_output["name"]]
+            qualifier_output["ontologies"] = ontology_dict["qualifier_outputs"][
+                qualifier_output["name"]
+            ]
 
     return data
 
@@ -119,6 +121,8 @@ def model_ontologies(data, ontologies):
 
     if data.get("qualifier_outputs", None):
         for qualifier_output in data["qualifier_outputs"]:
-            qualifier_output["ontologies"] = ontology_dict["qualifier_outputs"][qualifier_output["name"]]
+            qualifier_output["ontologies"] = ontology_dict["qualifier_outputs"][
+                qualifier_output["name"]
+            ]
 
     return data

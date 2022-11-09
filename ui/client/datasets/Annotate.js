@@ -73,7 +73,7 @@ export default withStyles(({ spacing }) => ({
 
 
     const fileArg = (useFilepath ? "filepath" : "filename");
-    const previewUrl = `/api/dojo/indicators/${datasetInfo.id}/preview/raw${rawFileName ? `?${fileArg}=${rawFileName}` : ''}`;
+    const previewUrl = `/api/dojo/datasets/${datasetInfo.id}/preview/raw${rawFileName ? `?${fileArg}=${rawFileName}` : ''}`;
 
     const getAnnotations = async () => {
       // TODO verify and document this:
@@ -84,7 +84,7 @@ export default withStyles(({ spacing }) => ({
       }
       else {
         // Load annotations from API, which also include other data unavailable if we don't call this
-        return axios.get(`/api/dojo/indicators/${datasetInfo.id}/annotations`);
+        return axios.get(`/api/dojo/datasets/${datasetInfo.id}/annotations`);
       }
     };
 
@@ -128,7 +128,7 @@ export default withStyles(({ spacing }) => ({
     console.log(backendPayload);
 
     axios
-      .patch(`/api/dojo/indicators/${datasetInfo.id}/annotations`, backendPayload)
+      .patch(`/api/dojo/datasets/${datasetInfo.id}/annotations`, backendPayload)
       .then(handleNext)
       .catch(() => {
         setPromptMessage('Error submitting annotation data.');
@@ -170,7 +170,7 @@ export default withStyles(({ spacing }) => ({
     };
 
     try {
-      const response = await axios.post('/api/dojo/indicators/validate_date', payload);
+      const response = await axios.post('/api/dojo/datasets/validate_date', payload);
       return response.data?.valid ? '' : 'Incompatible format';
     } catch (e) {
       // TODO Better error handling

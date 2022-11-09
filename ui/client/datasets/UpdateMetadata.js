@@ -73,7 +73,7 @@ export default withStyles(({ spacing }) => ({
 
     const response = await axios({
       method: 'PATCH',
-      url: `/api/dojo/indicators?indicator_id=${id}`,
+      url: `/api/dojo/datasets?indicator_id=${id}`,
       data: payload,
     });
     return response.data;
@@ -81,7 +81,7 @@ export default withStyles(({ spacing }) => ({
 
   const formRef = React.useRef();
 
-  const back = (event) => {}; // Do nothing
+  const back = (event) => { }; // Do nothing
 
   const defaultValues = genRegisterDefaultValues(datasetInfo);
   const [isUpdatingUploadedFile, setUpdatingUploadedFile] = useState(false);
@@ -104,17 +104,17 @@ export default withStyles(({ spacing }) => ({
         initialValues={defaultValues}
         validationSchema={!skipValidation && formSchema}
         enableReinitialize
-        onSubmit={ async (values, { setSubmitting }) => {
+        onSubmit={async (values, { setSubmitting }) => {
           const datasetId = datasetInfo?.id;
           if (!datasetId) {
-            throw(new Error('Unable to update metadata for an invalid Dataset.'));
+            throw (new Error('Unable to update metadata for an invalid Dataset.'));
           }
 
           setSubmitting(true);
 
           updateDataset(values, datasetId)
             .then(() => {
-              handleNext({dataset: datasetInfo, filename: rawFileName});
+              handleNext({ dataset: datasetInfo, filename: rawFileName });
             });
         }}
       >

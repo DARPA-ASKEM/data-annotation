@@ -1,4 +1,4 @@
-## ISI Datamart Indicators to Dojo
+## ISI Datamart Datasets to Dojo
 
 
 ### Set-up:
@@ -16,17 +16,17 @@
 ### Run:
 
 ```
-python3 indicators_to_dojo.py
+python3 datasets_to_dojo.py
 ```
 
 This will:
 
 1. Download the compressed datamart indicator json file `s3_jsons.gz` from S3.
 2. Decompress `s3_jsons.gz` then delete the `.gz` file.
-3. For each indicator json in the `s3_jsons` folder: Post the json to the indicators endpoint (as assigned in the script url)
+3. For each indicator json in the `s3_jsons` folder: Post the json to the datasets endpoint (as assigned in the script url)
 
 __NOTE__: There are two methods to run this script.
 
 1. Testing Mode: Slices small numbers of jsons to verify the code (this is what is committed)
-2. Prod Mode: Uncomment the code under `PROD MODE` and comment out the `TESTING MODE` to run thru all datamart indicators. This mode will also delete all jsons and their folder after completion
+2. Prod Mode: Uncomment the code under `PROD MODE` and comment out the `TESTING MODE` to run thru all datamart datasets. This mode will also delete all jsons and their folder after completion
 

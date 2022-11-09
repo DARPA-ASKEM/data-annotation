@@ -61,7 +61,7 @@ export default withStyles(({ spacing }) => ({
   function PublishDataset({ datasetInfo }) {
     console.log("Dataset published");
     handleNext();
-    // axios.put(`/api/dojo/indicators/${datasetInfo.id}/publish`)
+    // axios.put(`/api/dojo/datasets/${datasetInfo.id}/publish`)
     //   .then(handleNext)
     //   .catch(() => {
     //     setPromptMessage('Error submitting data to Dojo. Please contact the Dojo team.');
@@ -202,7 +202,7 @@ export default withStyles(({ spacing }) => ({
     }
 
     const fileArg = (useFilepath ? "filepath" : "filename");
-    const previewUrl = `/api/dojo/indicators/${datasetInfo.id}/preview/processed${rawFileName ? `?${fileArg}=${rawFileName}` : ''}`;
+    const previewUrl = `/api/dojo/datasets/${datasetInfo.id}/preview/processed${rawFileName ? `?${fileArg}=${rawFileName}` : ''}`;
     axios.post(previewUrl)
       .then((loadedPreviewData) => {
         const rows = loadedPreviewData.data;

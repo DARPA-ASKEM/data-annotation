@@ -13,14 +13,14 @@ function mockHttpRequests() {
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/indicators'
+    url: '/api/dojo/datasets'
   }, {
-    fixture: 'indicators_post.json'
+    fixture: 'datasets_post.json'
   });
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/indicators/*/upload*'
+    url: '/api/dojo/datasets/*/upload*'
   }, {
     "id": "test-guid",
     "filename": "raw_data.csv"
@@ -28,7 +28,7 @@ function mockHttpRequests() {
 
   cy.intercept({
     method: 'PATCH',
-    url: '/api/dojo/indicators/*/annotations'
+    url: '/api/dojo/datasets/*/annotations'
   }, "Updated annotation with id = test-guid");
 
   cy.intercept({
@@ -41,52 +41,52 @@ function mockHttpRequests() {
   cy.intercept({
     method: 'POST',
     url: '/api/dojo/job/*/geotime_processors.geotime_classify*'
-  }, {fixture: 'geotime_classify_post.json'});
+  }, { fixture: 'geotime_classify_post.json' });
 
   cy.intercept({
     method: 'GET',
-    url: '/api/dojo/indicators/*/annotations*'
-  }, {fixture: 'indicators_annotations_get.json'});
+    url: '/api/dojo/datasets/*/annotations*'
+  }, { fixture: 'datasets_annotations_get.json' });
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/indicators/*/preview/raw*'
-  }, {fixture: 'indicators_preview_raw_post.json'});
+    url: '/api/dojo/datasets/*/preview/raw*'
+  }, { fixture: 'datasets_preview_raw_post.json' });
 
   cy.intercept({
     url: 'api/dojo/job/*/mixmasta_processors.run_mixmasta*',
     method: 'POST'
-  }, {fixture: 'mixmasta_processors.run_mixmasta_post.json'});
+  }, { fixture: 'mixmasta_processors.run_mixmasta_post.json' });
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/indicators/*/preview/raw*'
-  }, {fixture: 'indicators_preview_raw_post.json'});
+    url: '/api/dojo/datasets/*/preview/raw*'
+  }, { fixture: 'datasets_preview_raw_post.json' });
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/indicators/*/preview/processed*'
-  }, {fixture: 'indicators_preview_processed_post.json'});
+    url: '/api/dojo/datasets/*/preview/processed*'
+  }, { fixture: 'datasets_preview_processed_post.json' });
 
   cy.intercept({
     method: 'PUT',
-    url: '/api/dojo/indicators/*/publish*'
+    url: '/api/dojo/datasets/*/publish*'
   }, {});
 
   cy.intercept(
     'PUT',
-    '/api/dojo/indicators',
+    '/api/dojo/datasets',
     {});
 
   cy.intercept(
     'PATCH',
-    '/api/dojo/indicators*',
+    '/api/dojo/datasets*',
     {});
 
   cy.intercept({
-    url:'/api/dojo/indicators/*/verbose*',
+    url: '/api/dojo/datasets/*/verbose*',
     method: 'GET'
-  }, {fixture: 'indicators_verbose_get.json'});
+  }, { fixture: 'datasets_verbose_get.json' });
 
 }
 
@@ -113,22 +113,22 @@ describe('Dataset Register Flow', function () {
 
     /* QUERIES */
 
-    cy.findByRole('textbox', {name: /^Name/i}).as('DatasetName');
-    cy.findByRole('textbox', {name: /Description/i}).as('DatasetDescription');
+    cy.findByRole('textbox', { name: /^Name/i }).as('DatasetName');
+    cy.findByRole('textbox', { name: /Description/i }).as('DatasetDescription');
 
     // Don't necessarily have to use test-id here, as increasing the timeout worked
     cy.findByTestId('file-upload-input', { timeout: 10000 }).as('FileUpload');
     cy.findByRole('combobox').as('DomainsSelector'); // also found as an input with name attr
-    cy.findAllByRole('textbox', {name: /Registerer Name \(Organization\)/i}).as('RegistererName');
-    cy.findAllByRole('textbox', {name: /Registerer Email/i}).as('RegistererEmail');
-    cy.findAllByRole('button', {name: /Next/i}).as('NextButton');
+    cy.findAllByRole('textbox', { name: /Registerer Name \(Organization\)/i }).as('RegistererName');
+    cy.findAllByRole('textbox', { name: /Registerer Email/i }).as('RegistererEmail');
+    cy.findAllByRole('button', { name: /Next/i }).as('NextButton');
 
     // ACTIONS
 
     cy.get('@FileUpload').selectFile({
       contents: 'cypress/fixtures/dummy.csv',
       fileName: 'dummy.csv'
-    }, {allowEmpty: true, force: true});
+    }, { allowEmpty: true, force: true });
 
     cy.get('@DatasetName').type('Dataset Name X');
     cy.get('@DatasetDescription').type('A sample description for a glorious test');
@@ -148,7 +148,7 @@ describe('Dataset Register Flow', function () {
     cy.url().should('match', /datasets\/register\/annotate\/.+\?filename=raw_data.csv/);
 
     // Annotate page selectors
-    cy.findAllByRole('button', {name: /Annotate/i}).as('AnnotateButtons');
+    cy.findAllByRole('button', { name: /Annotate/i }).as('AnnotateButtons');
 
 
     // Annotate page actions
@@ -156,16 +156,16 @@ describe('Dataset Register Flow', function () {
     // ====== Annotate the date column ==============
     cy.findByText('date').click();
 
-    cy.findAllByRole('button', {name: /type/i}).click();
+    cy.findAllByRole('button', { name: /type/i }).click();
 
-    cy.findByRole('option', {name: /Date/i}).click();
+    cy.findByRole('option', { name: /Date/i }).click();
 
-    cy.findByRole('checkbox', {name: /This is my primary date field This is my primary date field/i}).click();
+    cy.findByRole('checkbox', { name: /This is my primary date field This is my primary date field/i }).click();
 
-    cy.findByRole('textbox', {name: /Description/i})
+    cy.findByRole('textbox', { name: /Description/i })
       .type('sample column description for a date');
 
-    cy.findAllByRole('button', {name: /save/i}).click();
+    cy.findAllByRole('button', { name: /save/i }).click();
 
     // ========== Annotate the value column as feature =============
 
@@ -180,28 +180,28 @@ describe('Dataset Register Flow', function () {
     cy.get('@ValueColumnLabel')
       .click();
 
-    cy.findAllByRole('button', {name: /type/i}).click();
+    cy.findAllByRole('button', { name: /type/i }).click();
 
-    cy.findByRole('option', {name: /Feature/i}).click();
+    cy.findByRole('option', { name: /Feature/i }).click();
 
-    cy.findAllByRole('textbox', {name: /^Description/i})
+    cy.findAllByRole('textbox', { name: /^Description/i })
       .type('sample column description for a date');
 
-    cy.findByRole('textbox', {name: /^units/i})
+    cy.findByRole('textbox', { name: /^units/i })
       .type('m');
 
-    cy.findAllByRole('button', {name: /save/i}).click();
+    cy.findAllByRole('button', { name: /save/i }).click();
 
     // READY TO SUBMIT ANNOTATE step
 
-    cy.findAllByRole('button', {name: /^Next$/i}).click();
+    cy.findAllByRole('button', { name: /^Next$/i }).click();
 
 
     cy.url().should('match', /datasets\/register\/process\/.+\?filename=raw_data.csv/);
 
     cy.url().should('match', /datasets\/register\/preview\/.+\?filename=raw_data.csv/);
 
-    cy.findAllByRole('button', {name: /^submit to dojo$/i, timeout: 1000}).click();
+    cy.findAllByRole('button', { name: /^submit to dojo$/i, timeout: 1000 }).click();
 
     // ASSERTIONS
 
@@ -221,7 +221,7 @@ describe('Dataset Register Flow', function () {
 
     cy.intercept(
       'POST',
-      '/api/dojo/indicators',
+      '/api/dojo/datasets',
       (req) => {
         // This SHOULD NOT BE CALLED (no create, but update)
 
@@ -239,7 +239,7 @@ describe('Dataset Register Flow', function () {
 
     cy.intercept(
       'PATCH',
-      '/api/dojo/indicators?*',
+      '/api/dojo/datasets?*',
       (req) => {
         // This should be called
         assert.equal(req.method, 'PATCH');
@@ -255,7 +255,7 @@ describe('Dataset Register Flow', function () {
 
     cy.intercept(
       'POST',
-      '/api/dojo/indicators/*/upload',
+      '/api/dojo/datasets/*/upload',
       (req) => {
 
         uploadFileSpy();
@@ -268,29 +268,29 @@ describe('Dataset Register Flow', function () {
 
     cy.visit('/datasets/register/annotate/test-guid?filename=raw_data.csv');
 
-    cy.findAllByRole('button', {name: /^Back$/i}).click();
+    cy.findAllByRole('button', { name: /^Back$/i }).click();
 
     cy.url().should('match', /datasets\/register\/register\/.+\?filename=raw_data.csv/);
 
-    cy.findByRole('textbox', {name: /^Name/i})
+    cy.findByRole('textbox', { name: /^Name/i })
       .should('have.value', 'A better name');
 
-    cy.findByRole('textbox', {name: /Description/i})
+    cy.findByRole('textbox', { name: /Description/i })
       .should('have.value', 'A description, yo!');
 
     cy.findByRole('combobox')
       .findByText(/Earth and Space Sciences/i);
 
-    cy.findAllByRole('textbox', {name: /Registerer Name \(Organization\)/i})
+    cy.findAllByRole('textbox', { name: /Registerer Name \(Organization\)/i })
       .should('have.value', 'Joel');
 
-    cy.findAllByRole('textbox', {name: /Registerer Email/i})
+    cy.findAllByRole('textbox', { name: /Registerer Email/i })
       .should('have.value', 'joel@jataware.com');
 
     cy.findByText('output_0.9_1.2.csv');
-    cy.findByRole('button', {name: /replace/i});
+    cy.findByRole('button', { name: /replace/i });
 
-    cy.findByRole('button', {name: /Next/i}).click();
+    cy.findByRole('button', { name: /Next/i }).click();
 
     cy.url().should('match', /datasets\/register\/analyze\/.+\?filename=raw_data.csv/);
 
@@ -309,13 +309,13 @@ describe('Dataset Register Flow', function () {
     const uploadFileSpy = cy.spy().as('uploadFileSpy');
 
     cy.intercept({
-      url:'/api/dojo/indicators/*/verbose',
+      url: '/api/dojo/datasets/*/verbose',
       method: 'GET'
-    }, {fixture: 'indicators_verbose_get.json'});
+    }, { fixture: 'datasets_verbose_get.json' });
 
     cy.intercept(
       'PATCH',
-      '/api/dojo/indicators?*',
+      '/api/dojo/datasets?*',
       (req) => {
         // This should be called
         assert.equal(req.method, 'PATCH');
@@ -331,7 +331,7 @@ describe('Dataset Register Flow', function () {
 
     cy.intercept(
       'POST',
-      '/api/dojo/indicators/*/upload',
+      '/api/dojo/datasets/*/upload',
       (req) => {
 
         uploadFileSpy(req.body.includes('dummy.csv'));
@@ -344,7 +344,7 @@ describe('Dataset Register Flow', function () {
 
     cy.visit('/datasets/register/register/test-guid?filename=raw_data.csv');
 
-    cy.findByRole('textbox', {name: /^Name/i}).as('DatasetNameField');
+    cy.findByRole('textbox', { name: /^Name/i }).as('DatasetNameField');
 
     cy.get('@DatasetNameField')
       .should('have.value', 'A better name');
@@ -353,10 +353,10 @@ describe('Dataset Register Flow', function () {
       .clear()
       .type('An updated name');
 
-    cy.findByRole('textbox', {name: /Description/i})
+    cy.findByRole('textbox', { name: /Description/i })
       .should('have.value', 'A description, yo!');
 
-    cy.findAllByRole('textbox', {name: /Registerer Name \(Organization\)/i})
+    cy.findAllByRole('textbox', { name: /Registerer Name \(Organization\)/i })
       .should('have.value', 'Joel');
 
     cy.findByText('output_0.9_1.2.csv');
@@ -367,9 +367,9 @@ describe('Dataset Register Flow', function () {
       .selectFile({
         contents: 'cypress/fixtures/dummy.csv',
         fileName: 'dummy.csv'
-      }, {allowEmpty: true});
+      }, { allowEmpty: true });
 
-    cy.findByRole('button', {name: /Next/i}).click();
+    cy.findByRole('button', { name: /Next/i }).click();
 
     cy.get('@onUpdateSpy').should('have.been.calledWith', 'An updated name');
     cy.get('@uploadFileSpy').should('have.been.calledWith', true);

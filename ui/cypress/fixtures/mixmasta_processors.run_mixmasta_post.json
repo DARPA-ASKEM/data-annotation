@@ -13,10 +13,10 @@
             "headers": {
                 "date": "Wed, 17 Aug 2022 17:51:21 GMT",
                 "server": "uvicorn",
-                "location": "/api/indicators/aebbeb28-cf70-4b46-b54d-dd078f731700",
+                "location": "/api/datasets/aebbeb28-cf70-4b46-b54d-dd078f731700",
                 "content-length": "64"
             },
-            "url": "http://api.world-modelers/indicators/mixmasta_update/aebbeb28-cf70-4b46-b54d-dd078f731700",
+            "url": "http://api.world-modelers/datasets/mixmasta_update/aebbeb28-cf70-4b46-b54d-dd078f731700",
             "history": [],
             "encoding": null,
             "reason": "OK",
@@ -24,7 +24,7 @@
             "elapsed": 0.100474,
             "request": {
                 "method": "POST",
-                "url": "http://api.world-modelers/indicators/mixmasta_update/aebbeb28-cf70-4b46-b54d-dd078f731700",
+                "url": "http://api.world-modelers/datasets/mixmasta_update/aebbeb28-cf70-4b46-b54d-dd078f731700",
                 "headers": {
                     "User-Agent": "python-requests/2.28.1",
                     "Accept-Encoding": "gzip, deflate",

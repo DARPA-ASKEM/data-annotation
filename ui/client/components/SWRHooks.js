@@ -16,10 +16,10 @@ const fetcher = async (url) => {
   return rjson;
 };
 
-// Datasets were previously called indicators, and this has not yet been updated in dojo
+// Datasets were previously called datasets, and this has not yet been updated in dojo
 export function useDataset(datasetId) {
   const { data, error, mutate } = useSWR(
-    datasetId ? `/api/dojo/indicators/${datasetId}` : null, fetcher
+    datasetId ? `/api/dojo/datasets/${datasetId}` : null, fetcher
   );
 
   return {

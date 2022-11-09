@@ -112,7 +112,7 @@ const DatasetSummary = () => {
   };
 
   const acceptDeprecate = () => {
-    axios.put(`/api/dojo/indicators/${dataset.id}/deprecate`)
+    axios.put(`/api/dojo/datasets/${dataset.id}/deprecate`)
       .then((resp) => {
         console.info('Successfully deprecated the dataset:', resp);
         setAlertMessage({

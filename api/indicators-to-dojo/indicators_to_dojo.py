@@ -15,9 +15,9 @@ s3_secretKey = os.getenv("AWS_SECRET_KEY")
 bucket_name = "jataware-world-modelers"
 
 # Specifics for S3 zipped json file
-s3_key = "indicators/jsons/s3_jsons.tar.gz"
+s3_key = "datasets/jsons/s3_jsons.tar.gz"
 filename = "s3_jsons.gz"
-url = "http://localhost:8000/indicators/"
+url = "http://localhost:8000/datasets/"
 header = {"content-type": "application/json"}
 
 
@@ -60,7 +60,7 @@ if __name__ == "__main__":
         print(str(e))
 
     try:
-        # TESTING MODE: slice into just a few indicators
+        # TESTING MODE: slice into just a few datasets
         files = []
         for file in sorted(glob.glob("s3_jsons/*.json")):
             files.append(file)
@@ -69,7 +69,7 @@ if __name__ == "__main__":
             post_to_dojo(url, header, file)
 
         """
-        #PROD MODE: to post all indicators available in the zip file:
+        #PROD MODE: to post all datasets available in the zip file:
         for file in sorted(glob.glob("s3_jsons/*.json")):
             post_to_dojo(url, header, file)
             os.remove(file)

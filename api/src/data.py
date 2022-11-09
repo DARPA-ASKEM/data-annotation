@@ -23,7 +23,7 @@ from rq import job
 import boto3
 
 from src.utils import get_rawfile, put_rawfile
-from src.indicators import get_indicators, get_annotations
+from src.datasets import get_datasets, get_annotations
 from src.settings import settings
 
 logging.basicConfig()
@@ -49,7 +49,7 @@ def get_context(uuid):
     except:
         annotations = {}
     try:
-        dataset = get_indicators(uuid)
+        dataset = get_datasets(uuid)
     except:
         dataset = {}
 

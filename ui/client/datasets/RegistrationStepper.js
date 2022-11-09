@@ -194,7 +194,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
 
       const result = axios({
         method: 'get',
-        url: `/api/dojo/indicators/${datasetId}/verbose`,
+        url: `/api/dojo/datasets/${datasetId}/verbose`,
       }).then((result) => {
 
         /* Set loaded dataset info, uploaded files data, and annotations */
@@ -228,7 +228,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
         setUploadedFilesData(uploadedFiles);
 
         setDatasetInfo({
-          ...result.data.indicators,
+          ...result.data.datasets,
           fileData: {
             raw: {
               uploaded: Boolean(uploadedFileName),

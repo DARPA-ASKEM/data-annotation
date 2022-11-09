@@ -95,7 +95,7 @@ const BasicRegistrationFlow = {
                 qualifier_outputs: result.qualifier_outputs,
               };
               console.log(updatedDataset);
-              await axios.put(`/api/dojo/indicators`, updatedDataset);
+              await axios.put(`/api/dojo/datasets`, updatedDataset);
             }
           },
         ]
@@ -236,7 +236,7 @@ const AppendFlow = {
                 geography: result.geography,
                 period: result.period,
               };
-              await axios.put(`/api/dojo/indicators`, updatedDataset);
+              await axios.put(`/api/dojo/datasets`, updatedDataset);
             }
           }
         ]
@@ -375,7 +375,7 @@ const TableRegistrationFlow = {
                 outputs: result.outputs,
                 qualifier_outputs: result.qualifier_outputs,
               };
-              await axios.put(`/api/dojo/indicators`, updatedDataset);
+              await axios.put(`/api/dojo/datasets`, updatedDataset);
             }
           },
         ]
