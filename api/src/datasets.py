@@ -95,7 +95,7 @@ def create_indicator(payload: Dict[Any, Any]):
         logger.debug("No spatial resolution")
 
     response = requests.post(
-        "http://data-service_api_1:8000/datasets/datasets", json=dataset_payload
+        "http://data-service_api_1:8000/datasets", json=dataset_payload
     )
 
     response_obj = response.json()
@@ -126,7 +126,7 @@ def update_indicator(
     dataset_payload["annotations"] = json.dumps(dataset_payload["annotations"])
 
     response = requests.patch(
-        f"http://data-service_api_1:8000/datasets/datasets/{id}",
+        f"http://data-service_api_1:8000/datasets/{id}",
         json=dataset_payload,
     )
 
@@ -156,9 +156,7 @@ def patch_indicator(
 
 @router.get("/datasets/latest")
 def get_latest_datasets(size=100):
-    dataArray = requests.get(
-        f"http://data-service_api_1:8000/datasets/datasets?count={size}"
-    )
+    dataArray = requests.get(f"http://data-service_api_1:8000/datasets?count={size}")
     logger.warn(f"Data Array: {dataArray}")
     return dataArray.json()
 
@@ -212,9 +210,7 @@ def search_datasets(
 
 @router.get("/datasets/{indicator_id}")
 def get_datasets(indicator_id: str):
-    dataset = requests.get(
-        f"http://data-service_api_1:8000/datasets/datasets/{indicator_id}"
-    )
+    dataset = requests.get(f"http://data-service_api_1:8000/datasets/{indicator_id}")
     return dataset.json()
 
 
@@ -302,7 +298,7 @@ def get_csv(indicator_id: str, request: Request):
 def deprecate_indicator(indicator_id: str):
     try:
         response = requests.post(
-            f"http://data-service_api_1:8000/datasets/datasets/deprecate/{indicator_id}"
+            f"http://data-service_api_1:8000/datasets/deprecate/{indicator_id}"
         )
     except Exception as e:
         logger.exception(e)
@@ -359,7 +355,7 @@ def post_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
         existing_dataset["annotations"] = json.dumps(body)
 
         patch_response = requests.patch(
-            f"http://data-service_api_1:8000/datasets/datasets/{indicator_id}",
+            f"http://data-service_api_1:8000/datasets/{indicator_id}",
             json=existing_dataset,
         )
 
@@ -396,7 +392,7 @@ def put_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
         existing_dataset["annotations"] = json.dumps(body)
 
         patch_response = requests.patch(
-            f"http://data-service_api_1:8000/datasets/datasets/{indicator_id}",
+            f"http://data-service_api_1:8000/datasets/{indicator_id}",
             json=existing_dataset,
         )
 
@@ -462,7 +458,7 @@ def patch_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
         existing_dataset["annotations"] = json.dumps(body)
 
         patch_response = requests.patch(
-            f"http://data-service_api_1:8000/datasets/datasets/{indicator_id}",
+            f"http://data-service_api_1:8000/datasets/{indicator_id}",
             json=existing_dataset,
         )
 
