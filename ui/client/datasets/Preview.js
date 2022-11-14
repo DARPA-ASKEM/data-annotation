@@ -259,7 +259,7 @@ export default withStyles(({ spacing }) => ({
       />
 
       <Navigation
-        label="Submit to Dojo"
+        label="Submit as Annotation"
         handleNext={() => nextHandlers[handleNextFunc]({ datasetInfo, rawFileName, ...props })}
         handleBack={handleBack}
       />

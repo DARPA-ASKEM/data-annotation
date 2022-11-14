@@ -141,16 +141,14 @@ def update_indicator(
 
 # UNMODIFIED
 @router.patch("/datasets")
-def patch_indicator(
-    payload: IndicatorSchema.IndicatorMetadataSchema, indicator_id: str
-):
+def patch_indicator(payload: IndicatorSchema.IndicatorMetadataSchema, dataset_id: str):
     payload.created_at = current_milli_time()
     body = json.loads(payload.json(exclude_unset=True))
-    es.update(index="datasets", body={"doc": body}, id=indicator_id)
+    es.update(index="datasets", body={"doc": body}, id=dataset_id)
     return Response(
         status_code=status.HTTP_200_OK,
-        headers={"location": f"/api/datasets/{indicator_id}"},
-        content=f"Updated indicator with id = {indicator_id}",
+        headers={"location": f"/api/datasets/{dataset_id}"},
+        content=f"Updated indicator with id = {dataset_id}",
     )
 
 
@@ -208,35 +206,35 @@ def search_datasets(
         return indicator_data
 
 
-@router.get("/datasets/{indicator_id}")
-def get_datasets(indicator_id: str):
-    dataset = requests.get(f"http://data-service_api_1:8000/datasets/{indicator_id}")
+@router.get("/datasets/{dataset_id}")
+def get_datasets(dataset_id: str):
+    dataset = requests.get(f"http://data-service_api_1:8000/datasets/{dataset_id}")
     return dataset.json()
 
 
 # UNMODIFIED
-@router.put("/datasets/{indicator_id}/publish")
-def publish_indicator(indicator_id: str):
+@router.put("/datasets/{dataset_id}/publish")
+def publish_indicator(dataset_id: str):
     try:
-        indicator = es.get(index="datasets", id=indicator_id)["_source"]
+        indicator = es.get(index="datasets", id=dataset_id)["_source"]
         indicator["published"] = True
-        es.index(index="datasets", body=indicator, id=indicator_id)
+        es.index(index="datasets", body=indicator, id=dataset_id)
 
     except Exception as e:
         logger.exception(e)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return Response(
         status_code=status.HTTP_200_OK,
-        headers={"location": f"/api/datasets/{indicator_id}/publish"},
-        content=f"Published indicator with id {indicator_id}",
+        headers={"location": f"/api/datasets/{dataset_id}/publish"},
+        content=f"Published indicator with id {dataset_id}",
     )
 
 
 # UNMODIFIED
-@router.get("/datasets/{indicator_id}/download/csv")
-def get_csv(indicator_id: str, request: Request):
+@router.get("/datasets/{dataset_id}/download/csv")
+def get_csv(dataset_id: str, request: Request):
     try:
-        indicator = es.get(index="datasets", id=indicator_id)["_source"]
+        indicator = es.get(index="datasets", id=dataset_id)["_source"]
     except Exception as e:
         logger.exception(e)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
@@ -294,30 +292,30 @@ def get_csv(indicator_id: str, request: Request):
         )
 
 
-@router.put("/datasets/{indicator_id}/deprecate")
-def deprecate_indicator(indicator_id: str):
+@router.put("/datasets/{dataset_id}/deprecate")
+def deprecate_indicator(dataset_id: str):
     try:
         response = requests.post(
-            f"http://data-service_api_1:8000/datasets/deprecate/{indicator_id}"
+            f"http://data-service_api_1:8000/datasets/deprecate/{dataset_id}"
         )
     except Exception as e:
         logger.exception(e)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return Response(
         status_code=status.HTTP_200_OK,
-        headers={"location": f"/api/datasets/{indicator_id}"},
-        content=f"Deprecated indicator with id {indicator_id}",
+        headers={"location": f"/api/datasets/{dataset_id}"},
+        content=f"Deprecated indicator with id {dataset_id}",
     )
 
 
 @router.get(
-    "/datasets/{indicator_id}/annotations", response_model=MetadataSchema.MetaModel
+    "/datasets/{dataset_id}/annotations", response_model=MetadataSchema.MetaModel
 )
-def get_annotations(indicator_id: str) -> MetadataSchema.MetaModel:
+def get_annotations(dataset_id: str) -> MetadataSchema.MetaModel:
     """Get annotations for a dataset.
 
     Args:
-        indicator_id (str): The UUID of the dataset to retrieve annotations for from elasticsearch.
+        dataset_id (str): The UUID of the dataset to retrieve annotations for from elasticsearch.
 
     Raises:
         HTTPException: This is raised if no annotation is found for the dataset in elasticsearch.
@@ -326,7 +324,7 @@ def get_annotations(indicator_id: str) -> MetadataSchema.MetaModel:
         MetadataSchema.MetaModel: Returns the annotations pydantic schema for the dataset that contains a metadata dictionary and an annotations object validated via a nested pydantic schema.
     """
     try:
-        db_response = get_datasets(indicator_id)
+        db_response = get_datasets(dataset_id)
         annotation = db_response["annotations"]
         return annotation
     except Exception as e:
@@ -335,13 +333,13 @@ def get_annotations(indicator_id: str) -> MetadataSchema.MetaModel:
         return None
 
 
-@router.post("/datasets/{indicator_id}/annotations")
-def post_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
+@router.post("/datasets/{dataset_id}/annotations")
+def post_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
     """Post annotations for a dataset.
 
     Args:
         payload (MetadataSchema.MetaModel): Payload needs to be a fully formed json object representing the pydantic schema MettaDataSchema.MetaModel.
-        indicator_id (str): The UUID of the dataset to retrieve annotations for from elasticsearch.
+        dataset_id (str): The UUID of the dataset to retrieve annotations for from elasticsearch.
 
     Returns:
         Response: Returns a response with the status code of 201 and the location of the annotation.
@@ -350,35 +348,35 @@ def post_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
 
         body = json.loads(payload.json())
 
-        existing_dataset = get_datasets(indicator_id)
+        existing_dataset = get_datasets(dataset_id)
 
         existing_dataset["annotations"] = json.dumps(body)
 
         patch_response = requests.patch(
-            f"http://data-service_api_1:8000/datasets/{indicator_id}",
+            f"http://data-service_api_1:8000/datasets/{dataset_id}",
             json=existing_dataset,
         )
 
         return Response(
             status_code=status.HTTP_201_CREATED,
-            headers={"location": f"/api/annotations/{indicator_id}"},
-            content=f"Updated annotation with id = {indicator_id}",
+            headers={"location": f"/api/annotations/{dataset_id}"},
+            content=f"Updated annotation with id = {dataset_id}",
         )
     except Exception as e:
         logger.exception(e)
         return Response(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=f"Could not update annotation with id = {indicator_id}",
+            content=f"Could not update annotation with id = {dataset_id}",
         )
 
 
-@router.put("/datasets/{indicator_id}/annotations")
-def put_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
+@router.put("/datasets/{dataset_id}/annotations")
+def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
     """Put annotation for a dataset to Elasticsearch.
 
     Args:
         payload (MetadataSchema.MetaModel): Payload needs to be a fully formed json object representing the pydantic schema MettaDataSchema.MetaModel.
-        indicator_id (str): The UUID of the dataset for which the annotations apply.
+        dataset_id (str): The UUID of the dataset for which the annotations apply.
 
     Returns:
         Response: Response object with status code, informational messages, and content.
@@ -387,12 +385,12 @@ def put_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
 
         body = json.loads(payload.json())
 
-        existing_dataset = get_datasets(indicator_id)
+        existing_dataset = get_datasets(dataset_id)
 
         existing_dataset["annotations"] = json.dumps(body)
 
         patch_response = requests.patch(
-            f"http://data-service_api_1:8000/datasets/{indicator_id}",
+            f"http://data-service_api_1:8000/datasets/{dataset_id}",
             json=existing_dataset,
         )
 
@@ -401,7 +399,7 @@ def put_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
             if "qualifies" in feature:
                 qualifier_payload = {
                     "id": 0,
-                    "dataset_id": indicator_id,
+                    "dataset_id": dataset_id,
                     "description": feature["description"],
                     "display_name": feature["display_name"],
                     "name": feature["name"],
@@ -412,7 +410,7 @@ def put_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
                 )
             feature_payload = {
                 "id": 0,
-                "dataset_id": indicator_id,
+                "dataset_id": dataset_id,
                 "description": feature["description"],
                 "display_name": feature["display_name"],
                 "name": feature["name"],
@@ -424,25 +422,25 @@ def put_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
 
         return Response(
             status_code=status.HTTP_201_CREATED,
-            headers={"location": f"/api/annotations/{indicator_id}"},
-            content=f"Created annotation with id = {indicator_id}",
+            headers={"location": f"/api/annotations/{dataset_id}"},
+            content=f"Created annotation with id = {dataset_id}",
         )
     except Exception as e:
         logger.exception(e)
 
         return Response(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=f"Could not create annotation with id = {indicator_id}",
+            content=f"Could not create annotation with id = {dataset_id}",
         )
 
 
-@router.patch("/datasets/{indicator_id}/annotations")
-def patch_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
+@router.patch("/datasets/{dataset_id}/annotations")
+def patch_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
     """Patch annotation for a dataset to Elasticsearch.
 
     Args:
         payload (MetadataSchema.MetaModel): Payload needs to be a partially formed json object valid for the pydantic schema MettaDataSchema.MetaModel.
-        indicator_id (str): The UUID of the dataset for which the annotations apply.
+        dataset_id (str): The UUID of the dataset for which the annotations apply.
 
     Returns:
         Response: Response object with status code, informational messages, and content.
@@ -453,12 +451,12 @@ def patch_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
 
         logger.warn(f"Annotations PATCH: {body}")
 
-        existing_dataset = get_datasets(indicator_id)
+        existing_dataset = get_datasets(dataset_id)
 
         existing_dataset["annotations"] = json.dumps(body)
 
         patch_response = requests.patch(
-            f"http://data-service_api_1:8000/datasets/{indicator_id}",
+            f"http://data-service_api_1:8000/datasets/{dataset_id}",
             json=existing_dataset,
         )
 
@@ -470,7 +468,7 @@ def patch_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
                     qualifier_list.append(feature)
                 feature_payload = {
                     "id": 0,
-                    "dataset_id": indicator_id,
+                    "dataset_id": dataset_id,
                     "description": feature["description"],
                     "display_name": feature["display_name"],
                     "name": feature["name"],
@@ -483,7 +481,7 @@ def patch_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
             for feature in qualifier_list:
                 qualifier_payload = {
                     "id": 0,
-                    "dataset_id": indicator_id,
+                    "dataset_id": dataset_id,
                     "description": feature["description"],
                     "display_name": feature["display_name"],
                     "name": feature["name"],
@@ -501,27 +499,27 @@ def patch_annotation(payload: MetadataSchema.MetaModel, indicator_id: str):
 
         return Response(
             status_code=status.HTTP_201_CREATED,
-            headers={"location": f"/api/annotations/{indicator_id}"},
-            content=f"Updated annotation with id = {indicator_id}",
+            headers={"location": f"/api/annotations/{dataset_id}"},
+            content=f"Updated annotation with id = {dataset_id}",
         )
     except Exception as e:
         logger.exception(e)
         return Response(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=f"Could not update annotation with id = {indicator_id}",
+            content=f"Could not update annotation with id = {dataset_id}",
         )
 
 
-@router.post("/datasets/{indicator_id}/upload")
+@router.post("/datasets/{dataset_id}/upload")
 def upload_file(
-    indicator_id: str,
+    dataset_id: str,
     file: UploadFile = File(...),
     filename: Optional[str] = None,
     append: Optional[bool] = False,
 ):
     original_filename = file.filename
     _, ext = os.path.splitext(original_filename)
-    dir_path = os.path.join(settings.DATASET_STORAGE_BASE_URL, indicator_id)
+    dir_path = os.path.join(settings.DATASET_STORAGE_BASE_URL, dataset_id)
     if filename is None:
         if append:
             filenum = len(
@@ -536,23 +534,23 @@ def upload_file(
             filename = f"raw_data{ext}"
 
     # Upload file
-    dest_path = os.path.join(settings.DATASET_STORAGE_BASE_URL, indicator_id, filename)
+    dest_path = os.path.join(settings.DATASET_STORAGE_BASE_URL, dataset_id, filename)
     put_rawfile(path=dest_path, fileobj=file.file)
 
     return Response(
         status_code=status.HTTP_201_CREATED,
         headers={
-            "location": f"/api/datasets/{indicator_id}",
+            "location": f"/api/datasets/{dataset_id}",
             "content-type": "application/json",
         },
-        content=json.dumps({"id": indicator_id, "filename": filename}),
+        content=json.dumps({"id": dataset_id, "filename": filename}),
     )
 
 
-@router.get("/datasets/{indicator_id}/verbose")
-def get_all_indicator_info(indicator_id: str):
-    indicator = get_datasets(indicator_id)
-    annotations = get_annotations(indicator_id)
+@router.get("/datasets/{dataset_id}/verbose")
+def get_all_indicator_info(dataset_id: str):
+    indicator = get_datasets(dataset_id)
+    annotations = get_annotations(dataset_id)
 
     verbose_return_object = {"datasets": indicator, "annotations": annotations}
 
@@ -578,19 +576,19 @@ def validate_date(payload: IndicatorSchema.DateValidationRequestSchema):
     }
 
 
-@router.get("/datasets/{indicator_id}/data")
-async def get_data(indicator_id: str):
+@router.get("/datasets/{dataset_id}/data")
+async def get_data(dataset_id: str):
     """Get representation of dataset as 2d array (list of lists).
 
     Args:
-        indicator_id (str): The UUID of the dataset to return a preview of.
+        dataset_id (str): The UUID of the dataset to return a preview of.
 
     Returns:
         JSON: Returns a json object containing the preview for the dataset.
     """
     try:
         rawfile_path = os.path.join(
-            settings.DATASET_STORAGE_BASE_URL, indicator_id, "raw_data.csv"
+            settings.DATASET_STORAGE_BASE_URL, dataset_id, "raw_data.csv"
         )
         file = get_rawfile(rawfile_path)
         df = pd.read_csv(file, delimiter=",").fillna("")
@@ -623,19 +621,19 @@ async def get_data(indicator_id: str):
         )
 
 
-@router.post("/datasets/{indicator_id}/data")
-async def update_data(indicator_id: str, payload: List[List[Any]]):
+@router.post("/datasets/{dataset_id}/data")
+async def update_data(dataset_id: str, payload: List[List[Any]]):
     """Update representation of dataset as 2d array (list of lists).
 
     Args:
-        indicator_id (str): The UUID of the dataset to return a preview of.
+        dataset_id (str): The UUID of the dataset to return a preview of.
 
     Returns:
         JSON: Returns a json object containing the preview for the dataset.
     """
     try:
         rawfile_path = os.path.join(
-            settings.DATASET_STORAGE_BASE_URL, indicator_id, "raw_data.csv"
+            settings.DATASET_STORAGE_BASE_URL, dataset_id, "raw_data.csv"
         )
         logger.warn(payload)
         df = pd.DataFrame.from_records(data=payload[1:], columns=payload[0])
@@ -660,9 +658,9 @@ async def update_data(indicator_id: str, payload: List[List[Any]]):
         )
 
 
-@router.post("/datasets/{indicator_id}/preview/{preview_type}")
+@router.post("/datasets/{dataset_id}/preview/{preview_type}")
 async def create_preview(
-    indicator_id: str,
+    dataset_id: str,
     preview_type: IndicatorSchema.PreviewType,
     filename: Optional[str] = Query(None),
     filepath: Optional[str] = Query(None),
@@ -670,7 +668,7 @@ async def create_preview(
     """Get preview for a dataset.
 
     Args:
-        indicator_id (str): The UUID of the dataset to return a preview of.
+        dataset_id (str): The UUID of the dataset to return a preview of.
 
     Returns:
         JSON: Returns a json object containing the preview for the dataset.
@@ -694,8 +692,8 @@ async def create_preview(
             else:
                 rawfile_path = os.path.join(
                     settings.DATASET_STORAGE_BASE_URL,
-                    indicator_id,
-                    f"{indicator_id}{file_suffix}.parquet.gzip",
+                    dataset_id,
+                    f"{dataset_id}{file_suffix}.parquet.gzip",
                 )
 
             file = get_rawfile(rawfile_path)
@@ -703,8 +701,8 @@ async def create_preview(
             try:
                 strparquet_path = os.path.join(
                     settings.DATASET_STORAGE_BASE_URL,
-                    indicator_id,
-                    f"{indicator_id}_str{file_suffix}.parquet.gzip",
+                    dataset_id,
+                    f"{dataset_id}_str{file_suffix}.parquet.gzip",
                 )
                 file = get_rawfile(strparquet_path)
                 df_str = pd.read_parquet(file)
@@ -717,7 +715,7 @@ async def create_preview(
                 rawfile_path = os.path.join(settings.DATASET_STORAGE_BASE_URL, filepath)
             else:
                 rawfile_path = os.path.join(
-                    settings.DATASET_STORAGE_BASE_URL, indicator_id, "raw_data.csv"
+                    settings.DATASET_STORAGE_BASE_URL, dataset_id, "raw_data.csv"
                 )
             file = get_rawfile(rawfile_path)
             df = pd.read_csv(file, delimiter=",")
