@@ -16,7 +16,7 @@ services:
       ]
     volumes:
       - ./api:/api
-      - ../datasets:/datasets
+      - dataset-storage:/datasets
     env_file:
       - envfile
     environment:
@@ -65,7 +65,7 @@ services:
     depends_on:
       - redis
     volumes:
-      - ../datasets:/datasets
+      - dataset-storage:/datasets
 
 networks:
   data-annotation-stack:
@@ -76,3 +76,4 @@ volumes:
   dmc-data-results:
   dmc-data-mappers:
   dmc-data-model_configs:
+  dataset-storage:
