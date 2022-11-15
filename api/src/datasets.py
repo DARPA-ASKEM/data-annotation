@@ -1,15 +1,10 @@
 from __future__ import annotations
 
-import csv
-import io
 import re
 import time
-import zlib
-import uuid
 from datetime import datetime
 import tempfile
-from typing import Any, Dict, Generator, List, Optional
-from urllib.parse import urlparse
+from typing import Any, Dict, List, Optional
 
 import json
 import pandas as pd
@@ -34,7 +29,13 @@ from validation import IndicatorSchema, DojoSchema, MetadataSchema
 from src.settings import settings
 
 from src.dojo import search_and_scroll
-from src.utils import put_rawfile, get_rawfile, list_files, NpEncoder
+from src.utils import (
+    put_rawfile,
+    get_rawfile,
+    list_files,
+    stream_csv_from_data_paths,
+    compress_stream,
+)
 from validation.IndicatorSchema import (
     # DataRepresentationSchema,
     IndicatorMetadataSchema,
@@ -123,7 +124,9 @@ def update_indicator(
 
     id = payload["id"]
     dataset_payload = {**payload}
-    dataset_payload["annotations"] = json.dumps(dataset_payload["annotations"])
+    annotations = dataset_payload["annotations"]
+    annotations["data_paths"] = dataset_payload["data_paths"]
+    dataset_payload["annotations"] = json.dumps(annotations)
 
     response = requests.patch(
         f"http://data-service_api_1:8000/datasets/{id}",
@@ -230,64 +233,18 @@ def publish_indicator(dataset_id: str):
     )
 
 
-# UNMODIFIED
-@router.get("/datasets/{dataset_id}/download/csv")
-def get_csv(dataset_id: str, request: Request):
-    try:
-        indicator = es.get(index="datasets", id=dataset_id)["_source"]
-    except Exception as e:
-        logger.exception(e)
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-
-    async def iter_csv():
-        # Build single dataframe
-        df = pd.concat(pd.read_parquet(file) for file in indicator["data_paths"])
-
-        # Ensure pandas floats are used because vanilla python ones are problematic
-        df = df.fillna("").astype(
-            {
-                col: "str"
-                for col in df.select_dtypes(include=["float32", "float64"]).columns
-            },
-            # Note: This links it to the previous `df` so not a full copy
-            copy=False,
-        )
-
-        # Prepare for writing CSV to a temporary buffer
-        buffer = io.StringIO()
-        writer = csv.writer(buffer)
-
-        # Write out the header row
-        writer.writerow(df.columns)
-
-        yield buffer.getvalue()
-        buffer.seek(
-            0
-        )  # To clear the buffer we need to seek back to the start and truncate
-        buffer.truncate()
-
-        # Iterate over dataframe tuples, writing each one out as a CSV line one at a time
-        for record in df.itertuples(index=False, name=None):
-            writer.writerow(str(i) for i in record)
-            yield buffer.getvalue()
-            buffer.seek(0)
-            buffer.truncate()
-
-    async def compress(content):
-        compressor = zlib.compressobj()
-        async for buff in content:
-            yield compressor.compress(buff.encode())
-        yield compressor.flush()
+@router.post("/datasets/download/csv")
+def get_csv(request: Request, data_path_list: List[str] = Query(...)):
 
     if "deflate" in request.headers.get("accept-encoding", ""):
         return StreamingResponse(
-            compress(iter_csv()),
+            compress_stream(stream_csv_from_data_paths(data_path_list)),
             media_type="text/csv",
             headers={"Content-Encoding": "deflate"},
         )
     else:
         return StreamingResponse(
-            iter_csv(),
+            stream_csv_from_data_paths(data_path_list),
             media_type="text/csv",
         )
 
