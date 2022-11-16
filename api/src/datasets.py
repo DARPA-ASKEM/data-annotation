@@ -157,7 +157,9 @@ def patch_indicator(payload: IndicatorSchema.IndicatorMetadataSchema, dataset_id
 
 @router.get("/datasets/latest")
 def get_latest_datasets(size=100):
-    dataArray = requests.get(f"http://data-service_api_1:8000/datasets?count={size}")
+    dataArray = requests.get(
+        f"http://data-service_api_1:8000/datasets?page_size={size}"
+    )
     logger.warn(f"Data Array: {dataArray}")
     return dataArray.json()
 
@@ -351,9 +353,26 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
             json=existing_dataset,
         )
 
-        for feature in body["annotations"]["feature"]:
-            logger.info(feature)
-            if "qualifies" in feature:
+        try:
+            qualifier_list = []
+            for feature in body["annotations"]["feature"]:
+                logger.info(feature)
+                if feature["qualifies"]:
+                    qualifier_list.append(feature)
+                feature_payload = {
+                    "id": 0,
+                    "dataset_id": dataset_id,
+                    "description": feature["description"],
+                    "display_name": feature["display_name"],
+                    "name": feature["name"],
+                    "value_type": feature["feature_type"],
+                }
+                feature_response = requests.post(
+                    f"http://data-service_api_1:8000/datasets/features",
+                    json=feature_payload,
+                )
+
+            for feature in qualifier_list:
                 qualifier_payload = {
                     "id": 0,
                     "dataset_id": dataset_id,
@@ -362,20 +381,16 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     "name": feature["name"],
                     "value_type": feature["feature_type"],
                 }
+                post_payload = {
+                    "payload": qualifier_payload,
+                    "qualifies_array": feature["qualifies"],
+                }
                 qualifier_response = requests.post(
-                    f"http://data-service_api_1:8000/qualifiers", json=qualifier_payload
+                    f"http://data-service_api_1:8000/datasets/qualifiers",
+                    json=post_payload,
                 )
-            feature_payload = {
-                "id": 0,
-                "dataset_id": dataset_id,
-                "description": feature["description"],
-                "display_name": feature["display_name"],
-                "name": feature["name"],
-                "value_type": feature["feature_type"],
-            }
-            feature_response = requests.post(
-                f"http://data-service_api_1:8000/features", json=feature_payload
-            )
+        except:
+            logger.warn("No annotations currently")
 
         return Response(
             status_code=status.HTTP_201_CREATED,
@@ -432,7 +447,8 @@ def patch_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     "value_type": feature["feature_type"],
                 }
                 feature_response = requests.post(
-                    f"http://data-service_api_1:8000/features", json=feature_payload
+                    f"http://data-service_api_1:8000/datasets/features",
+                    json=feature_payload,
                 )
 
             for feature in qualifier_list:
@@ -449,7 +465,8 @@ def patch_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     "qualifies_array": feature["qualifies"],
                 }
                 qualifier_response = requests.post(
-                    f"http://data-service_api_1:8000/qualifiers", json=post_payload
+                    f"http://data-service_api_1:8000/datasets/qualifiers",
+                    json=post_payload,
                 )
         except:
             logger.warn("No annotations currently")
