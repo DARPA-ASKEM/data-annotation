@@ -84,7 +84,7 @@ class Maintainer(BaseModel):
     website: Optional[str] = Field(
         None,
         description="Dataset source website",
-        examples=["https://databank.worldbank.org/source/world-development-datasets"],
+        examples=["https://databank.worldbank.org/source/world-development-indicators"],
         title="Dataset Website",
     )
 
@@ -300,7 +300,7 @@ class IndicatorMetadataSchema(BaseModel):
         ...,
         description="The description of the dataset.",
         examples=[
-            "World Development Datasets are the World Bank's compilation of relevant, high-quality, and internationally comparable statistics about global development. The global database contains 1,600 time series datasets for 217 economies and more than 40 country groups, with data for many datasets going back more than 50 years.  There are ~1400 datasets for Ethiopia at the National level.  This data was pulled by the World Modelers program in September 2020."
+            "World Development Indicators are the World Bank's compilation of relevant, high-quality, and internationally comparable statistics about global development. The global database contains 1,600 time series datasets for 217 economies and more than 40 country groups, with data for many datasets going back more than 50 years.  There are ~1400 datasets for Ethiopia at the National level.  This data was pulled by the World Modelers program in September 2020."
         ],
         title="Dataset Description",
     )
