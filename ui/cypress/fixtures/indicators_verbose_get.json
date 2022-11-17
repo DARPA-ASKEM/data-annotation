@@ -1,5 +1,5 @@
 {
-    "indicators": {
+    "datasets": {
         "id": "test-guid",
         "name": "A better name",
         "family_name": null,

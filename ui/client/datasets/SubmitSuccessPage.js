@@ -74,14 +74,14 @@ export default withStyles(({ spacing }) => ({
           >
             Register Another Dataset
           </Button>
-            &nbsp;
+          &nbsp;
           <Button
             size="large"
             to={`/dataset_summary?dataset=${datasetInfo?.id}`}
             component={Link}
           >
 
-            View in Dojo
+            View Registration
           </Button>
         </div>
 

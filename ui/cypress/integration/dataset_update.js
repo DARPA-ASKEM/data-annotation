@@ -13,14 +13,14 @@ function mockHttpRequests() {
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/indicators'
+    url: '/api/dojo/datasets'
   }, {
-    fixture: 'indicators_post.json'
+    fixture: 'datasets_post.json'
   });
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/indicators/*/upload*'
+    url: '/api/dojo/datasets/*/upload*'
   }, {
     "id": "test-guid",
     "filename": "raw_data.csv"
@@ -28,51 +28,51 @@ function mockHttpRequests() {
 
   cy.intercept({
     method: 'PATCH',
-    url: '/api/dojo/indicators/*/annotations'
+    url: '/api/dojo/datasets/*/annotations'
   }, "Updated annotation with id = test-guid");
 
   cy.intercept({
     method: 'GET',
-    url: '/api/dojo/indicators/*/annotations*'
-  }, {fixture: 'indicators_annotations_get_prepopulated.json'}).as('DatasetAnnotationsGETStub');
+    url: '/api/dojo/datasets/*/annotations*'
+  }, { fixture: 'datasets_annotations_get_prepopulated.json' }).as('DatasetAnnotationsGETStub');
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/indicators/*/preview/raw*'
-  }, {fixture: 'indicators_preview_raw_post.json'});
+    url: '/api/dojo/datasets/*/preview/raw*'
+  }, { fixture: 'datasets_preview_raw_post.json' });
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/indicators/*/preview/processed*'
-  }, {fixture: 'indicators_preview_processed_post.json'});
+    url: '/api/dojo/datasets/*/preview/processed*'
+  }, { fixture: 'datasets_preview_processed_post.json' });
 
   // This is done to add mixmasta/jobs results to datasetInfo
   // TODO, should we change to PATCH, to simplify available stepper/flows?
   // PUT will reset some values.
   cy.intercept(
     'PUT',
-    '/api/dojo/indicators',
+    '/api/dojo/datasets',
     {});
 
   cy.intercept(
     'PATCH',
-    '/api/dojo/indicators*',
+    '/api/dojo/datasets*',
     {});
 
   cy.intercept({
     method: 'PUT',
-    url: '/api/dojo/indicators/*/publish*'
+    url: '/api/dojo/datasets/*/publish*'
   }, {});
 
   cy.intercept({
-    url:'/api/dojo/indicators/*/verbose*',
+    url: '/api/dojo/datasets/*/verbose*',
     method: 'GET'
-  }, {fixture: 'indicators_verbose_get.json'}).as('DatasetsVerboseGETStub');
+  }, { fixture: 'datasets_verbose_get.json' }).as('DatasetsVerboseGETStub');
 
   cy.intercept({
-    url:'/api/dojo/indicators/validate_date*',
+    url: '/api/dojo/datasets/validate_date*',
     method: 'POST'
-  }, {"format":"%Y-%m-%d","valid":true}).as('ValidateFormatStub');
+  }, { "format": "%Y-%m-%d", "valid": true }).as('ValidateFormatStub');
 
 }
 
@@ -98,12 +98,12 @@ describe('Dataset Update Metadata Flow', function () {
     cy.visit('/datasets/update/register/test-guid');
 
     cy
-      .findByRole('textbox', {name: /^Name/i})
+      .findByRole('textbox', { name: /^Name/i })
       .as('DatasetName')
       .should('have.value', 'A better name');
 
     cy
-      .findByRole('textbox', {name: /^Description/i})
+      .findByRole('textbox', { name: /^Description/i })
       .as('DatasetDescription')
       .should('have.value', 'A description, yo!');
 
@@ -121,7 +121,7 @@ describe('Dataset Update Metadata Flow', function () {
       .should('exist');
 
     // Submit / navigate to next
-    cy.findByRole('button', {name: /^next/i}).click();
+    cy.findByRole('button', { name: /^next/i }).click();
 
     cy.wait(10);
 
@@ -132,17 +132,17 @@ describe('Dataset Update Metadata Flow', function () {
     // ====== Annotate the date column ==============
     cy.findByText('date').click();
 
-    cy.findAllByRole('button', {name: /^type/i})
+    cy.findAllByRole('button', { name: /^type/i })
       .should('have.class', 'Mui-disabled');
 
-    cy.findByRole('checkbox', {name: /This is my primary date field This is my primary date field/i})
+    cy.findByRole('checkbox', { name: /This is my primary date field This is my primary date field/i })
       .should('be.disabled');
 
-    cy.findByRole('textbox', {name: /Description/i})
+    cy.findByRole('textbox', { name: /Description/i })
       .clear()
       .type('A new editable description');
 
-    cy.findByRole('button', {name: /^save/i})
+    cy.findByRole('button', { name: /^save/i })
       .click();
 
     // ========== Annotate the value column as feature =============
@@ -158,29 +158,29 @@ describe('Dataset Update Metadata Flow', function () {
     cy.get('@ColorColumnLabel')
       .click();
 
-    cy.findAllByRole('button', {name: /type/i})
+    cy.findAllByRole('button', { name: /type/i })
       .should('have.class', 'Mui-disabled');
 
-    cy.findAllByRole('textbox', {name: /^Description/i})
+    cy.findAllByRole('textbox', { name: /^Description/i })
       .type(' sample column description for a feature');
 
-    cy.findByRole('textbox', {name: /^units/i})
+    cy.findByRole('textbox', { name: /^units/i })
       .type('mmmm');
 
-    cy.findAllByRole('button', {name: /clear/i})
+    cy.findAllByRole('button', { name: /clear/i })
       .should('be.disabled');
 
-    cy.findAllByRole('button', {name: /save/i}).click();
+    cy.findAllByRole('button', { name: /save/i }).click();
 
     // READY TO SUBMIT ANNOTATE step
 
-    cy.findAllByRole('button', {name: /^Next$/i}).click();
+    cy.findAllByRole('button', { name: /^Next$/i }).click();
 
     cy.url().should('not.match', /datasets\/update\/process\/.+\?filename=raw_data.csv/);
 
     cy.url().should('match', /datasets\/update\/preview\/.+\?filename=raw_data.csv/);
 
-    cy.findAllByRole('button', {name: /^submit to dojo$/i, timeout: 1000}).click();
+    cy.findAllByRole('button', { name: /^submit to dojo$/i, timeout: 1000 }).click();
 
     // ASSERTIONS
 

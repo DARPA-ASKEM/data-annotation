@@ -24,29 +24,12 @@ services:
       - REDIS_HOST
       - DKG_URL
     networks:
-      - dojo-stack
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-  elasticsearch:
-    env_file:
-      - envfile
-    networks:
-      - dojo-stack
-    healthcheck:
-      interval: 3s
-      retries: 20
-      test:
-        - CMD
-        - curl
-        - --fail
-        - http://localhost:9200/_cluster/health
-      timeout: 3s
+      - data-annotation-stack
   redis:
     env_file:
       - envfile
     networks:
-      - dojo-stack
+      - data-annotation-stack
   ui:
     build:
       context: ./ui/
@@ -73,21 +56,21 @@ services:
       - --host
       - 0.0.0.0
     networks:
-      - dojo-stack
+      - data-annotation-stack
   rqworker:
     env_file:
       - envfile
     networks:
-      - dojo-stack
+      - data-annotation-stack
     depends_on:
       - redis
     volumes:
       - dataset-storage:/datasets
 
 networks:
-  dojo-stack:
+  data-annotation-stack:
     driver: bridge
-    name: dojo-stack
+    name: data-annotation-stack
 
 volumes:
   dmc-data-results:

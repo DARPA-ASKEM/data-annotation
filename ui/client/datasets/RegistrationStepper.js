@@ -129,7 +129,7 @@ function getUpdateRawFileName(uploadedRawFileNames) {
   const firstFileMatch = uploadedRawFileNames.find(fileName => fileName.startsWith('raw_data.'));
 
   if (!firstFileMatch) {
-    throw(new Error('Unable to update a Dataset without a previously uploaded file.'));
+    throw (new Error('Unable to update a Dataset without a previously uploaded file.'));
   }
 
   return firstFileMatch;
@@ -194,7 +194,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
 
       const result = axios({
         method: 'get',
-        url: `/api/dojo/indicators/${datasetId}/verbose`,
+        url: `/api/dojo/datasets/${datasetId}/verbose`,
       }).then((result) => {
 
         /* Set loaded dataset info, uploaded files data, and annotations */
@@ -228,7 +228,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
         setUploadedFilesData(uploadedFiles);
 
         setDatasetInfo({
-          ...result.data.indicators,
+          ...result.data.datasets,
           fileData: {
             raw: {
               uploaded: Boolean(uploadedFileName),
@@ -283,7 +283,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
     }
   };
 
-  const handleNext = ({dataset, filename, filepath, ...props}={}) => {
+  const handleNext = ({ dataset, filename, filepath, ...props } = {}) => {
     const currentStep = flow.steps[activeStep];
     const nextStep = flow.steps[activeStep + 1];
     const datasetId_ = datasetInfo.id || dataset?.id;
@@ -364,7 +364,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
 
       <div className={classes.contentWrapper}>
         <ErrorBoundary FallbackComponent={DefaultErrorFallback}>
-          { displayFormStep() }
+          {displayFormStep()}
         </ErrorBoundary>
       </div>
 

@@ -3,12 +3,13 @@ import logging
 import uvicorn
 from elasticsearch import Elasticsearch
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from src import (
     data,
     dkg,
     dojo,
-    indicators,
+    datasets,
     ui,
 )
 from src.settings import settings
@@ -17,10 +18,17 @@ logger = logging.getLogger(__name__)
 
 api = FastAPI(docs_url="/")
 api.include_router(dojo.router, tags=["Dojo"])
-api.include_router(indicators.router, tags=["Indicators"])
+api.include_router(datasets.router, tags=["Datasets"])
 api.include_router(dkg.router, tags=["DKG"])
 api.include_router(ui.router, prefix="/ui", tags=["Dojo UI"])
 api.include_router(data.router, tags=["Data"])
+api.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def setup_elasticsearch_indexes():
@@ -38,7 +46,7 @@ def setup_elasticsearch_indexes():
         },
         "configs": {},
         "directives": {},
-        "indicators": {
+        "datasets": {
             "mappings": {
                 "properties": {
                     "created_at": {"type": "long"},
@@ -149,12 +157,12 @@ def setup_elasticsearch_indexes():
         "outputfiles": {},
         "runs": {},
     }
-    es = Elasticsearch([settings.ELASTICSEARCH_URL], port=settings.ELASTICSEARCH_PORT)
+    # es = Elasticsearch([settings.ELASTICSEARCH_URL], port=settings.ELASTICSEARCH_PORT)
 
-    for idx, config in indices.items():
-        if not es.indices.exists(index=idx):
-            logger.info(f"Creating index {idx}")
-            es.indices.create(index=idx, body=config)
+    # for idx, config in indices.items():
+    #     if not es.indices.exists(index=idx):
+    #         logger.info(f"Creating index {idx}")
+    #         es.indices.create(index=idx, body=config)
 
 
 def print_debug_routes() -> None:

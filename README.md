@@ -20,13 +20,19 @@ To force rebuild all images: `$ make rebuild all`
 
 To view logs: `$ make logs` or `$ docker-compose logs {service-name}`
 
+- NOTE: Please make sure that the TERArium Data Service (TDS) is also running. Follow instructions for deployment in the README [here](https://github.com/DARPA-ASKEM/data-service)
+
 
 ## Endpoints
 
 * UI: http://localhost:8081/
 * API: http://localhost:8000/
-* Elasticsearch: http://localhost:9200/
+* Elasticsearch: http://localhost:9200/ - NOTE: elastic-search is going to be deprecated from the data-annotation stack.
 * Redis: http://localhost:6379/
+
+## Information storage
+
+All info from the registered datasets will be stored in the TERArium Data Service (TDS). 
 
 # Deploying
 
@@ -40,10 +46,10 @@ To run the stack, the following services must be run:
 
 To generate the static files for the UI:
 ```bash
-cd phantom
+cd ui
 NODE_OPTIONS=--openssl-legacy-provider make compile
 ```
-The compiled files required for hosting will be located in the `phantom-askem/ui/dist` folder.
+The compiled files required for hosting will be located in the `ui/dist` folder.
 
 
 ## Loading images to the internal Docker server

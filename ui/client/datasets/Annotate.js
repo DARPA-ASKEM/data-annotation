@@ -45,9 +45,9 @@ export default withStyles(({ spacing }) => ({
   classes, handleNext, handleBack,
   datasetInfo, stepTitle, rawFileName,
   annotations, setAnnotations, onSubmit,
-  addingAnnotationsAllowed=true, useFilepath=false,
+  addingAnnotationsAllowed = true, useFilepath = false,
   modelInfo,
-  fieldsConfig=()=>({})
+  fieldsConfig = () => ({})
 }) => {
   const [internalAnnotations, setInternalAnnotations] = useState({});
   const [multiPartData, setMultiPartData] = useState({});
@@ -73,18 +73,18 @@ export default withStyles(({ spacing }) => ({
 
 
     const fileArg = (useFilepath ? "filepath" : "filename");
-    const previewUrl = `/api/dojo/indicators/${datasetInfo.id}/preview/raw${rawFileName ? `?${fileArg}=${rawFileName}` : ''}`;
+    const previewUrl = `/api/dojo/datasets/${datasetInfo.id}/preview/raw${rawFileName ? `?${fileArg}=${rawFileName}` : ''}`;
 
     const getAnnotations = async () => {
       // TODO verify and document this:
       // Model Output condition: We store STATE in memory (no backing indicator created)
       // So we need to ensure we return the data received from props, and not do a new fetch
       if (annotations?.metadata?.geotime_classify) {
-        return {data: annotations};
+        return { data: annotations };
       }
       else {
         // Load annotations from API, which also include other data unavailable if we don't call this
-        return axios.get(`/api/dojo/indicators/${datasetInfo.id}/annotations`);
+        return axios.get(`/api/dojo/datasets/${datasetInfo.id}/annotations`);
       }
     };
 
@@ -97,7 +97,7 @@ export default withStyles(({ spacing }) => ({
         const { metadata } = serverAnnotationData.data;
 
         const inferred = metadata.geotime_classify;
-        const stats = {histograms: metadata.histograms, statistics: metadata.column_statistics};
+        const stats = { histograms: metadata.histograms, statistics: metadata.column_statistics };
 
         const parsedColumns = prepareColumns(preview.data[0]);
         const { annotations: serverAnnotations } = serverAnnotationData.data;
@@ -125,9 +125,10 @@ export default withStyles(({ spacing }) => ({
 
     const formattedAnnotations = formatAnnotationsOUT(internalAnnotations);
     const backendPayload = { annotations: formattedAnnotations };
+    console.log(backendPayload);
 
     axios
-      .patch(`/api/dojo/indicators/${datasetInfo.id}/annotations`, backendPayload)
+      .patch(`/api/dojo/datasets/${datasetInfo.id}/annotations`, backendPayload)
       .then(handleNext)
       .catch(() => {
         setPromptMessage('Error submitting annotation data.');
@@ -147,7 +148,7 @@ export default withStyles(({ spacing }) => ({
     } else {
       if (onSubmit) {
         const formattedAnnotations = formatAnnotationsOUT(internalAnnotations);
-        onSubmit({annotations, formattedAnnotations, setAnnotations, handleNext});
+        onSubmit({ annotations, formattedAnnotations, setAnnotations, handleNext });
 
       } else {
         submitToBackend();
@@ -169,7 +170,7 @@ export default withStyles(({ spacing }) => ({
     };
 
     try {
-      const response = await axios.post('/api/dojo/indicators/validate_date', payload);
+      const response = await axios.post('/api/dojo/datasets/validate_date', payload);
       return response.data?.valid ? '' : 'Incompatible format';
     } catch (e) {
       // TODO Better error handling
@@ -219,7 +220,7 @@ export default withStyles(({ spacing }) => ({
         errors={errors}
         warnings={warnings}
         onDecline={() => setPreviewPromptOpen(false)}
-        onAccept={() => {if (onSubmit) {onSubmit({annotations, setAnnotations, handleNext})} else {submitToBackend()};}}
+        onAccept={() => { if (onSubmit) { onSubmit({ annotations, setAnnotations, handleNext }) } else { submitToBackend() }; }}
       />
 
       <Prompt

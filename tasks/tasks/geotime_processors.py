@@ -41,7 +41,9 @@ class GeotimeProcessor(BaseProcessor):
             os.makedirs(output_path)
 
         sample_size = min(len(df), 100)
-        df.sample(sample_size).to_csv(f"{output_path}/raw_data_geotime.csv", index=False)
+        df.sample(sample_size).to_csv(
+            f"{output_path}/raw_data_geotime.csv", index=False
+        )
         c_classified = GeoTimeClass.columns_classified(
             f"{output_path}/raw_data_geotime.csv"
         )
@@ -107,11 +109,10 @@ def geotime_classify(context, filename=None):
             "column_statistics": statistics,
             "histograms": histograms,
         }
-
     }
     api_url = os.environ.get("DOJO_HOST")
     request_response = requests.patch(
-        f"{api_url}/indicators/{context['uuid']}/annotations",
+        f"{api_url}/datasets/{context['uuid']}/annotations",
         json=data,
     )
 
@@ -142,7 +143,12 @@ def infer_types(dataframe):
 
 
 def model_output_geotime_classify(context, *args, **kwargs):
-    file_uuid = context['annotations']['metadata']['file_uuid']
-    sample_path = os.path.join(settings.DATASET_STORAGE_BASE_URL, 'model-output-samples', context['uuid'], f'{file_uuid}.csv')
+    file_uuid = context["annotations"]["metadata"]["file_uuid"]
+    sample_path = os.path.join(
+        settings.DATASET_STORAGE_BASE_URL,
+        "model-output-samples",
+        context["uuid"],
+        f"{file_uuid}.csv",
+    )
     filepath = get_rawfile(sample_path)
     return classify(filepath, context)

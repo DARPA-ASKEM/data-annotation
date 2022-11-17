@@ -40,22 +40,22 @@ const NavBar = () => {
   return (
     <AppBar position="static" classes={{ root: classes.appBarRoot }}>
       <Toolbar variant="dense" disableGutters className={classes.toolbar}>
-        <Tooltip title="Dojo home" arrow>
+        <Tooltip title="Data Annotation home" arrow>
           <IconButton
             component={Link}
             to="/"
             size="small"
           >
             <img
-              src="/assets/Dojo_Logo_black.svg"
-              alt="Dojo Logo"
+              src="/assets/terrariumlogo2Cropped.png"
+              alt="TERArium Logo"
               className={classes.dojoIcon}
             />
           </IconButton>
         </Tooltip>
         <span className={classes.spacer} />
         <Button href="https://www.dojo-modeling.com" target="_blank">Documentation</Button>
-        <Button href="https://github.com/dojo-modeling/dojo" target="_blank">GitHub</Button>
+        <Button href="https://github.com/DARPA-ASKEM/data-annotation" target="_blank">GitHub</Button>
       </Toolbar>
     </AppBar>
   );
