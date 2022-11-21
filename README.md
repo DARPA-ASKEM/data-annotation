@@ -12,6 +12,8 @@
 
 ## Running
 
+- NOTE: Please make sure that the TERArium Data Service (TDS) is also running. Follow instructions for deployment in the README [here](https://github.com/DARPA-ASKEM/data-service)
+
 To start all services: `$ make up`
 
 To stop all services: `$ make down`
@@ -19,9 +21,6 @@ To stop all services: `$ make down`
 To force rebuild all images: `$ make rebuild all`
 
 To view logs: `$ make logs` or `$ docker-compose logs {service-name}`
-
-- NOTE: Please make sure that the TERArium Data Service (TDS) is also running. Follow instructions for deployment in the README [here](https://github.com/DARPA-ASKEM/data-service)
-
 
 ## Endpoints
 
