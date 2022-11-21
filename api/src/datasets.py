@@ -51,6 +51,8 @@ router = APIRouter()
 
 es = Elasticsearch([settings.ELASTICSEARCH_URL], port=settings.ELASTICSEARCH_PORT)
 
+tds_api = settings.TDS_API
+
 
 # For created_at times in epoch milliseconds
 def current_milli_time():
@@ -70,7 +72,7 @@ def create_indicator(payload: Dict[Any, Any]):
     }
 
     persons_response = requests.post(
-        "http://data-service_api_1:8000/persons", json=person_payload
+        f"http://{tds_api}:8000/persons", json=person_payload
     )
 
     p_response_obj = persons_response.json()
@@ -95,24 +97,9 @@ def create_indicator(payload: Dict[Any, Any]):
     except:
         logger.debug("No spatial resolution")
 
-    response = requests.post(
-        "http://data-service_api_1:8000/datasets", json=dataset_payload
-    )
+    response = requests.post(f"http://{tds_api}:8000/datasets", json=dataset_payload)
 
     response_obj = response.json()
-
-    # association_payload = {
-    #     "id": 0,
-    #     "person_id": p_response_obj["id"],
-    #     "asset_id": response_obj["id"],
-    #     "type": "dataset",
-    #     "role": "maintainer",
-    # }
-
-    # association_response = requests.post(
-    #     "http://data-service_api_1:8000/associations",
-    #     json=association_payload,
-    # )
 
     return response_obj
 
@@ -129,7 +116,7 @@ def update_indicator(
     dataset_payload["annotations"] = json.dumps(annotations)
 
     response = requests.patch(
-        f"http://data-service_api_1:8000/datasets/{id}",
+        f"http://{tds_api}:8000/datasets/{id}",
         json=dataset_payload,
     )
 
@@ -157,9 +144,7 @@ def patch_indicator(payload: IndicatorSchema.IndicatorMetadataSchema, dataset_id
 
 @router.get("/datasets/latest")
 def get_latest_datasets(size=100):
-    dataArray = requests.get(
-        f"http://data-service_api_1:8000/datasets?page_size={size}"
-    )
+    dataArray = requests.get(f"http://{tds_api}:8000/datasets?page_size={size}")
     logger.warn(f"Data Array: {dataArray}")
     return dataArray.json()
 
@@ -213,7 +198,7 @@ def search_datasets(
 
 @router.get("/datasets/{dataset_id}")
 def get_datasets(dataset_id: str):
-    dataset = requests.get(f"http://data-service_api_1:8000/datasets/{dataset_id}")
+    dataset = requests.get(f"http://{tds_api}:8000/datasets/{dataset_id}")
     return dataset.json()
 
 
@@ -255,7 +240,7 @@ def get_csv(request: Request, data_path_list: List[str] = Query(...)):
 def deprecate_indicator(dataset_id: str):
     try:
         response = requests.post(
-            f"http://data-service_api_1:8000/datasets/deprecate/{dataset_id}"
+            f"http://{tds_api}:8000/datasets/deprecate/{dataset_id}"
         )
     except Exception as e:
         logger.exception(e)
@@ -312,7 +297,7 @@ def post_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
         existing_dataset["annotations"] = json.dumps(body)
 
         patch_response = requests.patch(
-            f"http://data-service_api_1:8000/datasets/{dataset_id}",
+            f"http://{tds_api}:8000/datasets/{dataset_id}",
             json=existing_dataset,
         )
 
@@ -349,7 +334,7 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
         existing_dataset["annotations"] = json.dumps(body)
 
         patch_response = requests.patch(
-            f"http://data-service_api_1:8000/datasets/{dataset_id}",
+            f"http://{tds_api}:8000/datasets/{dataset_id}",
             json=existing_dataset,
         )
 
@@ -368,7 +353,7 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     "value_type": feature["feature_type"],
                 }
                 feature_response = requests.post(
-                    f"http://data-service_api_1:8000/datasets/features",
+                    f"http://{tds_api}:8000/datasets/features",
                     json=feature_payload,
                 )
 
@@ -386,7 +371,7 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     "qualifies_array": feature["qualifies"],
                 }
                 qualifier_response = requests.post(
-                    f"http://data-service_api_1:8000/datasets/qualifiers",
+                    f"http://{tds_api}:8000/datasets/qualifiers",
                     json=post_payload,
                 )
         except:
@@ -428,7 +413,7 @@ def patch_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
         existing_dataset["annotations"] = json.dumps(body)
 
         patch_response = requests.patch(
-            f"http://data-service_api_1:8000/datasets/{dataset_id}",
+            f"http://{tds_api}:8000/datasets/{dataset_id}",
             json=existing_dataset,
         )
 
@@ -447,7 +432,7 @@ def patch_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     "value_type": feature["feature_type"],
                 }
                 feature_response = requests.post(
-                    f"http://data-service_api_1:8000/datasets/features",
+                    f"http://{tds_api}:8000/datasets/features",
                     json=feature_payload,
                 )
 
@@ -465,7 +450,7 @@ def patch_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     "qualifies_array": feature["qualifies"],
                 }
                 qualifier_response = requests.post(
-                    f"http://data-service_api_1:8000/datasets/qualifiers",
+                    f"http://{tds_api}:8000/datasets/qualifiers",
                     json=post_payload,
                 )
         except:

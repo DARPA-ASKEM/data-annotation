@@ -20,7 +20,7 @@ services:
     env_file:
       - envfile
     environment:
-      - DOJO_URL
+      - DATA_ANNOTATION_URL
       - REDIS_HOST
       - DKG_URL
     networks:

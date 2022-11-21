@@ -110,7 +110,7 @@ def geotime_classify(context, filename=None):
             "histograms": histograms,
         }
     }
-    api_url = os.environ.get("DOJO_HOST")
+    api_url = os.environ.get("DATA_ANNOTATION_HOST")
     request_response = requests.patch(
         f"{api_url}/datasets/{context['uuid']}/annotations",
         json=data,

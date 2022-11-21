@@ -15,7 +15,7 @@ baseConfig.devServer.proxy = {
     ws: true,
   },
   '/api/dojo': {
-    target: (process.env.DOJO_URL ? process.env.DOJO_URL : 'http://localhost:8000'),
+    target: (process.env.DATA_ANNOTATION_URL ? process.env.DATA_ANNOTATION_URL : 'http://localhost:8000'),
     pathRewrite: { '^/api/dojo': '' },
     secure: false,
     changeOrigin: true,
