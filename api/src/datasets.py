@@ -51,7 +51,7 @@ router = APIRouter()
 
 es = Elasticsearch([settings.ELASTICSEARCH_URL], port=settings.ELASTICSEARCH_PORT)
 
-tds_api = settings.TDS_API
+tds_host = settings.TDS_HOST
 
 
 # For created_at times in epoch milliseconds
@@ -71,9 +71,7 @@ def create_indicator(payload: Dict[Any, Any]):
         "is_registered": True,
     }
 
-    persons_response = requests.post(
-        f"http://{tds_api}:8000/persons", json=person_payload
-    )
+    persons_response = requests.post(f"{tds_host}/persons", json=person_payload)
 
     p_response_obj = persons_response.json()
 
@@ -97,7 +95,7 @@ def create_indicator(payload: Dict[Any, Any]):
     except:
         logger.debug("No spatial resolution")
 
-    response = requests.post(f"http://{tds_api}:8000/datasets", json=dataset_payload)
+    response = requests.post(f"{tds_host}/datasets", json=dataset_payload)
 
     response_obj = response.json()
 
@@ -116,7 +114,7 @@ def update_indicator(
     dataset_payload["annotations"] = json.dumps(annotations)
 
     response = requests.patch(
-        f"http://{tds_api}:8000/datasets/{id}",
+        f"{tds_host}/datasets/{id}",
         json=dataset_payload,
     )
 
@@ -144,7 +142,7 @@ def patch_indicator(payload: IndicatorSchema.IndicatorMetadataSchema, dataset_id
 
 @router.get("/datasets/latest")
 def get_latest_datasets(size=100):
-    dataArray = requests.get(f"http://{tds_api}:8000/datasets?page_size={size}")
+    dataArray = requests.get(f"{tds_host}/datasets?page_size={size}")
     logger.warn(f"Data Array: {dataArray}")
     return dataArray.json()
 
@@ -198,7 +196,7 @@ def search_datasets(
 
 @router.get("/datasets/{dataset_id}")
 def get_datasets(dataset_id: str):
-    dataset = requests.get(f"http://{tds_api}:8000/datasets/{dataset_id}")
+    dataset = requests.get(f"{tds_host}/datasets/{dataset_id}")
     return dataset.json()
 
 
@@ -239,9 +237,7 @@ def get_csv(request: Request, data_path_list: List[str] = Query(...)):
 @router.put("/datasets/{dataset_id}/deprecate")
 def deprecate_indicator(dataset_id: str):
     try:
-        response = requests.post(
-            f"http://{tds_api}:8000/datasets/deprecate/{dataset_id}"
-        )
+        response = requests.post(f"{tds_host}/datasets/deprecate/{dataset_id}")
     except Exception as e:
         logger.exception(e)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
@@ -297,7 +293,7 @@ def post_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
         existing_dataset["annotations"] = json.dumps(body)
 
         patch_response = requests.patch(
-            f"http://{tds_api}:8000/datasets/{dataset_id}",
+            f"{tds_host}/datasets/{dataset_id}",
             json=existing_dataset,
         )
 
@@ -334,7 +330,7 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
         existing_dataset["annotations"] = json.dumps(body)
 
         patch_response = requests.patch(
-            f"http://{tds_api}:8000/datasets/{dataset_id}",
+            f"{tds_host}/datasets/{dataset_id}",
             json=existing_dataset,
         )
 
@@ -353,7 +349,7 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     "value_type": feature["feature_type"],
                 }
                 feature_response = requests.post(
-                    f"http://{tds_api}:8000/datasets/features",
+                    f"{tds_host}/datasets/features",
                     json=feature_payload,
                 )
 
@@ -371,7 +367,7 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     "qualifies_array": feature["qualifies"],
                 }
                 qualifier_response = requests.post(
-                    f"http://{tds_api}:8000/datasets/qualifiers",
+                    f"{tds_host}/datasets/qualifiers",
                     json=post_payload,
                 )
         except:
@@ -413,7 +409,7 @@ def patch_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
         existing_dataset["annotations"] = json.dumps(body)
 
         patch_response = requests.patch(
-            f"http://{tds_api}:8000/datasets/{dataset_id}",
+            f"{tds_host}/datasets/{dataset_id}",
             json=existing_dataset,
         )
 
@@ -432,7 +428,7 @@ def patch_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     "value_type": feature["feature_type"],
                 }
                 feature_response = requests.post(
-                    f"http://{tds_api}:8000/datasets/features",
+                    f"{tds_host}/datasets/features",
                     json=feature_payload,
                 )
 
@@ -450,7 +446,7 @@ def patch_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     "qualifies_array": feature["qualifies"],
                 }
                 qualifier_response = requests.post(
-                    f"http://{tds_api}:8000/datasets/qualifiers",
+                    f"{tds_host}/datasets/qualifiers",
                     json=post_payload,
                 )
         except:
