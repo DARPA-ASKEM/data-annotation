@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     DATASET_STORAGE_BASE_URL: str
     DATA_ANNOTATION_URL: str
 
-    TDS_HOST: str = "http://data-service-api:8000"
+    TDS_URL: str = "http://data-service-api:8000"
 
     REDIS_HOST: str
     REDIS_PORT: int = 6379
