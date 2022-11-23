@@ -8,7 +8,9 @@ class Settings(BaseSettings):
     ELASTICSEARCH_PORT: int = 9200
 
     DATASET_STORAGE_BASE_URL: str
-    DOJO_URL: str
+    DATA_ANNOTATION_URL: str
+
+    TDS_URL: str = "http://data-service-api:8000"
 
     REDIS_HOST: str
     REDIS_PORT: int = 6379
@@ -24,8 +26,8 @@ class Settings(BaseSettings):
 
     UVICORN_RELOAD: bool = False
 
-    DKG_URL : str
-    DKG_API_PORT : str
+    DKG_URL: str
+    DKG_API_PORT: str
 
     UAZ_URL: str = ""
     UAZ_THRESHOLD: str = ""

@@ -7,7 +7,6 @@ import logging
 
 import botocore
 import boto3
-from settings import settings
 
 # S3 OBJECT
 s3 = boto3.client("s3")
