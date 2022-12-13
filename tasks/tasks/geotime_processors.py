@@ -105,7 +105,10 @@ def geotime_classify(context, filename=None):
     # Type inferencing
     inferred_types = infer_types(df)
     for key in inferred_types:
-        json_final[key]["type_inference"] = inferred_types[key]
+        try:
+            json_final[key]["type_inference"] = inferred_types[key]
+        except KeyError:
+            continue
 
     # Collect column statistics from dataframe
     statistics, histograms = describe_df(df)
