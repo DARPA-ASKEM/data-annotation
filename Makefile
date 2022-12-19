@@ -68,7 +68,7 @@ up:docker-compose.yaml ui/node_modules
 
 .PHONY:up-rebuild
 up-rebuild:docker-compose.yaml ui/node_modules
-	docker-compose up --build -d --remove-orphans 
+	docker-compose up --build -d --remove-orphans
 
 
 
