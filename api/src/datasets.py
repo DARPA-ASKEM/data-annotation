@@ -325,8 +325,6 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
 
         body = json.loads(payload.json(exclude_unset=True))
 
-        logger.warn(f"Annotations PATCH: {body}")
-
         existing_dataset = get_datasets(dataset_id)
 
         existing_dataset["annotations"] = json.dumps(body)
@@ -358,7 +356,7 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                 feature_response = feature_response.json()
                 concept = feature["primary_ontology_id"]
 
-                if concept != "":
+                if concept:
                     feature_id = feature_response["id"]
                     concept_payload = {
                         "curie": concept,
@@ -367,7 +365,7 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                         "status": "obj",
                     }
 
-                    concept_response = requests.post(
+                    requests.post(
                         f"{tds_url}/concepts",
                         json=concept_payload,
                         timeout=100,
@@ -386,7 +384,7 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     "payload": qualifier_payload,
                     "qualifies_array": feature["qualifies"],
                 }
-                qualifier_response = requests.post(
+                requests.post(
                     f"{tds_url}/datasets/qualifiers",
                     json=post_payload,
                 )
@@ -454,7 +452,7 @@ def patch_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                 feature_response = feature_response.json()
                 concept = feature["primary_ontology_id"]
 
-                if concept != "":
+                if concept:
                     feature_id = feature_response["id"]
                     concept_payload = {
                         "curie": concept,
@@ -463,7 +461,7 @@ def patch_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                         "status": "obj",
                     }
 
-                    concept_response = requests.post(
+                    requests.post(
                         f"{tds_url}/concepts",
                         json=concept_payload,
                         timeout=100,
@@ -482,7 +480,7 @@ def patch_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     "payload": qualifier_payload,
                     "qualifies_array": feature["qualifies"],
                 }
-                qualifier_response = requests.post(
+                requests.post(
                     f"{tds_url}/datasets/qualifiers",
                     json=post_payload,
                 )
