@@ -9,7 +9,6 @@ import shutil
 import pandas as pd
 import numpy as np
 
-# from geotime_classify import geotime_classify as gc
 from cartwright import categorize
 
 from base_annotation import BaseProcessor
@@ -38,7 +37,6 @@ class GeotimeProcessor(BaseProcessor):
                 del ret[col_name]["column"]
             return ret
 
-        # GeoTimeClass = gc.GeoTimeClassify(100)
         cartwright = categorize.CartwrightClassify()
         if not os.path.exists(output_path):
             os.makedirs(output_path)
@@ -47,13 +45,9 @@ class GeotimeProcessor(BaseProcessor):
         df.sample(sample_size).to_csv(
             f"{output_path}/raw_data_geotime.csv", index=False
         )
-        # c_classified = GeoTimeClass.columns_classified(
-        #     f"{output_path}/raw_data_geotime.csv"
-        # )
         c_classified = cartwright.categorize(path=f"{output_path}/raw_data_geotime.csv")
 
         try:
-            # c_classifiedConverted = convert_gc(c_classified)
             c_classifiedConverted = convert_gc(c_classified)
             c_classified = c_classifiedConverted
         except Exception as e:
