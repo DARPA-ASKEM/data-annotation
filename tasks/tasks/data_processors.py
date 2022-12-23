@@ -2,11 +2,8 @@ from os import mkdir
 import json
 import os
 import logging
-import requests
-import shutil
 
 import pandas as pd
-from geotime_classify import geotime_classify as gc
 import numpy as np
 
 from utils import get_rawfile

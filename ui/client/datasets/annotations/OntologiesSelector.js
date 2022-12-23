@@ -130,7 +130,7 @@ export default withStyles((theme) => ({
           )}
           <div className={classes.ontologiesBox}>
             <List className={classes.list}>
-              {searchResults.length && searchResults?.map((result) => (
+              {searchResults && searchResults?.map((result) => (
                 <ListItem
                   classes={{ root: classes.listItem }}
                   key={result.id}

@@ -323,7 +323,7 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
     """
     try:
 
-        body = json.loads(payload.json())
+        body = json.loads(payload.json(exclude_unset=True))
 
         existing_dataset = get_datasets(dataset_id)
 
@@ -353,6 +353,24 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     json=feature_payload,
                 )
 
+                feature_response = feature_response.json()
+                concept = feature["primary_ontology_id"]
+
+                if concept:
+                    feature_id = feature_response["id"]
+                    concept_payload = {
+                        "curie": concept,
+                        "type": "features",
+                        "object_id": feature_id,
+                        "status": "obj",
+                    }
+
+                    requests.post(
+                        f"{tds_url}/concepts",
+                        json=concept_payload,
+                        timeout=100,
+                    )
+
             for feature in qualifier_list:
                 qualifier_payload = {
                     "id": 0,
@@ -366,24 +384,23 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     "payload": qualifier_payload,
                     "qualifies_array": feature["qualifies"],
                 }
-                qualifier_response = requests.post(
+                requests.post(
                     f"{tds_url}/datasets/qualifiers",
                     json=post_payload,
                 )
-        except:
-            logger.warn("No annotations currently")
+        except Exception as e:
+            logger.warn(f"No annotations currently, error is: {e}")
 
         return Response(
             status_code=status.HTTP_201_CREATED,
             headers={"location": f"/api/annotations/{dataset_id}"},
-            content=f"Created annotation with id = {dataset_id}",
+            content=f"Updated annotation with id = {dataset_id}",
         )
     except Exception as e:
         logger.exception(e)
-
         return Response(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=f"Could not create annotation with id = {dataset_id}",
+            content=f"Could not update annotation with id = {dataset_id}",
         )
 
 
@@ -432,6 +449,24 @@ def patch_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     json=feature_payload,
                 )
 
+                feature_response = feature_response.json()
+                concept = feature["primary_ontology_id"]
+
+                if concept:
+                    feature_id = feature_response["id"]
+                    concept_payload = {
+                        "curie": concept,
+                        "type": "features",
+                        "object_id": feature_id,
+                        "status": "obj",
+                    }
+
+                    requests.post(
+                        f"{tds_url}/concepts",
+                        json=concept_payload,
+                        timeout=100,
+                    )
+
             for feature in qualifier_list:
                 qualifier_payload = {
                     "id": 0,
@@ -445,12 +480,12 @@ def patch_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
                     "payload": qualifier_payload,
                     "qualifies_array": feature["qualifies"],
                 }
-                qualifier_response = requests.post(
+                requests.post(
                     f"{tds_url}/datasets/qualifiers",
                     json=post_payload,
                 )
-        except:
-            logger.warn("No annotations currently")
+        except Exception as e:
+            logger.warn(f"No annotations currently, error is: {e}")
 
         return Response(
             status_code=status.HTTP_201_CREATED,

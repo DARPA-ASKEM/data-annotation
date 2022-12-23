@@ -8,11 +8,12 @@ import shutil
 
 import pandas as pd
 import numpy as np
-from geotime_classify import geotime_classify as gc
+
+from cartwright import categorize
 
 from base_annotation import BaseProcessor
 from data_processors import describe_df
-from utils import get_rawfile, put_rawfile
+from utils import get_rawfile
 from settings import settings
 
 logging.basicConfig()
@@ -29,14 +30,14 @@ class GeotimeProcessor(BaseProcessor):
 
         def convert_gc(classifications):
             ret = {}
-            for classification in classifications.classifications:
+            for classification in classifications:
                 col_name = classification.column
                 logging.warn(f"Inside converter: {classification}")
                 ret[col_name] = classification.dict()
                 del ret[col_name]["column"]
             return ret
 
-        GeoTimeClass = gc.GeoTimeClassify(100)
+        cartwright = categorize.CartwrightClassify()
         if not os.path.exists(output_path):
             os.makedirs(output_path)
 
@@ -44,18 +45,18 @@ class GeotimeProcessor(BaseProcessor):
         df.sample(sample_size).to_csv(
             f"{output_path}/raw_data_geotime.csv", index=False
         )
-        c_classified = GeoTimeClass.columns_classified(
-            f"{output_path}/raw_data_geotime.csv"
-        )
+        c_classified = cartwright.categorize(path=f"{output_path}/raw_data_geotime.csv")
+
         try:
             c_classifiedConverted = convert_gc(c_classified)
+            c_classified = c_classifiedConverted
         except Exception as e:
             logging.error(f"Error: {e}, Classified object: {c_classified}")
         json.dump(
-            c_classifiedConverted,
+            c_classified,
             open(f"{output_path}/geotime_classification.json", "w"),
         )
-        return c_classifiedConverted
+        return c_classified
 
 
 def classify(filepath, context):
@@ -98,7 +99,10 @@ def geotime_classify(context, filename=None):
     # Type inferencing
     inferred_types = infer_types(df)
     for key in inferred_types:
-        json_final[key]["type_inference"] = inferred_types[key]
+        try:
+            json_final[key]["type_inference"] = inferred_types[key]
+        except KeyError:
+            continue
 
     # Collect column statistics from dataframe
     statistics, histograms = describe_df(df)
