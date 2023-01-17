@@ -61,7 +61,7 @@ class MixmastaProcessor(BaseProcessor):
             f"{context.get('logging_preface', '')} - Running mixmasta processor"
         )
         output_path = datapath
-        mapper_fp = f"{output_path}/mixmasta_ready_annotations.json"  # Filename for json info, will eventually be in Elasticsearch, needs to be written to disk until mixmasta is updated
+        mapper_fp = f"{output_path}/mixmasta_ready_annotations.json"
         raw_data_fp = f"{output_path}/{filename}"  # Raw data
         # Getting admin level to resolve to from annotations
         admin_level = None  # Default to admin1

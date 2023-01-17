@@ -7,16 +7,12 @@ from urllib.parse import urlparse
 from io import StringIO
 from zlib import compressobj
 
-from elasticsearch import Elasticsearch
 import boto3
 import botocore
 import numpy as np
 import pandas as pd
 
 from src.settings import settings
-from validation import ModelSchema
-
-es = Elasticsearch([settings.ELASTICSEARCH_URL], port=settings.ELASTICSEARCH_PORT)
 
 # S3 OBJECT
 s3 = boto3.client("s3")

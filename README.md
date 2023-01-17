@@ -26,7 +26,6 @@ To view logs: `$ make logs` or `$ docker-compose logs {service-name}`
 
 * UI: http://localhost:8081/
 * API: http://localhost:8000/
-* Elasticsearch: http://localhost:9200/ - NOTE: elastic-search is going to be deprecated from the data-annotation stack.
 * Redis: http://localhost:6379/
 
 ## Information storage
@@ -37,7 +36,6 @@ All info from the registered datasets will be stored in the TERArium Data Servic
 
 To run the stack, the following services must be run:
 
-* Elasticsearch
 * Redis
 * Dojo API (dojo/api/Dockerfile)
 * Dojo workers (dojo/workers/rq-worker/Dockerfile)

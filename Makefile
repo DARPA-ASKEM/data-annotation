@@ -23,8 +23,7 @@ init:
 
 .PHONY:rebuild-all
 rebuild-all:
-	docker-compose build --no-cache; \
-	cd $(MIXMASTA_DIR) && docker build . -t mixmasta:dev;
+	docker-compose build --no-cache;
 
 envfile:
 ifeq ($(wildcard envfile),)

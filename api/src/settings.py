@@ -4,8 +4,6 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
 
     BIND_PORT: int = 8000
-    ELASTICSEARCH_URL: str
-    ELASTICSEARCH_PORT: int = 9200
 
     DATASET_STORAGE_BASE_URL: str
     DATA_ANNOTATION_URL: str
@@ -15,11 +13,6 @@ class Settings(BaseSettings):
     REDIS_HOST: str
     REDIS_PORT: int = 6379
 
-    DOCKERHUB_URL: str = ""
-    DOCKERHUB_USER: str = ""
-    DOCKERHUB_PWD: str = ""
-    DOCKERHUB_ORG: str = "jataware"
-
     DATASET_STORAGE_BASE_URL: str = "file:///datasets/"
 
     CONFIG_STORAGE_BASE: str = "file:///dojo/configs/"
@@ -28,10 +21,6 @@ class Settings(BaseSettings):
 
     DKG_URL: str
     DKG_API_PORT: str
-
-    UAZ_URL: str = ""
-    UAZ_THRESHOLD: str = ""
-    UAZ_HITS: str = ""
 
     class Config:
         case_sensitive = True
