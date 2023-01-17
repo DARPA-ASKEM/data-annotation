@@ -138,56 +138,9 @@ def patch_indicator(payload: IndicatorSchema.IndicatorMetadataSchema, dataset_id
 
 @router.get("/datasets/latest")
 def get_latest_datasets(size=100):
-    dataArray = requests.get(f"{tds_url}/datasets?page_size={size}")
+    dataArray = requests.get(f"{tds_url}/datasets?page_size={size}&is_sim_run=false")
     logger.warn(f"Data Array: {dataArray}")
     return dataArray.json()
-
-
-# # UNMODIFIED
-# @router.get("/datasets", response_model=DojoSchema.IndicatorSearchResult)
-# def search_datasets(
-#     query: str = Query(None),
-#     size: int = 10,
-#     scroll_id: str = Query(None),
-#     include_ontologies: bool = True,
-#     include_geo: bool = True,
-# ) -> DojoSchema.IndicatorSearchResult:
-#     indicator_data = search_and_scroll(
-#         index="datasets", size=size, query=query, scroll_id=scroll_id
-#     )
-#     # if request wants ontologies and geo data return all
-#     if include_ontologies and include_geo:
-#         return indicator_data
-#     else:
-#         for indicator in indicator_data["results"]:
-#             if not include_ontologies:
-#                 for q_output in indicator["qualifier_outputs"]:
-#                     try:
-#                         q_output["ontologies"] = {
-#                             "concepts": None,
-#                             "processes": None,
-#                             "properties": None,
-#                         }
-#                     except Exception as e:
-#                         print(e)
-#                         logger.exception(e)
-#                 for outputs in indicator["outputs"]:
-#                     try:
-#                         outputs["ontologies"] = {
-#                             "concepts": None,
-#                             "processes": None,
-#                             "properties": None,
-#                         }
-#                     except Exception as e:
-#                         print(e)
-#                         logger.exception(e)
-#             if not include_geo:
-#                 indicator["geography"]["country"] = []
-#                 indicator["geography"]["admin1"] = []
-#                 indicator["geography"]["admin2"] = []
-#                 indicator["geography"]["admin3"] = []
-
-#         return indicator_data
 
 
 @router.get("/datasets/{dataset_id}")
