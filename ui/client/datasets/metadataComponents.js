@@ -15,7 +15,6 @@ import * as yup from 'yup';
 import get from 'lodash/get';
 
 import { withStyles } from '@material-ui/core/styles';
-import DomainsAutocomplete from '../components/DomainsAutocomplete';
 
 import { Navigation } from '.';
 import { FormAwareTextField, FormAwareSelect } from './FormFields';
@@ -172,18 +171,6 @@ export const BaseData = (props) => {
         minRows="2"
         disabled={isReadOnlyMode}
       />
-
-      <div style={{ margin: '0.5rem 0' }}>
-        <DomainsAutocomplete
-          formik={formik}
-          label="Domains"
-          textFieldProps={{
-            placeholder: isEmpty(formik.values.domains) ? 'Select as many as appropriate' : '',
-            InputLabelProps: { shrink: true }
-          }}
-          disabled={isReadOnlyMode}
-        />
-      </div>
 
       <FileSelector
         formik={formik}

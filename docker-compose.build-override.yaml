@@ -17,8 +17,6 @@ services:
     volumes:
       - ./api:/api
       - dataset-storage:/datasets
-    env_file:
-      - envfile
     environment:
       - DATA_ANNOTATION_URL
       - REDIS_HOST
@@ -58,6 +56,8 @@ services:
     networks:
       - data-annotation-stack
   rqworker:
+    build:
+      context: ./tasks/  
     env_file:
       - envfile
     networks:
