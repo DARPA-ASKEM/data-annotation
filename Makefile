@@ -9,7 +9,6 @@ MIXMASTA_DIR = mixmasta
 UI_DIR = ui
 RQ_DIR = tasks
 WORKERS_DIR = workers
-COMPOSE_DIRS := $(DOJO_DMC_DIR)
 COMPOSE_FILES := $(DOJO_API_DIR)/docker-compose.yaml $(RQ_DIR)/docker-compose.yaml
 TEMP_COMPOSE_FILES := $(foreach file,$(subst /,_,$(COMPOSE_FILES)),temp_$(file))
 
