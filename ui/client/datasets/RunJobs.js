@@ -63,7 +63,7 @@ const RunJobs = withStyles(({ spacing }) => ({
   const updateJobData = ({firstRun, ...args} = {}) => {
     const job = jobs[jobIndex];
     // const job_id = job.id;
-    const url = `/api/dojo/job/${datasetInfo.id}/${job.id}`;
+    const url = `/api/data_annotation/job/${datasetInfo.id}/${job.id}`;
     let context;
     if (job.send_context) {
       context = {

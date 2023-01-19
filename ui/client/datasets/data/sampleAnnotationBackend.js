@@ -1,5 +1,5 @@
 // part of response from backend for first sampleData.js file only
-// Sample call that would return such data: `/api/dojo/datasets/${datasetInfo.id}/annotations
+// Sample call that would return such data: `/api/data_annotation/datasets/${datasetInfo.id}/annotations
 // This object would be keyed in its reponse within `geoClassify.data.annotations`
 export default {
   "geo": [

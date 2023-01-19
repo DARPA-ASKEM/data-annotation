@@ -67,7 +67,7 @@ const getDatasets = (setDatasets, setDatasetsError, setDatasetsLoading) => {
   // pass along a timestamp to ensure that our url is different every time
   // otherwise the browser may cache the request and we won't see updates if someone
   // deprecates their dataset and comes back to this page
-  const url = '/api/dojo/datasets/latest';
+  const url = '/api/data_annotation/datasets/latest';
   axios.get(url)
     .then((response) => {
       setDatasetsLoading(false);
@@ -95,7 +95,7 @@ function ViewDatasets() {
   useEffect(() => {
     // only do this once when the page loads
     getDatasets(setDatasets, setDatasetsError, setDatasetsLoading);
-    document.title = 'View Datasets - Dojo';
+    document.title = 'View Datasets';
   }, []);
 
   useEffect(() => {

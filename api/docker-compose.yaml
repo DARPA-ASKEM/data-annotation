@@ -10,7 +10,7 @@ services:
     env_file:
       - envfile
     networks:
-      - dojo
+      - data-annotation-stack
 
   redis:
     container_name: redis1
@@ -18,12 +18,8 @@ services:
     ports:
       - 6379:6379
     networks:
-      - dojo
-
-volumes:
-  dojo_esdata:
-    driver: local
+      - data-annotation-stack
 
 networks:
-  dojo:
+  data-annotation-stack:
     driver: bridge

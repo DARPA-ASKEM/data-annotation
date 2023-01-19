@@ -59,9 +59,9 @@ module.exports = {
         changeOrigin: true,
         ws: true,
       },
-      '/api/dojo': {
+      '/api/data_annotation': {
         target: 'http://localhost:8000',
-        pathRewrite: { '^/api/dojo': '' },
+        pathRewrite: { '^/api/data_annotation': '' },
         secure: false,
         changeOrigin: true,
       },

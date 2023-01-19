@@ -16,10 +16,10 @@ const fetcher = async (url) => {
   return rjson;
 };
 
-// Datasets were previously called datasets, and this has not yet been updated in dojo
+// Datasets were previously called datasets, and this has not yet been updated
 export function useDataset(datasetId) {
   const { data, error, mutate } = useSWR(
-    datasetId ? `/api/dojo/datasets/${datasetId}` : null, fetcher
+    datasetId ? `/api/data_annotation/datasets/${datasetId}` : null, fetcher
   );
 
   return {
@@ -31,7 +31,7 @@ export function useDataset(datasetId) {
 }
 
 export function useConceptName(termId) {
-  const { data, error } = useSWR(`/api/dojo/dkg/term/${termId}`, fetcher);
+  const { data, error } = useSWR(`/api/data_annotation/dkg/term/${termId}`, fetcher);
 
   return {
     name: data?.name,

@@ -98,7 +98,7 @@ const DatasetSummary = () => {
   const mediumBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
-    document.title = 'Dataset Summary - Dojo';
+    document.title = 'Dataset Summary';
   }, []);
 
   useEffect(() => {
@@ -112,7 +112,7 @@ const DatasetSummary = () => {
   };
 
   const acceptDeprecate = () => {
-    axios.put(`/api/dojo/datasets/${dataset.id}/deprecate`)
+    axios.put(`/api/data_annotation/datasets/${dataset.id}/deprecate`)
       .then((resp) => {
         console.info('Successfully deprecated the dataset:', resp);
         setAlertMessage({

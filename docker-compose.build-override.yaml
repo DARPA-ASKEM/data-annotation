@@ -1,5 +1,7 @@
 services:
   api:
+    build:
+      context: ./api/  
     command:
       [
         "uvicorn",

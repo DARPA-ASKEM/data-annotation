@@ -36,7 +36,7 @@ and navigate to http://localhost:6006
 ## Some definitions
 
 ##### RawFileName
-WHen registering or updating a dataset, and uploading a file to the backend services through the API, the original filename is stored, as well as a reference to the raw file data before it is processed by Dojo. The raw data uploaded by the user is then referenced as raw file (or source file), and stored using the following naming convention:
+WHen registering or updating a dataset, and uploading a file to the backend services through the API, the original filename is stored, as well as a reference to the raw file data before it is processed. The raw data uploaded by the user is then referenced as raw file (or source file), and stored using the following naming convention:
 
 - First file, csv upload: raw_data.csv
 - Second file, another csv iupload: raw_data_2.csv

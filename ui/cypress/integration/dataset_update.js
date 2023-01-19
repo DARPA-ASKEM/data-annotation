@@ -6,21 +6,21 @@ function mockHttpRequests() {
 
   cy.intercept({
     method: 'GET',
-    url: '/api/dojo/*/domains*'
+    url: '/api/data_annotation/*/domains*'
   }, {
     fixture: 'domains_get.json'
   });
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/datasets'
+    url: '/api/data_annotation/datasets'
   }, {
     fixture: 'datasets_post.json'
   });
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/datasets/*/upload*'
+    url: '/api/data_annotation/datasets/*/upload*'
   }, {
     "id": "test-guid",
     "filename": "raw_data.csv"
@@ -28,22 +28,22 @@ function mockHttpRequests() {
 
   cy.intercept({
     method: 'PATCH',
-    url: '/api/dojo/datasets/*/annotations'
+    url: '/api/data_annotation/datasets/*/annotations'
   }, "Updated annotation with id = test-guid");
 
   cy.intercept({
     method: 'GET',
-    url: '/api/dojo/datasets/*/annotations*'
+    url: '/api/data_annotation/datasets/*/annotations*'
   }, { fixture: 'datasets_annotations_get_prepopulated.json' }).as('DatasetAnnotationsGETStub');
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/datasets/*/preview/raw*'
+    url: '/api/data_annotation/datasets/*/preview/raw*'
   }, { fixture: 'datasets_preview_raw_post.json' });
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/datasets/*/preview/processed*'
+    url: '/api/data_annotation/datasets/*/preview/processed*'
   }, { fixture: 'datasets_preview_processed_post.json' });
 
   // This is done to add mixmasta/jobs results to datasetInfo
@@ -51,26 +51,26 @@ function mockHttpRequests() {
   // PUT will reset some values.
   cy.intercept(
     'PUT',
-    '/api/dojo/datasets',
+    '/api/data_annotation/datasets',
     {});
 
   cy.intercept(
     'PATCH',
-    '/api/dojo/datasets*',
+    '/api/data_annotation/datasets*',
     {});
 
   cy.intercept({
     method: 'PUT',
-    url: '/api/dojo/datasets/*/publish*'
+    url: '/api/data_annotation/datasets/*/publish*'
   }, {});
 
   cy.intercept({
-    url: '/api/dojo/datasets/*/verbose*',
+    url: '/api/data_annotation/datasets/*/verbose*',
     method: 'GET'
   }, { fixture: 'datasets_verbose_get.json' }).as('DatasetsVerboseGETStub');
 
   cy.intercept({
-    url: '/api/dojo/datasets/validate_date*',
+    url: '/api/data_annotation/datasets/validate_date*',
     method: 'POST'
   }, { "format": "%Y-%m-%d", "valid": true }).as('ValidateFormatStub');
 
@@ -180,7 +180,7 @@ describe('Dataset Update Metadata Flow', function () {
 
     cy.url().should('match', /datasets\/update\/preview\/.+\?filename=raw_data.csv/);
 
-    cy.findAllByRole('button', { name: /^submit to dojo$/i, timeout: 1000 }).click();
+    cy.findAllByRole('button', { name: /^submit$/i, timeout: 1000 }).click();
 
     // ASSERTIONS
 

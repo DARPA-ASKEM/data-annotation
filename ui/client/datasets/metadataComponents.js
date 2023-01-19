@@ -90,7 +90,7 @@ export const uploadFile = async (form, datasetID, params = {}) => {
 
   const response = await axios({
     method: 'post',
-    url: `/api/dojo/datasets/${datasetID}/upload`,
+    url: `/api/data_annotation/datasets/${datasetID}/upload`,
     data: uploadData,
     params: params
   });
@@ -109,7 +109,7 @@ export const updateMetadata = async (datasetId, fileMetadataData, storeAnnotatio
 
   const response = await axios({
     method: 'patch',
-    url: `/api/dojo/datasets/${datasetId}/annotations`,
+    url: `/api/data_annotation/datasets/${datasetId}/annotations`,
     data: payload,
   });
 

@@ -4,12 +4,12 @@ PYTHON = $(shell which python3 || which python)
 export LANG
 
 BASEDIR = $(shell pwd)
-DOJO_API_DIR = api
+API_DIR = api
 MIXMASTA_DIR = mixmasta
 UI_DIR = ui
 RQ_DIR = tasks
 WORKERS_DIR = workers
-COMPOSE_FILES := $(DOJO_API_DIR)/docker-compose.yaml $(RQ_DIR)/docker-compose.yaml
+COMPOSE_FILES := $(API_DIR)/docker-compose.yaml $(RQ_DIR)/docker-compose.yaml
 TEMP_COMPOSE_FILES := $(foreach file,$(subst /,_,$(COMPOSE_FILES)),temp_$(file))
 
 .PHONY:update

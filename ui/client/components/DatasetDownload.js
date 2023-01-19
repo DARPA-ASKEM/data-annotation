@@ -16,7 +16,7 @@ function DatasetDownload({ dataset, className }) {
         <Button
           variant="outlined"
           color="primary"
-          href={`/api/dojo/datasets/${dataset.id}/download/csv`}
+          href={`/api/data_annotation/datasets/${dataset.id}/download/csv`}
           download={`${dataset.id}.csv`}
           type="text/csv"
           onClick={() => setDownload(true)}

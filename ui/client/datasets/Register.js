@@ -81,7 +81,7 @@ export default withStyles(({ spacing }) => ({
 
     const response = await axios({
       method,
-      url: `/api/dojo/datasets${method === 'PATCH' ? '?indicator_id=' + id : ''}`,
+      url: `/api/data_annotation/datasets${method === 'PATCH' ? '?indicator_id=' + id : ''}`,
       data: payload,
     });
     return response.data;
