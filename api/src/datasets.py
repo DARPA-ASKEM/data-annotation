@@ -167,20 +167,13 @@ def publish_indicator(dataset_id: str):
     )
 
 
-@router.post("/datasets/download/csv")
-def get_csv(request: Request, data_path_list: List[str] = Query(...)):
-
-    if "deflate" in request.headers.get("accept-encoding", ""):
-        return StreamingResponse(
-            compress_stream(stream_csv_from_data_paths(data_path_list)),
-            media_type="text/csv",
-            headers={"Content-Encoding": "deflate"},
-        )
-    else:
-        return StreamingResponse(
-            stream_csv_from_data_paths(data_path_list),
-            media_type="text/csv",
-        )
+# @router.get("/datasets/{dataset_id}/download/csv")
+# def get_csv_from_tds(dataset_id: str):
+#     try:
+#         response = requests.get(f"{tds_url}/datasets/{dataset_id}/download/rawfile", stream=True)
+#     except Exception as e:
+#         logger.exception(e)
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
 @router.put("/datasets/{dataset_id}/deprecate")
@@ -484,7 +477,7 @@ def upload_file(
         },
         content=json.dumps({"id": dataset_id, "filename": filename}),
     )
-
+    
 
 @router.get("/datasets/{dataset_id}/verbose")
 def get_all_indicator_info(dataset_id: str):

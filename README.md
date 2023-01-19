@@ -2,7 +2,12 @@
 
 ## Setup
 
-1. Run [TERArium Data Service (TDS)](https://github.com/DARPA-ASKEM/data-service)
+1. Run [TERArium Data Service (TDS)](https://github.com/DARPA-ASKEM/data-service). It is assumed that the `data-service` is run out of a directory at an equivalent level as `data-annotation`. For example:
+    ```
+    darpa-askem/
+        data-service/
+        data-annotation/
+    ```
 2. In this repo, run run `$ make init` to generate envfile
 3. Add your secrets to the file `envfile`  
   - NOTE: You should rarely, if ever, need to change any of the host names or ports. You should really only need to set the variables that are wrapped in `${...}`

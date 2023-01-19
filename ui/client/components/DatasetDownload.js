@@ -16,7 +16,7 @@ function DatasetDownload({ dataset, className }) {
         <Button
           variant="outlined"
           color="primary"
-          href={`/api/data_annotation/datasets/${dataset.id}/download/csv`}
+          href={`${process.env.TDS_DOWNLOAD_URL}/datasets/${dataset.id}/download/rawfile`}
           download={`${dataset.id}.csv`}
           type="text/csv"
           onClick={() => setDownload(true)}

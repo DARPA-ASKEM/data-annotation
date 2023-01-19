@@ -18,7 +18,7 @@ services:
       ]
     volumes:
       - ./api:/api
-      - dataset-storage:/datasets
+      - ../data-service/data/datasets:/datasets
     environment:
       - DATA_ANNOTATION_URL
       - REDIS_HOST
@@ -67,7 +67,7 @@ services:
     depends_on:
       - redis
     volumes:
-      - dataset-storage:/datasets
+      - ../data-service/data/datasets:/datasets
 
 networks:
   data-annotation-stack:
