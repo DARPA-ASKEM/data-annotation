@@ -54,6 +54,7 @@ module.exports = {
     watchOptions: {
       ignored: /node_modules/,
     },
+    proxy: {
       '/api/data_annotation': {
         target: 'http://localhost:8000',
         pathRewrite: { '^/api/data_annotation': '' },
