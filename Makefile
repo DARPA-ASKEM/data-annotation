@@ -18,7 +18,8 @@ update:
 
 .PHONY:init
 init:
-	make envfile;
+	make envfile
+	make docker-compose.yaml;
 
 .PHONY:rebuild-all
 rebuild-all:
@@ -38,6 +39,7 @@ clean:
 	docker container prune -f && \
 	docker-compose run app rm -r ./data/*/ && \
 	echo "Done"
+
 
 docker-compose.yaml:$(COMPOSE_FILES) docker-compose.build-override.yaml envfile
 	export $$(cat envfile | xargs); \
