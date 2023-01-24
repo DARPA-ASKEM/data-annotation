@@ -6,6 +6,8 @@ class Settings(BaseSettings):
     BIND_PORT: int = 8000
 
     DATASET_STORAGE_BASE_URL: str
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
     DATA_ANNOTATION_URL: str
 
     TDS_URL: str = "http://data-service-api:8000"
@@ -13,7 +15,7 @@ class Settings(BaseSettings):
     REDIS_HOST: str
     REDIS_PORT: int = 6379
 
-    DATASET_STORAGE_BASE_URL: str = "file:///datasets/"
+    # DATASET_STORAGE_BASE_URL: str = "file:///datasets/"
 
     CONFIG_STORAGE_BASE: str = "file:///data-annotation/configs/"
 
