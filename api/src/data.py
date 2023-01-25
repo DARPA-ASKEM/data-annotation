@@ -198,8 +198,10 @@ def run_test_jobs(num_of_jobs):
 
 
 @router.get("/data/test/s3_grab/{uuid}")
-def test_s3_grab(uuid):
-    rawfile_path = os.path.join(settings.DATASET_STORAGE_BASE_URL, uuid, "raw_data.csv")
+def test_s3_grab(uuid:str, filename: Optional[str]=None):
+    if filename==None:
+        filename="raw_data.csv"
+    rawfile_path = os.path.join(settings.DATASET_STORAGE_BASE_URL, uuid, filename)
     file = get_rawfile(rawfile_path)
 
     df = pd.read_csv(file, delimiter=",")
