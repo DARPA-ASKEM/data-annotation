@@ -15,15 +15,7 @@ import pandas as pd
 from src.settings import settings
 
 # S3 OBJECT
-s3 = boto3.resource(
-    "s3",
-    # endpoint_url=os.getenv("STORAGE_HOST"),
-    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-    aws_session_token=None,
-    config=boto3.session.Config(signature_version="s3v4"),
-    verify=False,
-)
+
 storage_host=os.getenv("STORAGE_HOST")
 if "minio" in storage_host:
     s3 = boto3.resource(
@@ -35,7 +27,15 @@ if "minio" in storage_host:
         config=boto3.session.Config(signature_version="s3v4"),
         verify=False,
     )
-
+else:
+    s3 = boto3.resource(
+    "s3",
+    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+    aws_session_token=None,
+    config=boto3.session.Config(signature_version="s3v4"),
+    verify=False,
+)
 
 
 class NpEncoder(json.JSONEncoder):
