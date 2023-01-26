@@ -428,7 +428,7 @@ export const FileSelector = withStyles(({ spacing, palette }) => ({
         setFileMetadata({ ...fileMetadata, ...metadata });
     }
 
-    setMessage(`File ${file.name} is not a type that Dojo is able to process.`);
+    setMessage(`File ${file.name} is not a type that we are able to process.`);
     setProcessing(false);
     setFileMetadata({});
 

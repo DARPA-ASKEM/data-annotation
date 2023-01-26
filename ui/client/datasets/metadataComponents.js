@@ -15,7 +15,6 @@ import * as yup from 'yup';
 import get from 'lodash/get';
 
 import { withStyles } from '@material-ui/core/styles';
-import DomainsAutocomplete from '../components/DomainsAutocomplete';
 
 import { Navigation } from '.';
 import { FormAwareTextField, FormAwareSelect } from './FormFields';
@@ -91,7 +90,7 @@ export const uploadFile = async (form, datasetID, params = {}) => {
 
   const response = await axios({
     method: 'post',
-    url: `/api/dojo/datasets/${datasetID}/upload`,
+    url: `/api/data_annotation/datasets/${datasetID}/upload`,
     data: uploadData,
     params: params
   });
@@ -110,7 +109,7 @@ export const updateMetadata = async (datasetId, fileMetadataData, storeAnnotatio
 
   const response = await axios({
     method: 'patch',
-    url: `/api/dojo/datasets/${datasetId}/annotations`,
+    url: `/api/data_annotation/datasets/${datasetId}/annotations`,
     data: payload,
   });
 
@@ -172,18 +171,6 @@ export const BaseData = (props) => {
         minRows="2"
         disabled={isReadOnlyMode}
       />
-
-      <div style={{ margin: '0.5rem 0' }}>
-        <DomainsAutocomplete
-          formik={formik}
-          label="Domains"
-          textFieldProps={{
-            placeholder: isEmpty(formik.values.domains) ? 'Select as many as appropriate' : '',
-            InputLabelProps: { shrink: true }
-          }}
-          disabled={isReadOnlyMode}
-        />
-      </div>
 
       <FileSelector
         formik={formik}

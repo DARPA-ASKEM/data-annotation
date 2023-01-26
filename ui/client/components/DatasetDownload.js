@@ -16,7 +16,7 @@ function DatasetDownload({ dataset, className }) {
         <Button
           variant="outlined"
           color="primary"
-          href={`/api/dojo/datasets/${dataset.id}/download/csv`}
+          href={`${process.env.TDS_DOWNLOAD_URL}/datasets/${dataset.id}/download/rawfile`}
           download={`${dataset.id}.csv`}
           type="text/csv"
           onClick={() => setDownload(true)}

@@ -10,7 +10,6 @@ import json
 import pandas as pd
 import requests
 
-from elasticsearch import Elasticsearch
 import pandas as pd
 from fastapi import (
     APIRouter,
@@ -25,10 +24,9 @@ from fastapi import (
 from fastapi.logger import logger
 from fastapi.responses import StreamingResponse
 
-from validation import IndicatorSchema, DojoSchema, MetadataSchema
+from validation import IndicatorSchema, MetadataSchema
 from src.settings import settings
 
-from src.dojo import search_and_scroll
 from src.utils import (
     put_rawfile,
     get_rawfile,
@@ -48,8 +46,6 @@ from validation.IndicatorSchema import (
 import os
 
 router = APIRouter()
-
-es = Elasticsearch([settings.ELASTICSEARCH_URL], port=settings.ELASTICSEARCH_PORT)
 
 tds_url = settings.TDS_URL
 
@@ -142,56 +138,9 @@ def patch_indicator(payload: IndicatorSchema.IndicatorMetadataSchema, dataset_id
 
 @router.get("/datasets/latest")
 def get_latest_datasets(size=100):
-    dataArray = requests.get(f"{tds_url}/datasets?page_size={size}")
+    dataArray = requests.get(f"{tds_url}/datasets?page_size={size}&is_sim_run=false")
     logger.warn(f"Data Array: {dataArray}")
     return dataArray.json()
-
-
-# UNMODIFIED
-@router.get("/datasets", response_model=DojoSchema.IndicatorSearchResult)
-def search_datasets(
-    query: str = Query(None),
-    size: int = 10,
-    scroll_id: str = Query(None),
-    include_ontologies: bool = True,
-    include_geo: bool = True,
-) -> DojoSchema.IndicatorSearchResult:
-    indicator_data = search_and_scroll(
-        index="datasets", size=size, query=query, scroll_id=scroll_id
-    )
-    # if request wants ontologies and geo data return all
-    if include_ontologies and include_geo:
-        return indicator_data
-    else:
-        for indicator in indicator_data["results"]:
-            if not include_ontologies:
-                for q_output in indicator["qualifier_outputs"]:
-                    try:
-                        q_output["ontologies"] = {
-                            "concepts": None,
-                            "processes": None,
-                            "properties": None,
-                        }
-                    except Exception as e:
-                        print(e)
-                        logger.exception(e)
-                for outputs in indicator["outputs"]:
-                    try:
-                        outputs["ontologies"] = {
-                            "concepts": None,
-                            "processes": None,
-                            "properties": None,
-                        }
-                    except Exception as e:
-                        print(e)
-                        logger.exception(e)
-            if not include_geo:
-                indicator["geography"]["country"] = []
-                indicator["geography"]["admin1"] = []
-                indicator["geography"]["admin2"] = []
-                indicator["geography"]["admin3"] = []
-
-        return indicator_data
 
 
 @router.get("/datasets/{dataset_id}")
@@ -218,20 +167,13 @@ def publish_indicator(dataset_id: str):
     )
 
 
-@router.post("/datasets/download/csv")
-def get_csv(request: Request, data_path_list: List[str] = Query(...)):
-
-    if "deflate" in request.headers.get("accept-encoding", ""):
-        return StreamingResponse(
-            compress_stream(stream_csv_from_data_paths(data_path_list)),
-            media_type="text/csv",
-            headers={"Content-Encoding": "deflate"},
-        )
-    else:
-        return StreamingResponse(
-            stream_csv_from_data_paths(data_path_list),
-            media_type="text/csv",
-        )
+# @router.get("/datasets/{dataset_id}/download/csv")
+# def get_csv_from_tds(dataset_id: str):
+#     try:
+#         response = requests.get(f"{tds_url}/datasets/{dataset_id}/download/rawfile", stream=True)
+#     except Exception as e:
+#         logger.exception(e)
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
 @router.put("/datasets/{dataset_id}/deprecate")
@@ -255,10 +197,10 @@ def get_annotations(dataset_id: str) -> MetadataSchema.MetaModel:
     """Get annotations for a dataset.
 
     Args:
-        dataset_id (str): The UUID of the dataset to retrieve annotations for from elasticsearch.
+        dataset_id (str): The UUID of the dataset to retrieve annotations.
 
     Raises:
-        HTTPException: This is raised if no annotation is found for the dataset in elasticsearch.
+        HTTPException: This is raised if no annotation is found for the dataset.
 
     Returns:
         MetadataSchema.MetaModel: Returns the annotations pydantic schema for the dataset that contains a metadata dictionary and an annotations object validated via a nested pydantic schema.
@@ -279,7 +221,7 @@ def post_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
 
     Args:
         payload (MetadataSchema.MetaModel): Payload needs to be a fully formed json object representing the pydantic schema MettaDataSchema.MetaModel.
-        dataset_id (str): The UUID of the dataset to retrieve annotations for from elasticsearch.
+        dataset_id (str): The UUID of the dataset to retrieve annotations for.
 
     Returns:
         Response: Returns a response with the status code of 201 and the location of the annotation.
@@ -312,7 +254,7 @@ def post_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
 
 @router.put("/datasets/{dataset_id}/annotations")
 def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
-    """Put annotation for a dataset to Elasticsearch.
+    """Put annotation for a dataset.
 
     Args:
         payload (MetadataSchema.MetaModel): Payload needs to be a fully formed json object representing the pydantic schema MettaDataSchema.MetaModel.
@@ -406,7 +348,7 @@ def put_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
 
 @router.patch("/datasets/{dataset_id}/annotations")
 def patch_annotation(payload: MetadataSchema.MetaModel, dataset_id: str):
-    """Patch annotation for a dataset to Elasticsearch.
+    """Patch annotation for a dataset.
 
     Args:
         payload (MetadataSchema.MetaModel): Payload needs to be a partially formed json object valid for the pydantic schema MettaDataSchema.MetaModel.
@@ -535,7 +477,7 @@ def upload_file(
         },
         content=json.dumps({"id": dataset_id, "filename": filename}),
     )
-
+    
 
 @router.get("/datasets/{dataset_id}/verbose")
 def get_all_indicator_info(dataset_id: str):

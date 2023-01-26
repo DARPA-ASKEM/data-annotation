@@ -6,21 +6,21 @@ function mockHttpRequests() {
 
   cy.intercept({
     method: 'GET',
-    url: '/api/dojo/*/domains*'
+    url: '/api/data_annotation/*/domains*'
   }, {
     fixture: 'domains_get.json'
   });
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/datasets'
+    url: '/api/data_annotation/datasets'
   }, {
     fixture: 'datasets_post.json'
   });
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/datasets/*/upload*'
+    url: '/api/data_annotation/datasets/*/upload*'
   }, {
     "id": "test-guid",
     "filename": "raw_data.csv"
@@ -28,63 +28,63 @@ function mockHttpRequests() {
 
   cy.intercept({
     method: 'PATCH',
-    url: '/api/dojo/datasets/*/annotations'
+    url: '/api/data_annotation/datasets/*/annotations'
   }, "Updated annotation with id = test-guid");
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/job/*/file_processors.file_conversion*'
+    url: '/api/data_annotation/job/*/file_processors.file_conversion*'
   }, {
     fixture: 'file_conversion_post.json'
   });
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/job/*/geotime_processors.geotime_classify*'
+    url: '/api/data_annotation/job/*/geotime_processors.geotime_classify*'
   }, { fixture: 'geotime_classify_post.json' });
 
   cy.intercept({
     method: 'GET',
-    url: '/api/dojo/datasets/*/annotations*'
+    url: '/api/data_annotation/datasets/*/annotations*'
   }, { fixture: 'datasets_annotations_get.json' });
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/datasets/*/preview/raw*'
+    url: '/api/data_annotation/datasets/*/preview/raw*'
   }, { fixture: 'datasets_preview_raw_post.json' });
 
   cy.intercept({
-    url: 'api/dojo/job/*/mixmasta_processors.run_mixmasta*',
+    url: 'api/data_annotation/job/*/mixmasta_processors.run_mixmasta*',
     method: 'POST'
   }, { fixture: 'mixmasta_processors.run_mixmasta_post.json' });
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/datasets/*/preview/raw*'
+    url: '/api/data_annotation/datasets/*/preview/raw*'
   }, { fixture: 'datasets_preview_raw_post.json' });
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/datasets/*/preview/processed*'
+    url: '/api/data_annotation/datasets/*/preview/processed*'
   }, { fixture: 'datasets_preview_processed_post.json' });
 
   cy.intercept({
     method: 'PUT',
-    url: '/api/dojo/datasets/*/publish*'
+    url: '/api/data_annotation/datasets/*/publish*'
   }, {});
 
   cy.intercept(
     'PUT',
-    '/api/dojo/datasets',
+    '/api/data_annotation/datasets',
     {});
 
   cy.intercept(
     'PATCH',
-    '/api/dojo/datasets*',
+    '/api/data_annotation/datasets*',
     {});
 
   cy.intercept({
-    url: '/api/dojo/datasets/*/verbose*',
+    url: '/api/data_annotation/datasets/*/verbose*',
     method: 'GET'
   }, { fixture: 'datasets_verbose_get.json' });
 
@@ -201,7 +201,7 @@ describe('Dataset Register Flow', function () {
 
     cy.url().should('match', /datasets\/register\/preview\/.+\?filename=raw_data.csv/);
 
-    cy.findAllByRole('button', { name: /^submit to dojo$/i, timeout: 1000 }).click();
+    cy.findAllByRole('button', { name: /^submit$/i, timeout: 1000 }).click();
 
     // ASSERTIONS
 
@@ -221,7 +221,7 @@ describe('Dataset Register Flow', function () {
 
     cy.intercept(
       'POST',
-      '/api/dojo/datasets',
+      '/api/data_annotation/datasets',
       (req) => {
         // This SHOULD NOT BE CALLED (no create, but update)
 
@@ -239,7 +239,7 @@ describe('Dataset Register Flow', function () {
 
     cy.intercept(
       'PATCH',
-      '/api/dojo/datasets?*',
+      '/api/data_annotation/datasets?*',
       (req) => {
         // This should be called
         assert.equal(req.method, 'PATCH');
@@ -255,7 +255,7 @@ describe('Dataset Register Flow', function () {
 
     cy.intercept(
       'POST',
-      '/api/dojo/datasets/*/upload',
+      '/api/data_annotation/datasets/*/upload',
       (req) => {
 
         uploadFileSpy();
@@ -309,13 +309,13 @@ describe('Dataset Register Flow', function () {
     const uploadFileSpy = cy.spy().as('uploadFileSpy');
 
     cy.intercept({
-      url: '/api/dojo/datasets/*/verbose',
+      url: '/api/data_annotation/datasets/*/verbose',
       method: 'GET'
     }, { fixture: 'datasets_verbose_get.json' });
 
     cy.intercept(
       'PATCH',
-      '/api/dojo/datasets?*',
+      '/api/data_annotation/datasets?*',
       (req) => {
         // This should be called
         assert.equal(req.method, 'PATCH');
@@ -331,7 +331,7 @@ describe('Dataset Register Flow', function () {
 
     cy.intercept(
       'POST',
-      '/api/dojo/datasets/*/upload',
+      '/api/data_annotation/datasets/*/upload',
       (req) => {
 
         uploadFileSpy(req.body.includes('dummy.csv'));

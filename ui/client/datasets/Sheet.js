@@ -66,7 +66,7 @@ const Sheet = withStyles(({ spacing }) => ({
 
     const next = () => {
         const payload = data;
-        axios.post(`/api/dojo/datasets/${datasetInfo.id}/data`, payload).then(() => {
+        axios.post(`/api/data_annotation/datasets/${datasetInfo.id}/data`, payload).then(() => {
             handleNext();
         });
     }
@@ -78,8 +78,8 @@ const Sheet = withStyles(({ spacing }) => ({
 
         Promise
             .all([
-                axios.get(`/api/dojo/datasets/${datasetInfo.id}/annotations`),
-                axios.get(`/api/dojo/datasets/${datasetInfo.id}/data`),
+                axios.get(`/api/data_annotation/datasets/${datasetInfo.id}/annotations`),
+                axios.get(`/api/data_annotation/datasets/${datasetInfo.id}/data`),
             ])
             .then(([annotations, data]) => {
                 const metadata = annotations?.data?.metadata;

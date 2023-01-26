@@ -122,7 +122,7 @@ export default withStyles((theme) => ({
             <Search
               name="Ontology Term"
               setSearch={setSearchResults}
-              searchEndpoint="/api/dojo/dkg/search"
+              searchEndpoint="/api/data_annotation/dkg/search"
               initialSearchTerm={columnName}
               fullWidth
             />

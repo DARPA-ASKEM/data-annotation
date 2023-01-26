@@ -7,19 +7,19 @@ function mockHttpRequests() {
 
   cy.intercept({
     method: 'GET',
-    url: '/api/dojo/*/domains*'
+    url: '/api/data_annotation/*/domains*'
   }, {
     fixture: 'domains_get.json'
   }).as('DomainsStub');
 
   cy.intercept({
-    url: '/api/dojo/datasets/*/verbose*',
+    url: '/api/data_annotation/datasets/*/verbose*',
     method: 'GET'
   }, { fixture: 'datasets_verbose_get.json' }).as('DatasetVerboseStub');
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/datasets/*/upload*'
+    url: '/api/data_annotation/datasets/*/upload*'
   }, {
     "id": "test-guid",
     "filename": "raw_data_3.csv"
@@ -27,39 +27,39 @@ function mockHttpRequests() {
 
   cy.intercept({
     method: 'PATCH',
-    url: '/api/dojo/datasets/*/annotations'
+    url: '/api/data_annotation/datasets/*/annotations'
   }, "Updated annotation with id = test-guid");
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/job/*/file_processors.file_conversion*'
+    url: '/api/data_annotation/job/*/file_processors.file_conversion*'
   }, {
     fixture: 'file_conversion_post.json'
   });
 
   cy.intercept({
-    url: 'api/dojo/job/*/mixmasta_processors.run_mixmasta*',
+    url: 'api/data_annotation/job/*/mixmasta_processors.run_mixmasta*',
     method: 'POST'
   }, { fixture: 'mixmasta_processors.run_mixmasta_post.json' });
 
   cy.intercept(
     'PUT',
-    '/api/dojo/datasets',
+    '/api/data_annotation/datasets',
     {});
 
   cy.intercept(
     'PUT',
-    '/api/dojo/datasets*',
+    '/api/data_annotation/datasets*',
     {});
 
   cy.intercept({
     method: 'POST',
-    url: '/api/dojo/datasets/*/preview/processed*'
+    url: '/api/data_annotation/datasets/*/preview/processed*'
   }, { fixture: 'datasets_preview_processed_post.json' }).as('PreviewProcessedStub');
 
   cy.intercept({
     method: 'PUT',
-    url: '/api/dojo/datasets/*/publish*'
+    url: '/api/data_annotation/datasets/*/publish*'
   }, {});
 }
 
@@ -108,7 +108,7 @@ describe('Dataset Append Flow', function () {
     cy.url().should('match', /datasets\/append\/preview\/.+\?filename=raw_data_3.csv/);
 
     cy
-      .findAllByRole('button', { name: /^submit to dojo$/i, timeout: 1000 })
+      .findAllByRole('button', { name: /^submit$/i, timeout: 1000 })
       .click();
 
     cy.wait(50);

@@ -6,7 +6,7 @@ VERSION="0.5.13"
 TAG="${VERSION}"
 
 GROUP=jataware
-NAME=dojo-ui
+NAME=data-annotation-ui
 IMAGE="${GROUP}/${NAME}"
 
 docker build -f deploy/Dockerfile \

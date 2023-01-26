@@ -472,7 +472,7 @@ export default withStyles(({ palette, spacing, breakpoints }) => ({
                               component="div"
                               style={{display: 'flex', alignItems: 'center'}}>
                               <InfoRoundedIcon style={{marginRight: '0.5rem', color: '#51abf1b3'}} />
-                              Defaults include inferred values from Dojo analysis.
+                              Defaults include inferred values from analysis.
                             </Typography>
                           )}
 

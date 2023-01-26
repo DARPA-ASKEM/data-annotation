@@ -66,7 +66,7 @@ const RunJob = withStyles(({ spacing }) => ({
   const [jobData, setJobData] = useState(null);
 
   const updateJobData = () => {
-    const url = `/api/dojo/job/${datasetInfo.id}/${job_id}`;
+    const url = `/api/data_annotation/job/${datasetInfo.id}/${job_id}`;
     console.log(url);
     axios({
       method: 'post',

@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     padding: [[0, theme.spacing(5)]],
     gap: theme.spacing(3),
   },
-  dojoIcon: {
+  dataAnnotationIcon: {
     height: '40px',
     width: '40px',
     marginRight: theme.spacing(1),
@@ -49,12 +49,12 @@ const NavBar = () => {
             <img
               src="/assets/terrariumlogo2Cropped.png"
               alt="TERArium Logo"
-              className={classes.dojoIcon}
+              className={classes.dataAnnotationIcon}
             />
           </IconButton>
         </Tooltip>
         <span className={classes.spacer} />
-        <Button href="https://www.dojo-modeling.com" target="_blank">Documentation</Button>
+        <Button href="https://darpa-askem.github.io/" target="_blank">Documentation</Button>
         <Button href="https://github.com/DARPA-ASKEM/data-annotation" target="_blank">GitHub</Button>
       </Toolbar>
     </AppBar>

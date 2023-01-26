@@ -26,7 +26,7 @@ const HintTooltip = withStyles(() => ({
 }))(({ classes }) => (
   <Tooltip
     classes={{ tooltip: classes.tooltip }}
-    title="This is a Preview of the normalized data. Review output and submit to Dojo."
+    title="This is a Preview of the normalized data. Review output and submit."
   >
     <IconButton>
       <InfoIcon />
@@ -61,139 +61,11 @@ export default withStyles(({ spacing }) => ({
   function PublishDataset({ datasetInfo }) {
     console.log("Dataset published");
     handleNext();
-    // axios.put(`/api/dojo/datasets/${datasetInfo.id}/publish`)
-    //   .then(handleNext)
-    //   .catch(() => {
-    //     setPromptMessage('Error submitting data to Dojo. Please contact the Dojo team.');
-    //   });
   };
 
-  // function PublishModelOutput({datasetInfo, annotations, handleNext, defaultHandleNext, ...props}={}) {
-  function PublishModelOutput({ datasetInfo, annotations, onSubmit, ...props } = {}) {
-    const file_uuid = annotations.metadata.file_uuid;
-    const [output_directory, path] = splitOnWildCard(annotations.metadata.filename);
-    const outputPayload = [{
-      id: file_uuid,
-      model_id: datasetInfo.id,
-      name: datasetInfo.name,
-      output_directory: output_directory,
-      path: path,
-      file_type: annotations.metadata.mixmasterAnnotations?.meta?.ftype,
-      transform: annotations.metadata.mixmasterAnnotations,
-      prev_id: null,
-    }];
-
-    const isQualifier = (annotation) => (Boolean(annotation.qualify?.length || annotation.qualifies?.length || annotation.qualifier_outputs?.length));
-    const isPrimary = (annotation) => (Boolean(annotation.primary_date === true || annotation.primary_geo === true));
-    // An annotation is a feature if it doesn't qualify anything and is not a primary date or primary geo
-    const isFeature = (annotation) => (!(isQualifier(annotation) || isPrimary(annotation)));
-
-    let outputs = (datasetInfo?.outputs || []).filter((output) => (output.uuid !== file_uuid));
-    let qualifier_outputs = (datasetInfo?.qualifier_outputs || []).filter((output) => (output.uuid !== file_uuid));
-
-    const column_index = Object.fromEntries([].concat(...Object.values(annotations.annotations)).map((obj) => ([obj.name, obj])));
-
-    let resolution = {}
-    if (datasetInfo['temporal_resolution']) {
-      resolution['temporal_resolution'] = datasetInfo['temporal_resolution'];
-    }
-    if (datasetInfo['x-resolution'] && datasetInfo['y-resolution']) {
-      resolution['spatial_resolution'] = [
-        datasetInfo['x-resolution'],
-        datasetInfo['y-resolution']
-      ]
-    }
-
-    const typeRemapper = {
-      date: "datetime",
-      string: "str",
-      binary: "boolean",
-      latitude: "lat",
-      longitude: "lng",
-    }
-
-    let model_outputs = annotations.annotations.feature.filter(isFeature).map((annotation) => {
-      return {
-        uuid: file_uuid,
-        name: annotation.name,
-        display_name: annotation.display_name,
-        description: annotation.description,
-        type: typeRemapper[annotation.feature_type] || annotation.feature_type, // OutputType
-        unit: annotation.units,
-        unit_description: annotation.units_description,
-        is_primary: false,
-        data_resolution: resolution, // Resolution
-        alias: column_index[annotation.name]?.aliases,
-        choices: null,
-        min: null,
-        max: null,
-        ontologies: null,
-      }
-    });
-    let model_qualifier_outputs = [].concat(
-      // Primary date column(s)
-      annotations.annotations.date.map((annotation) => {
-        return {
-          uuid: file_uuid,
-          name: annotation.name,
-          display_name: annotation.display_name,
-          description: annotation.description,
-          type: typeRemapper[annotation.date_type] || annotation.date_type, //annotation.date_type, // OutputType
-          unit: null, // annotation.units,
-          unit_description: null, // annotation.units_description,
-          related_features: [],
-          qualifier_role: "breakdown",
-          alias: {},
-        }
-      }),
-
-      // Primary geo column(s)
-      annotations.annotations.geo.map((annotation) => {
-        return {
-          uuid: file_uuid,
-          name: annotation.name,
-          display_name: annotation.display_name,
-          description: annotation.description,
-          type: typeRemapper[annotation.geo_type] || annotation.geo_type, //annotation.geo_type, // OutputType
-          unit: null, // annotation.units,
-          unit_description: null, // annotation.units_description,
-          related_features: [],
-          qualifier_role: "breakdown",
-          alias: {},
-        }
-      }),
-
-      // Qualifier features
-      annotations.annotations.feature.filter(isQualifier).map((annotation) => {
-        return {
-          uuid: file_uuid,
-          name: annotation.name,
-          display_name: annotation.display_name,
-          description: annotation.description,
-          type: typeRemapper[annotation.feature_type] || annotation.feature_type, // OutputType
-          unit: annotation.units,
-          unit_description: annotation.units_description,
-          related_features: annotation.qualifies,
-          qualifier_role: annotation.qualifierrole,
-          alias: column_index[annotation.name]?.aliases,
-        }
-      }),
-    );
-
-    const updates = Promise.all([
-      axios.post(`/api/dojo/dojo/outputfile`, outputPayload),
-      axios.patch(`/api/dojo/models/${datasetInfo.id}`,
-        {
-          outputs: outputs.concat(model_outputs),
-          qualifier_outputs: qualifier_outputs.concat(model_qualifier_outputs),
-        }
-      ),
-    ]).then(onSubmit());
-  };
-
+  
   const nextHandlers = {
-    'PublishDataset': PublishDataset,
-    'PublishModelOutput': PublishModelOutput,
+    'PublishDataset': PublishDataset
   };
 
   useEffect(() => {
@@ -202,7 +74,7 @@ export default withStyles(({ spacing }) => ({
     }
 
     const fileArg = (useFilepath ? "filepath" : "filename");
-    const previewUrl = `/api/dojo/datasets/${datasetInfo.id}/preview/processed${rawFileName ? `?${fileArg}=${rawFileName}` : ''}`;
+    const previewUrl = `/api/data_annotation/datasets/${datasetInfo.id}/preview/processed${rawFileName ? `?${fileArg}=${rawFileName}` : ''}`;
     axios.post(previewUrl)
       .then((loadedPreviewData) => {
         const rows = loadedPreviewData.data;

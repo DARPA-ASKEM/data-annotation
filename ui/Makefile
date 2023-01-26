@@ -43,7 +43,7 @@ ip:| ip-addr
 docker_build: docker_build-ui  ## Build all docker images
 
 .PHONY: docker_build-ui
-docker_build-ui: | npm_build ## Build dojo-ui image
+docker_build-ui: | npm_build ## Build data-annotation-ui image
 	./build-ui.sh
 
 
@@ -56,7 +56,7 @@ docker_push-dockerhub: docker_push-ui | docker_login-dockerhub  ## Push all imag
 
 docker_push-%:| docker_login-dockerhub
 	@echo "push $* ${VERSION}"
-	docker push "jataware/dojo-ui:${VERSION}"
+	docker push "jataware/data-annotation-ui:${VERSION}"
 
 .PHONY: npm_lint
 npm_lint:   ## Format js files

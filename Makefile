@@ -4,13 +4,12 @@ PYTHON = $(shell which python3 || which python)
 export LANG
 
 BASEDIR = $(shell pwd)
-DOJO_API_DIR = api
+API_DIR = api
 MIXMASTA_DIR = mixmasta
 UI_DIR = ui
 RQ_DIR = tasks
 WORKERS_DIR = workers
-COMPOSE_DIRS := $(DOJO_DMC_DIR)
-COMPOSE_FILES := $(DOJO_API_DIR)/docker-compose.yaml $(RQ_DIR)/docker-compose.yaml
+COMPOSE_FILES := $(API_DIR)/docker-compose.yaml $(RQ_DIR)/docker-compose.yaml
 TEMP_COMPOSE_FILES := $(foreach file,$(subst /,_,$(COMPOSE_FILES)),temp_$(file))
 
 .PHONY:update
@@ -19,12 +18,12 @@ update:
 
 .PHONY:init
 init:
-	make envfile;
+	make envfile
+	make docker-compose.yaml;
 
 .PHONY:rebuild-all
 rebuild-all:
-	docker-compose build --no-cache; \
-	cd $(MIXMASTA_DIR) && docker build . -t mixmasta:dev;
+	docker-compose build --no-cache;
 
 envfile:
 ifeq ($(wildcard envfile),)
@@ -40,6 +39,7 @@ clean:
 	docker container prune -f && \
 	docker-compose run app rm -r ./data/*/ && \
 	echo "Done"
+
 
 docker-compose.yaml:$(COMPOSE_FILES) docker-compose.build-override.yaml envfile
 	export $$(cat envfile | xargs); \

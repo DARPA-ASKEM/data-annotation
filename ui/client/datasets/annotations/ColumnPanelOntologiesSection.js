@@ -27,7 +27,7 @@ export default withStyles((theme) => ({
     // if someone has closed and reopened the annotation panel, essentially
     if (values.primary_ontology_id
       && (values.primary_ontology_id !== currentOntologyTerm?.id)) {
-      axios.get(`/api/dojo/dkg/term/${values.primary_ontology_id}`).then((response) => {
+      axios.get(`/api/data_annotation/dkg/term/${values.primary_ontology_id}`).then((response) => {
         setCurrentOntologyTerm(response.data);
       });
       // no need to handle errors because we will fall back to just the ID, as seen below

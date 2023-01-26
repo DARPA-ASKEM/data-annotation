@@ -182,7 +182,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
   const [displayError, setDisplayError] = React.useState(false);
 
   useEffect(() => {
-    document.title = 'Dataset Registration - Dojo';
+    document.title = 'Dataset Registration';
 
     let rawFileNameToUse = getRawFileNameFromLocation(location);
 
@@ -194,7 +194,7 @@ const HorizontalLinearStepper = ({ match, updateLocation, ...props }) => {
 
       const result = axios({
         method: 'get',
-        url: `/api/dojo/datasets/${datasetId}/verbose`,
+        url: `/api/data_annotation/datasets/${datasetId}/verbose`,
       }).then((result) => {
 
         /* Set loaded dataset info, uploaded files data, and annotations */

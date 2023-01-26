@@ -33,7 +33,7 @@ const DatasetEditDialog = ({
   open, onClose, dataset
 }) => {
   const [dialogContent, setDialogContent] = useState('start');
-  const dataUrl = 'https://data.wm.dojo-modeling.com/';
+  const dataUrl = 'https://darpa-askem.github.io/';
   const classes = useStyles();
 
   const redirectToDatasetUrl = (action) => {

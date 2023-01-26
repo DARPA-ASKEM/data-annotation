@@ -14,7 +14,6 @@ from sqlite3 import connect
 
 from requests import put
 from fastapi import APIRouter, Response, File, UploadFile, status
-from elasticsearch import Elasticsearch
 from rq import Worker, Queue
 from rq.job import Job
 from redis import Redis

@@ -4,7 +4,6 @@ import Annotate from './Annotate';
 import AnomalyDetection from './AnomalyDetection';
 import Append from './Append';
 import UpdateMetadata from './UpdateMetadata';
-import ModelOutput from './ModelOutput';
 import Preview from './Preview';
 import SubmitSuccessPage from './SubmitSuccessPage';
 import RunJobs from './RunJobs';
@@ -95,7 +94,7 @@ const BasicRegistrationFlow = {
                 qualifier_outputs: result.qualifier_outputs,
               };
               console.log(updatedDataset);
-              await axios.put(`/api/dojo/datasets`, updatedDataset);
+              await axios.put(`/api/data_annotation/datasets`, updatedDataset);
             }
           },
         ]
@@ -117,93 +116,6 @@ const BasicRegistrationFlow = {
       component: SubmitSuccessPage,
       options: {}
     },
-  ]
-};
-
-const ModelOutputFlow = {
-  steps: [
-    {
-      slug: 'model',
-      title: 'Model Output Registration',
-      label: 'Registration',
-      component: ModelOutput,
-      options: {}
-    },
-    {
-      slug: 'analyze',
-      title: 'Analyzing Dataset',
-      label: 'Analysis',
-      component: RunJobs,
-      options: {
-        jobs: [
-          {
-            id: 'file_processors.model_output_preview',
-            send_context: true,
-            handler: ({ result, setRawFileName }) => {
-              setRawFileName(result);
-            }
-          },
-          {
-            id: 'geotime_processors.model_output_geotime_classify',
-            send_context: true,
-            handler: ({ result, annotations, setAnnotations, ...extra }) => {
-              annotations.metadata['geotime_classify'] = result;
-              setAnnotations(annotations);
-            }
-          },
-        ],
-      }
-    },
-    {
-      slug: 'annotate',
-      title: 'Annotate Dataset',
-      label: 'Annotation',
-      component: Annotate,
-      options: {
-        useFilepath: true,
-        onSubmit: ({ annotations, formattedAnnotations, setAnnotations, handleNext, ...extra }) => {
-          annotations.annotations = formattedAnnotations;
-          setAnnotations(annotations);
-          handleNext();
-        }
-      }
-    },
-    {
-      slug: 'process',
-      title: 'Processing Dataset',
-      label: 'Processing',
-      component: RunJobs,
-      options: {
-        jobs: [
-          {
-            id: 'mixmasta_processors.run_model_mixmasta',
-            send_context: true,
-            handler: async ({ result, annotations, setAnnotations, datasetInfo, setDatasetInfo, ...extra }) => {
-              annotations.metadata["mixmasterAnnotations"] = result.mixmaster_annotations;
-              setAnnotations(annotations);
-            }
-          }
-        ]
-      }
-    },
-    {
-      slug: 'preview',
-      title: 'Preview Dataset',
-      label: 'Preview',
-      component: Preview,
-      options: {
-        useFilepath: true,
-        handleNextFunc: 'PublishModelOutput',
-      }
-    },
-    {
-      slug: 'submit',
-      title: 'Submit Dataset',
-      label: 'Submit',
-      component: SubmitSuccessPage,
-      options: {}
-    },
-
   ]
 };
 
@@ -236,7 +148,7 @@ const AppendFlow = {
                 geography: result.geography,
                 period: result.period,
               };
-              await axios.put(`/api/dojo/datasets`, updatedDataset);
+              await axios.put(`/api/data_annotation/datasets`, updatedDataset);
             }
           }
         ]
@@ -375,7 +287,7 @@ const TableRegistrationFlow = {
                 outputs: result.outputs,
                 qualifier_outputs: result.qualifier_outputs,
               };
-              await axios.put(`/api/dojo/datasets`, updatedDataset);
+              await axios.put(`/api/data_annotation/datasets`, updatedDataset);
             }
           },
         ]
@@ -403,7 +315,6 @@ const TableRegistrationFlow = {
 
 const flows = {
   register: BasicRegistrationFlow,
-  model: ModelOutputFlow,
   append: AppendFlow,
   update: UpdateMetadataFlow,
   table: TableRegistrationFlow,

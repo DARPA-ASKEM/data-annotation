@@ -1,5 +1,7 @@
 services:
   api:
+    build:
+      context: ./api/  
     command:
       [
         "uvicorn",
@@ -16,13 +18,15 @@ services:
       ]
     volumes:
       - ./api:/api
-      - dataset-storage:/datasets
-    env_file:
-      - envfile
     environment:
       - DATA_ANNOTATION_URL
       - REDIS_HOST
       - DKG_URL
+      - DKG_API_PORT
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - DATASET_STORAGE_BASE_URL
+      - STORAGE_HOST
     networks:
       - data-annotation-stack
   redis:
@@ -58,14 +62,14 @@ services:
     networks:
       - data-annotation-stack
   rqworker:
+    build:
+      context: ./tasks/  
     env_file:
       - envfile
     networks:
       - data-annotation-stack
     depends_on:
       - redis
-    volumes:
-      - dataset-storage:/datasets
 
 networks:
   data-annotation-stack:
@@ -73,7 +77,4 @@ networks:
     name: data-annotation-stack
 
 volumes:
-  dmc-data-results:
-  dmc-data-mappers:
-  dmc-data-model_configs:
   dataset-storage:

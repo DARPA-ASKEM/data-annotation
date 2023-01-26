@@ -55,34 +55,9 @@ module.exports = {
       ignored: /node_modules/,
     },
     proxy: {
-      '/api/terminal': {
-        target: 'http://localhost:3000',
-        pathRewrite: { '^/api/terminal': '' },
-        secure: false,
-        changeOrigin: true,
-      },
-      '/api/ws': {
-        target: 'http://localhost:3000',
-        pathRewrite: { '^/api': '' },
-        secure: false,
-        changeOrigin: true,
-        ws: true,
-      },
-      '/api/dojo': {
+      '/api/data_annotation': {
         target: 'http://localhost:8000',
-        pathRewrite: { '^/api/dojo': '' },
-        secure: false,
-        changeOrigin: true,
-      },
-      '/api/shorthand': {
-        target: 'http://localhost:5000',
-        pathRewrite: { '^/api/shorthand': '' },
-        secure: false,
-        changeOrigin: true,
-      },
-      '/api/spacetag': {
-        target: 'http://localhost:8001',
-        pathRewrite: { '^/api/spacetag': '' },
+        pathRewrite: { '^/api/data_annotation': '' },
         secure: false,
         changeOrigin: true,
       },

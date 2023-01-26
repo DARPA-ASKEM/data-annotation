@@ -61,7 +61,7 @@ class MixmastaProcessor(BaseProcessor):
             f"{context.get('logging_preface', '')} - Running mixmasta processor"
         )
         output_path = datapath
-        mapper_fp = f"{output_path}/mixmasta_ready_annotations.json"  # Filename for json info, will eventually be in Elasticsearch, needs to be written to disk until mixmasta is updated
+        mapper_fp = f"{output_path}/mixmasta_ready_annotations.json"
         raw_data_fp = f"{output_path}/{filename}"  # Raw data
         # Getting admin level to resolve to from annotations
         admin_level = None  # Default to admin1
@@ -142,10 +142,9 @@ def run_mixmasta(context, filename=None):
             with open(os.path.join(datapath, local_file), "rb") as fileobj:
                 put_rawfile(path=dest_file_path, fileobj=fileobj)
             if dest_file_path.startswith("s3:"):
-                # "https://jataware-world-modelers.s3.amazonaws.com/dev/datasets/6c9c996b-a175-4fa6-803c-e39b24e38b6e/6c9c996b-a175-4fa6-803c-e39b24e38b6e.parquet.gzip"
                 location_info = urlparse(dest_file_path)
                 data_files.append(
-                    f"https://{location_info.netloc}.s3.amazonaws.com{location_info.path}"
+                    f"s3://{location_info.netloc}/{location_info.path}"
                 )
             else:
                 data_files.append(dest_file_path)
