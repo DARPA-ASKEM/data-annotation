@@ -16,7 +16,7 @@ redis = Redis(
 )
 
 
-@router.get("/dojo/spacetag/get_job_by_args")
+@router.get("/data_annotation/spacetag/get_job_by_args")
 def get_job_by_args(args):
     workers = Worker.all(connection=redis)
     running_jobs = [worker.get_current_job() for worker in workers]
@@ -26,7 +26,7 @@ def get_job_by_args(args):
     return None
 
 
-@router.get("/dojo/spacetag/get_job_by_id")
+@router.get("/data_annotation/spacetag/get_job_by_id")
 def get_job_by_id(job_id):
     try:
         return Job.fetch(job_id, connection=redis)

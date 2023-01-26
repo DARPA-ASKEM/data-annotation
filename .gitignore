@@ -160,5 +160,8 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-dojo/api/es-mappings/import/*.json
-dojo/**/tasks/venv_tasks/
+data-annotation/api/es-mappings/import/*.json
+data-annotation/**/tasks/venv_tasks/
+
+.eslintignore
+

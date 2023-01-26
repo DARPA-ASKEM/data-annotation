@@ -79,6 +79,11 @@ class GeoAnnotation(BaseModel):
         title="Coordinate Format",
         description="If geo type is COORDINATES, then provide the coordinate format",
     )
+    primary_ontology_id: Optional[str] = Field(
+        None,
+        description="The ontology term the user assigned to this variable",
+        title="Ontology term",
+    )
     qualifies: Optional[List[str]] = Field(
         title="Qualifies Columns",
         description="An array of the column names which this qualifies",
@@ -118,6 +123,11 @@ class DateAnnotation(BaseModel):
         description="the type of time as the key with the column name being the value",
         example={"day": "day_column", "hour": "hour_column"},
     )
+    primary_ontology_id: Optional[str] = Field(
+        None,
+        description="The ontology term the user assigned to this variable",
+        title="Ontology term",
+    )
     qualifies: Optional[List[str]] = Field(
         title="Qualifies Columns",
         description="An array of the column names which this qualifies",
@@ -139,9 +149,13 @@ class FeatureAnnotation(BaseModel):
         description="An array of the column names which this qualifies",
         example=["crop_production", "malnutrition_rate"],
     )
+    primary_ontology_id: Optional[str] = Field(
+        None,
+        description="The ontology term the user assigned to this variable",
+        title="Ontology term",
+    )
     qualifierrole: Optional[str]
     aliases: Dict[str, str] = {}
-
 
 
 class AnnotationSchema(BaseModel):

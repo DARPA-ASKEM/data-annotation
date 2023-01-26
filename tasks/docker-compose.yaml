@@ -2,9 +2,9 @@ version: '2.2'
 services:
   rqworker:
     build: .
-    container_name: dojo-rq-worker
+    container_name: data-annotation-rq-worker
     networks:
-      - dojo
+      - data-annotation-stack
     command:
       - rq
       - worker
@@ -15,5 +15,5 @@ services:
       - low
 
 networks:
-  dojo:
+  data-annotation-stack:
     driver: bridge

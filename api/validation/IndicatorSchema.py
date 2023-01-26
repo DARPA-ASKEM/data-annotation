@@ -58,6 +58,7 @@ class PreviewType(Enum):
 #         title="Final Alias Name",
 #     )
 
+
 class Maintainer(BaseModel):
     class Config:
         extra = Extra.allow
@@ -204,7 +205,7 @@ class Output(BaseModel):
         examples=[""],
         title="Unit Description",
     )
-    primaryOntologyId: Optional[str] = Field(
+    primary_ontology_id: Optional[str] = Field(
         None,
         description="The ontology term the user assigned to this variable",
         title="Ontology term",
@@ -220,10 +221,8 @@ class Output(BaseModel):
         description="Spatial and temporal resolution of the data",
         title="Data Resolution",
     )
-    alias: Optional[Dict[Any,Any]] = Field(
-        None,
-        description="alias dictionary",
-        title="Alias"
+    alias: Optional[Dict[Any, Any]] = Field(
+        None, description="alias dictionary", title="Alias"
     )
 
 
@@ -271,6 +270,11 @@ class QualifierOutput(BaseModel):
         description="The feature names that this data should be used as a qualifier for",
         title="Related Features",
     )
+    primary_ontology_id: Optional[str] = Field(
+        None,
+        description="The ontology term the user assigned to this variable",
+        title="Ontology term",
+    )
 
 
 class IndicatorMetadataSchema(BaseModel):
@@ -296,7 +300,7 @@ class IndicatorMetadataSchema(BaseModel):
         ...,
         description="The description of the dataset.",
         examples=[
-            "World Development Indicators are the World Bank's compilation of relevant, high-quality, and internationally comparable statistics about global development. The global database contains 1,600 time series indicators for 217 economies and more than 40 country groups, with data for many indicators going back more than 50 years.  There are ~1400 indicators for Ethiopia at the National level.  This data was pulled by the World Modelers program in September 2020."
+            "World Development Indicators are the World Bank's compilation of relevant, high-quality, and internationally comparable statistics about global development. The global database contains 1,600 time series datasets for 217 economies and more than 40 country groups, with data for many datasets going back more than 50 years.  There are ~1400 datasets for Ethiopia at the National level.  This data was pulled by the World Modelers program in September 2020."
         ],
         title="Dataset Description",
     )
@@ -330,9 +334,7 @@ class IndicatorMetadataSchema(BaseModel):
         title="Data Path URLs",
     )
     outputs: Optional[List[Output]] = Field(
-        [],
-        description="An array of dataset variables",
-        title="Dataset Outputs"
+        [], description="An array of dataset variables", title="Dataset Outputs"
     )
     qualifier_outputs: Optional[List[QualifierOutput]] = Field(
         None,
@@ -360,17 +362,13 @@ class IndicatorMetadataSchema(BaseModel):
     data_sensitivity: Optional[str] = Field(
         None,
         description="Specifies any restrictions on data use.",
-        examples=[
-            "..."
-        ],
+        examples=["..."],
         title="Dataset Sensitivity",
     )
     data_quality: Optional[str] = Field(
         None,
         description="Specify if the data is measured, derived, or estimated data and what was the methodology associated with each of these.",
-        examples=[
-            "measured"
-        ],
+        examples=["measured"],
         title="Dataset Quality",
     )
     published: Boolean = Field(
@@ -381,7 +379,7 @@ class IndicatorMetadataSchema(BaseModel):
     )
 
 
-class IndicatorsSearchSchema(BaseModel):
+class DatasetsSearchSchema(BaseModel):
     class Config:
         extra = Extra.allow
 
@@ -398,7 +396,7 @@ class IndicatorsSearchSchema(BaseModel):
         ...,
         description="The description of the dataset.",
         examples=[
-            "World Development Indicators are the World Bank's compilation of relevant, high-quality, and internationally comparable statistics about global development. The global database contains 1,600 time series indicators for 217 economies and more than 40 country groups, with data for many indicators going back more than 50 years.  There are ~1400 indicators for Ethiopia at the National level.  This data was pulled by the World Modelers program in September 2020."
+            "World Development Datasets are the World Bank's compilation of relevant, high-quality, and internationally comparable statistics about global development. The global database contains 1,600 time series datasets for 217 economies and more than 40 country groups, with data for many datasets going back more than 50 years.  There are ~1400 datasets for Ethiopia at the National level.  This data was pulled by the World Modelers program in September 2020."
         ],
         title="Dataset Description",
     )
@@ -413,7 +411,7 @@ class IndicatorsSearchSchema(BaseModel):
         description="Information about the dataset maintainer.",
         title="Dataset Maintainer",
     )
-   
+
 
 class DateValidationRequestSchema(BaseModel):
     format: str = Field(
@@ -428,7 +426,7 @@ class DateValidationRequestSchema(BaseModel):
             ["2001-01-01", "2022-07-11", "2011-03-27"],
             ["2002", "2005", "1998"],
             ["Nov 11, 1911", "Dec 25, 2020", "Feb 9, 1999"],
-        ]
+        ],
     )
 
 
@@ -442,4 +440,23 @@ class DateValidationResponseSchema(BaseModel):
         ...,
         description="Indicates if format provided (and returned) matches the values sent in",
         examples=[True, False],
+    )
+
+
+class DataRepresentationSchema(BaseModel):
+    columns: List[str] = Field(
+        ...,
+        description="List of the columns for the dataset",
+        examples=[["date", "lat", "lon", "value", "type"]],
+    )
+    records: List[List[Any]] = Field(
+        ...,
+        description="List of list",
+        examples=[
+            [
+                ["2012-04-18", "60.4982", "-10.6151", "18.2", "auto"],
+                ["2012-04-19", "60.4982", "-10.6151", "15.4", "auto"],
+                ["2012-04-20", "60.4982", "-10.6151", "13.1", "manual"],
+            ]
+        ],
     )

@@ -1,5 +1,7 @@
 services:
   api:
+    build:
+      context: ./api/  
     command:
       [
         "uvicorn",
@@ -16,45 +18,33 @@ services:
       ]
     volumes:
       - ./api:/api
-      - dataset-storage:/datasets
-    env_file:
-      - envfile
     environment:
-      - DOJO_URL
+      - DATA_ANNOTATION_URL
       - REDIS_HOST
+      - DKG_URL
+      - DKG_API_PORT
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - DATASET_STORAGE_BASE_URL
+      - STORAGE_HOST
     networks:
-      - dojo-stack
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-  elasticsearch:
-    env_file:
-      - envfile
-    networks:
-      - dojo-stack
-    healthcheck:
-      interval: 10s
-      retries: 5
-      test:
-        - CMD
-        - curl
-        - --fail
-        - http://localhost:9200/_cluster/health
-      timeout: 10s
+      - data-annotation-stack
   redis:
     env_file:
       - envfile
     networks:
-      - dojo-stack
-  phantom:
+      - data-annotation-stack
+  ui:
     build:
-      context: ./phantom/
+      context: ./ui/
       dockerfile: Dockerfile.dev
-    container_name: phantom
+    container_name: ui
     env_file:
       - envfile
+    environment:
+      - DKG_URL
     volumes:
-      - "./phantom/ui:/ui"
+      - "./ui:/ui"
     expose:
       - 8080
     ports:
@@ -70,24 +60,21 @@ services:
       - --host
       - 0.0.0.0
     networks:
-      - dojo-stack
+      - data-annotation-stack
   rqworker:
+    build:
+      context: ./tasks/  
     env_file:
       - envfile
     networks:
-      - dojo-stack
+      - data-annotation-stack
     depends_on:
       - redis
-    volumes:
-      - dataset-storage:/datasets
 
 networks:
-  dojo-stack:
+  data-annotation-stack:
     driver: bridge
-    name: dojo-stack
+    name: data-annotation-stack
 
 volumes:
-  dmc-data-results:
-  dmc-data-mappers:
-  dmc-data-model_configs:
   dataset-storage:

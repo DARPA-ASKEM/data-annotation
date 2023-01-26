@@ -4,31 +4,25 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
 
     BIND_PORT: int = 8000
-    ELASTICSEARCH_URL: str
-    ELASTICSEARCH_PORT: int = 9200
 
     DATASET_STORAGE_BASE_URL: str
-    DOJO_URL: str
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
+    DATA_ANNOTATION_URL: str
+
+    TDS_URL: str = "http://data-service-api:8000"
 
     REDIS_HOST: str
     REDIS_PORT: int = 6379
 
-    DOCKERHUB_URL: str = ""
-    DOCKERHUB_USER: str = ""
-    DOCKERHUB_PWD: str = ""
-    DOCKERHUB_ORG: str = "jataware"
+    # DATASET_STORAGE_BASE_URL: str = "file:///datasets/"
 
-    DATASET_STORAGE_BASE_URL: str = "file:///datasets/"
-
-    CONFIG_STORAGE_BASE: str = "file:///dojo/configs/"
+    CONFIG_STORAGE_BASE: str = "file:///data-annotation/configs/"
 
     UVICORN_RELOAD: bool = False
 
-    DKG_URL : str
-
-    UAZ_URL: str = ""
-    UAZ_THRESHOLD: str = ""
-    UAZ_HITS: str = ""
+    DKG_URL: str
+    DKG_API_PORT: str
 
     class Config:
         case_sensitive = True

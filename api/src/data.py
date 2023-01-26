@@ -14,7 +14,6 @@ from sqlite3 import connect
 
 from requests import put
 from fastapi import APIRouter, Response, File, UploadFile, status
-from elasticsearch import Elasticsearch
 from rq import Worker, Queue
 from rq.job import Job
 from redis import Redis
@@ -23,7 +22,7 @@ from rq import job
 import boto3
 
 from src.utils import get_rawfile, put_rawfile
-from src.indicators import get_indicators, get_annotations
+from src.datasets import get_datasets, get_annotations
 from src.settings import settings
 
 logging.basicConfig()
@@ -49,7 +48,7 @@ def get_context(uuid):
     except:
         annotations = {}
     try:
-        dataset = get_indicators(uuid)
+        dataset = get_datasets(uuid)
     except:
         dataset = {}
 
@@ -180,7 +179,6 @@ def job(uuid: str, job_string: str, options: Optional[Dict[Any, Any]] = None):
         "result": job_result,
     }
     return response
-
 
 
 # TEST ENDPOINTS
