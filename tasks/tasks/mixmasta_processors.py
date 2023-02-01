@@ -144,7 +144,7 @@ def run_mixmasta(context, filename=None):
             if dest_file_path.startswith("s3:"):
                 location_info = urlparse(dest_file_path)
                 data_files.append(
-                    f"s3://{location_info.netloc}/{location_info.path}"
+                    f"s3://{location_info.netloc}{location_info.path}"
                 )
             else:
                 data_files.append(dest_file_path)
